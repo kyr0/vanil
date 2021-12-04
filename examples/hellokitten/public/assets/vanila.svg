@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="Vanila.svg"
+   inkscape:version="1.0 (4035a4f, 2020-05-01)"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 210 297"
+   height="297mm"
+   width="210mm">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     inkscape:window-maximized="0"
+     inkscape:window-y="38"
+     inkscape:window-x="0"
+     inkscape:window-height="916"
+     inkscape:window-width="1512"
+     inkscape:lockguides="true"
+     inkscape:guide-bbox="true"
+     showguides="true"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="425.22907"
+     inkscape:cx="344.65097"
+     inkscape:zoom="1"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base">
+    <sodipodi:guide
+       inkscape:locked="true"
+       id="guide871"
+       orientation="1,0"
+       position="165.64407,200.11033" />
+    <sodipodi:guide
+       inkscape:locked="true"
+       id="guide873"
+       orientation="1,0"
+       position="159.68163,201.78727" />
+    <sodipodi:guide
+       inkscape:locked="true"
+       id="guide917"
+       orientation="0,-1"
+       position="95.389255,224.41365" />
+    <sodipodi:guide
+       inkscape:locked="true"
+       id="guide919"
+       orientation="1,0"
+       position="65.163468,224.41366" />
+    <sodipodi:guide
+       inkscape:locked="true"
+       id="guide921"
+       orientation="1,0"
+       position="60.965181,221.41798" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Ebene 1">
+    <g
+       style="font-size:58.1804px;line-height:1.25;font-family:Zapfino;-inkscape-font-specification:Zapfino;stroke-width:0.909069"
+       id="text885"
+       transform="matrix(1,0,0,-1,-0.20818612,-0.34658059)"
+       aria-label="V">
+      <path
+         sodipodi:nodetypes="cccccccccc"
+         id="path907"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.909069"
+         d="M 69.684225,-96.449633 53.138583,-138.98236 h 5.965764 l 10.8236,30.25494 c 0.871191,2.42419 1.60034,4.69686 2.187447,6.81802 0.643923,-2.27267 1.392011,-4.54535 2.244263,-6.81802 l 11.249726,-30.25494 h 5.624863 l -16.306421,41.646712 z" />
+    </g>
+    <path
+       d="M 85.401197,138.63578 110.76749,72.584298 h 9.41662 l 27.03334,66.051482 h -9.95728 l -7.70451,-20.00467 h -27.61907 l -7.253943,20.00467 z m 19.058513,-27.12346 h 22.39262 l -6.8935,-18.292566 q -3.15389,-8.335283 -4.68578,-13.696896 -1.26155,6.352836 -3.5594,12.615562 z"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:92.758px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:1.44177"
+       id="path910" />
+    <text
+       id="text881"
+       y="159.78104"
+       x="52.801212"
+       style="font-size:29.5553px;line-height:1.25;font-family:Zapfino;-inkscape-font-specification:Zapfino;stroke-width:0.461801"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.461801"
+         y="159.78104"
+         x="52.801212"
+         id="tspan879"
+         sodipodi:role="line">VANILA</tspan></text>
+    <rect
+       transform="matrix(0.0178839,-0.99984007,-0.99999907,-0.0013653,0,0)"
+       y="-259.32794"
+       x="-102.6383"
+       height="25.052773"
+       width="1.5236557"
+       id="rect887"
+       style="fill:#000000;stroke-width:0.484123" />
+    <rect
+       style="fill:#000000;stroke-width:0.803545"
+       id="rect889"
+       width="1.5256578"
+       height="68.927673"
+       x="-255.10773"
+       y="-50.181507"
+       transform="matrix(-0.87770907,-0.47919389,-0.43109094,0.90230849,0,0)" />
+    <path
+       id="path891"
+       style="fill:#000000;stroke-width:0.802958"
+       d="m 244.20419,76.235797 h 1.64987 l 29.41746,62.899673 h -1.30981 z"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       id="path893"
+       style="fill:#000000;stroke-width:0.802958"
+       d="m 198.65177,102.63933 -1.33909,-0.73109 -17.52134,37.31817 2.19047,-0.20381 z"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       sodipodi:nodetypes="ccccc"
+       d="m 184.76186,76.261233 h 1.64986 l 29.41746,62.899677 h -1.30981 z"
+       style="fill:#000000;stroke-width:0.802958"
+       id="path895" />
+    <path
+       sodipodi:nodetypes="ccccc"
+       d="m 198.65177,102.63933 -1.33909,-0.73109 -17.52134,37.31817 2.19047,-0.20381 z"
+       style="fill:#000000;stroke-width:0.802958"
+       id="path897" />
+    <text
+       xml:space="preserve"
+       style="font-size:29.9385px;line-height:1.25;font-family:Zapfino;-inkscape-font-specification:Zapfino;stroke-width:0.467789"
+       x="179.6344"
+       y="160.52173"
+       id="text901"><tspan
+         sodipodi:role="line"
+         id="tspan899"
+         x="179.6344"
+         y="160.52173"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.467789">VANILA</tspan></text>
+    <g
+       aria-label="V"
+       transform="matrix(0.84455726,0,-0.05975634,-1,-7.5975353,-34.185398)"
+       id="g915"
+       style="font-size:58.18039999999999878px;line-height:1.25;font-family:Zapfino;-inkscape-font-specification:Zapfino;fill:#000000;stroke-width:0.909069">
+      <path
+         sodipodi:nodetypes="ccccc"
+         d="m 73.644251,-106.77175 c -0.343235,-0.74826 18.977261,-51.67532 18.977261,-51.67532 l -1.387266,19.46471 -12.636006,32.21061 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;stroke-width:0.909069"
+         id="path913" />
+    </g>
+    <path
+       sodipodi:nodetypes="ccccc"
+       d="m 71.907208,101.56282 v 0 l 13.493989,37.07296 -26.505033,-1e-5 z"
+       style="fill:#ffeeaa;stroke-width:3"
+       id="rect934" />
+  </g>
+</svg>

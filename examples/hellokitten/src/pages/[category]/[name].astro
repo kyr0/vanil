@@ -1,0 +1,45 @@
+---
+import { request, props } from "vanil"
+
+import Test from "../../components/test.astro"
+  
+// called isolated, do not use any variables in this function
+// that are not part of the function body -- they will all be undefined!
+export const getStaticPaths = async() => {
+    return [{
+        params: { name: 'Minki', category: 'foo' }, 
+        props: { foo: 'bar' }
+    }, {
+        params: { name: 'Felix', category: 'foo' }, 
+        props: { foo: 'baz' }
+    }, {
+        params: { name: 'Felix1', category: 'bar' }, 
+        props: { foo: 'baz2' }
+    }]
+}
+
+---
+<html>
+    <head>
+        <title>{ request.params.name }</title>
+    </head>
+    <body>
+
+        <Test lala={ request.params.name }>
+            <h1 slot="header">Some header</h1>
+            <p slot="para">Wanna have fun11!</p>
+            Default content
+            Lala1
+            <p>lalala</p>
+            <span>URL { request.url }</span>
+        </Test>
+
+        Hello, { request.params.name } :)
+  
+        <br /> 
+
+        isPage: { Astro.isPage }
+
+        There is a prop called foo, it knows: { props.foo } in category: { request.params.category }.
+    </body>
+</html> 

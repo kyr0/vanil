@@ -1,0 +1,34 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "declaration": true,
+        "skipLibCheck": true,
+        "jsx": "react",
+        "resolveJsonModule": true,
+        "jsxFragmentFactory": "Vanil.tsx",
+        "jsxFactory": "Vanil.tsx",
+        "module": "CommonJS",
+        "outDir": "./dist",
+        "target": "ES2019",
+        "types": [
+            "node"
+        ]
+    },
+    "ts-node": {
+        "transpileOnly": true,
+        "files": true,
+        "moduleTypes": {
+            "**/.js": "cjs",
+            "**/.mjs": "cjs",
+            "**/.jsx": "cjs",
+            "**/.tsx": "cjs",
+            "**/.ts": "cjs",
+        }
+    },
+    "include": [
+        "src",
+        "package.json"
+    ]
+}

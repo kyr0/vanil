@@ -1,0 +1,26 @@
+---
+import { get } from "vanil"
+
+export interface Props {
+    lala: string
+    children?: any
+}
+
+const { lala = 'Foo' } = Astro.props
+---
+<div>
+    Test: {lala}
+    Test get: { get('testKey') }
+
+    Site: { Astro.site }<br />
+    isPage: { Astro.isPage } <br/>
+
+    Default Slot:<br />
+    <slot />
+
+    Para Header:<br />
+    <slot name="header" />
+
+    Para Slot:<br />
+    <slot name="para" />
+</div>

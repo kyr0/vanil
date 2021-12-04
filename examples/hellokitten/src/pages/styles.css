@@ -1,0 +1,13 @@
+:root {
+  --color: black;
+  --font-family: Helvetica, sans-serif;
+}
+
+body {
+  font: 100% var(--font-family);
+  color: var(--color);
+}
+
+.cat {
+    width: 300;
+}

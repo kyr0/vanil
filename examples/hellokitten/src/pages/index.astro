@@ -1,0 +1,203 @@
+---
+// THIS CODE IS 1x SERVER-SIDE EXECUTED
+// THE RESULTING FILE IS DYNAMICALLY SERVED via `vanil dev` 
+// AND CAN BE BUILD / PREVIEWED VIA `vanil build` AND `vanil preview`
+import { set, t, changeLanguage, language, translations, 
+    setTranslations, Debug, Trans, fetchContent, 
+    resolve, props, Code } from "vanil"
+
+set('testKey', 123)
+
+// load and set translations; it's remembered in browser
+setTranslations('de', fetchContent('../i18n/de.json5')[0])
+setTranslations('en', fetchContent('../i18n/en.json5')[0])
+ 
+// set language; it's remembered in browser
+changeLanguage('de')
+
+console.log('test t in SSG', t('Hello world'))
+
+// markdown
+const markdownVDom = fetchContent('../data/test.md')[0]
+
+// exmaple with params
+//console.log('t', t('Hello world {name}', { name: 'lol' }))
+
+// you can use arbitrary Node.js modules here
+import { Base64 } from "js-base64"
+console.log('transform to base64:', Base64.encode('test'))
+
+// you can import .js/.ts/.jsx/.tsx by any means
+// however, for .js you need to export with module.exports
+import { genTitle } from '../components/test'
+import { KittenHeader } from '../components/header'
+import { KittenLayout } from '../layouts/KittenLayout'
+import { fetchKittens } from '../isomorphic/fetchKittens'
+
+// fetch 5 fresh images
+const catImages = await fetchKittens()
+
+// dynamic imports are supported
+const catData: { catNames: Array<string> } = fetchContent("../data/catNames.json")[0]
+ 
+// resolve all paths of files in a folder; can be outside root dir; 
+// you can use all kinds of loaders; such as, raw:, binary:
+const svgs = fetchContent("resolve:../../public/assets/*.svg")
+//console.log('svgs resolved', svgs)
+  
+// VANIL logo
+const vanilLogo = fetchContent("../../public/assets/vanil.svg")[0]
+   
+// mutate SVG VDOM on the fly
+vanilLogo.attributes.width = 120
+vanilLogo.attributes.height = 120
+ 
+// JSON5 support
+const catQuotes = fetchContent("../data/catNames.json5")[0]
+
+console.log('Vanil config locally provided', props.context.config, resolve('../../package.json'))
+
+// JS + CSS finally united
+const red = '#cc0000'
+
+// store kitten data so that it's available at runtime
+props.setState({
+    catImages,
+    catData
+})
+
+// THE FOLLOWING TEMPALTE WILL BE 1x SERVER-SIDE RENDERED
+---
+<html>
+    <head>
+        <title>{ genTitle() }</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+        
+        <link href="styles.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+
+        <Debug { Astro.request } />
+
+        <h1>Some markdown</h1>
+        { markdownVDom }
+
+        <Trans key="Hello <b>World</b>" tag="p" html />
+        <br />
+        <Trans key="Max length {length}" values={{ length: 50 }} ns="fooSpace" />
+
+        <Code code="let x = 123" lang="js" theme="funky" />
+
+        { vanilLogo } 
+
+        <img src="assets/vanil_logo.svg" />
+ 
+        <br />
+        
+        { t('Hello world {name}', { name: 'lol' }) }
+
+        <br />
+ 
+        <fragment>
+            Change the file: <code>{ props.context.path }</code> to experiment with VANIL :)
+        </fragment>  
+
+        <KittenHeader title={genTitle()} />
+ 
+        <KittenLayout>
+            <!-- first level TypeScript / ES2020 support; unopiniated -->
+            {catData.catNames.map((catName: string, index: number) => (
+                <div class="foo" style="background-color: orange">
+                    This is <b class="bar">{catName}</b> :], she often says <i>"{catQuotes[catName]}"</i> :]<br />
+                    <img class="cat" style={{ border: '2px solid #cc0000' }} src={`https://cataas.com/cat/${catImages[index].id}`} />
+                </div> 
+            ))}
+        </KittenLayout>
+
+        <!-- we have support for fragments like this -->
+        <>
+            <div>fragment support</div>
+            <div>is <u>there</u> too</div>
+        </>
+
+        <!-- of course you can add scripts for interavtivity -->
+        <button ref="mixBtn" style={{ color: 'red' }} onclick="mixClick">Mix!</button>
+        
+        <!-- interactive script, runs in browser only -->
+        <script> 
+  
+            // TODO: support const has = await import('lodash/has') without syntax error!
+            import * as has from 'lodash/has'
+
+            const has = await import('lodash')
+
+            const { get, set } = await import('vanil')
+
+            console.log('lodash anyone?', has)
+
+            // make it Vanil.tsx and import from "vanil" package
+            // so that we don't pollute the global scope
+            import { mixButtonHandler } from "../components/interactive/mixButton"
+            const { fetchKittens } = await import('../isomorphic/fetchKittens')
+
+            console.log('fetchKittens isomorphic', fetchKittens)
+
+            import { 
+                t, on, $, 
+                render, props, 
+                fetchContent, resolve, refs, listen, emit, Code, Script, Debug } from "vanil"
+            
+            const lala = 12345
+
+            console.log('mixBtn', refs.mixBtn)
+ 
+            on('mixClick', mixButtonHandler) 
+
+            set('foo', { hey: 'so nice' })
+
+            console.log('can read store', get('foo'))
+             
+            // using SSG-only API at runtime throws thoughtful exceptions
+            // fetchContent('test')
+            // resolve('test')
+
+            const tFoo = t('fooSpace')
+
+            console.log('tFoo', tFoo('Hello {lala}', { lala: 'KLAPPT'}))
+
+            console.log('props.state', props.state)
+
+            listen('transactionComplete', (tx: any) => {
+                console.log('transactionComplete!', tx)
+            })
+
+            // JS code entered here is ran entirely on the Browser
+            console.log('See me in the devTools', $('[ref=mixBtn]'), { foo: `bar${lala}` })
+
+            // dynamically render Vanil TSX and isomorphic Vanil components
+            render(<>
+                <div ref="mixBtn2">{ 
+                    t('Hello world {name}', { name: 'lol' }) 
+                }</div>
+                <Code code="let x = 123" lang="js" />
+                <Debug { { currentTime: Date.now() } } />
+                <Script>console.log('even runtime generated and injected code works')</Script>
+            </>, document.body)
+        </script>
+   
+        <style lang="css">
+            @import "module.css";
+            .foo {
+                border: 1px dotted #334433;
+ 
+                .bar {
+                    color: ${red}
+                }
+            }
+        </style>
+
+        <!-- interactive script, runs in browser only -->
+        <script src="index.ts"></script>
+    </body>
+</html> 

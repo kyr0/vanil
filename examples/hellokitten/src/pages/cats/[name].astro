@@ -1,0 +1,33 @@
+---
+import { request, props } from "vanil"
+
+// called isolated, do not use any variables in this function
+// that are not part of the function body -- they will all be undefined!
+export const getStaticPaths = async() => {
+    return [{
+        params: { name: 'Minki' }, 
+        props: { foo: 'bar' }
+    }, {
+        params: { name: 'Felix' }, 
+        props: { foo: 'baz' }
+    }, {
+        params: { name: 'Felix1' }, 
+        props: { foo: 'baz2' }
+    }]
+}
+
+---
+<html>
+    <head>
+        <title>{ request.params.name }</title>
+    </head>
+    <body>
+
+        Hello, { request.params.name } :)
+  
+        <br /> 
+
+        There is a prop called foo, it knows: { props.foo }
+
+    </body>
+</html> 

@@ -1,0 +1,20 @@
+{
+  "name": "homepage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm --prefix ../../ run start:dev -- dev --project-root ./examples/homepage",
+    "build": "npm --prefix ../../ run start:dev -- build --project-root ./examples/homepage",
+    "preview": "npm --prefix ../../ run start:dev -- preview --project-root ./examples/homepage",
+    "clean": "npm --prefix ../../ run start:dev -- clean --project-root ./examples/homepage",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "browserslist": [
+    "> 0.05%",
+    "not ie > 0"
+  ],
+  "dependencies": {}
+}

@@ -27,9 +27,15 @@ console.log(`Version ${packageJSON.version} will be released now.`)
 // git add; git commit; git push
 
 const commitMsg = `chore: version bump ${level} ${packageJSON.version}`
-execSync(`git add .`, { stdio: 'inherit' })
-execSync(`git commit -m "${commitMsg}"`, { stdio: 'inherit' })
-execSync(`git push`, { stdio: 'inherit' })
+try {
+  execSync(`git add .`, { stdio: 'inherit' })
+} catch (e) {}
+try {
+  execSync(`git commit -m "${commitMsg}"`, { stdio: 'inherit' })
+} catch (e) {}
+try {
+  execSync(`git push`, { stdio: 'inherit' })
+} catch (e) {}
 
 console.log(`Done git add, commit, push: ${commitMsg}`)
 

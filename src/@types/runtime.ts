@@ -14,6 +14,7 @@ import { CodeFn } from './runtime/components/Code'
 import { LinkFn } from './runtime/components/Link'
 import { ScriptFn } from './runtime/components/Script'
 import { TransFn } from './runtime/components/Trans'
+
 export interface SSGRuntime extends StoreApi, i18nApi {
   mode: 'development' | 'production'
 
@@ -50,13 +51,19 @@ export interface InteractiveRuntime extends SSGRuntime, BusApi, QueryApi, EventA
   exports: (exportsType: string) => { [exportName: string]: any }
 }
 
-// (Astro/Vanil).props, (Astro/Vanil).request
+// runtime state
+export type JSONSerializable = string | number | object | Array<JSONSerializable> | boolean | null
+
+export type RuntimeState = { [key: string]: JSONSerializable }
+
+// (Astro/Vanil).props
 export declare const props: {
   [key: string]: any
   context: Context
-  setState: () => void
+  setState: (state: RuntimeState) => void
 }
 
+// (Astro/Vanil).request
 export declare const request: {
   params: {
     [key: string]: any
@@ -64,9 +71,11 @@ export declare const request: {
   url: string
 }
 
+// (Astro/Vanil).fetchContent
 export type FetchContentFn = (pathGlob: string) => Array<any>
 export declare const fetchContent: FetchContentFn
 
+// (Astro/Vanil).resolve
 export type ResolveFn = (path: string) => string
 export declare const resolve: ResolveFn
 

@@ -174,12 +174,10 @@ export const cli = async (args: string[]) => {
   }
 
   // support for package.json provided vanil config
-  if (defaultConfig.projectRoot) {
-    const userConfigCandidate = getProjectPackageJson(projectRootOverride).vanil
+  const userConfigCandidate = getProjectPackageJson(defaultConfig.projectRoot!).vanil
 
-    if (userConfigCandidate) {
-      userConfig = userConfigCandidate
-    }
+  if (userConfigCandidate) {
+    userConfig = userConfigCandidate
   }
 
   // read project .env files

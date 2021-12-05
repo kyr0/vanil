@@ -17,6 +17,6 @@
     "not ie > 0"
   ],
   "dependencies": {
-    "vanil": "^0.0.9"
+    "vanil": "^0.0.10"
   }
 }

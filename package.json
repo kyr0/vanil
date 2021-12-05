@@ -10,7 +10,9 @@
   "version": "0.0.7",
   "description": "Vanilla JSX + HTML + CSS compiler and static-site generator (SSG)",
   "scripts": {
-    "release": "ts-node ./scripts/release.ts patch",
+    "release:patch": "ts-node ./scripts/release.ts patch",
+    "release:minor": "ts-node ./scripts/release.ts minor",
+    "release:major": "ts-node ./scripts/release.ts major",
     "start:dev": "ts-node-dev --rs --ignore-watch=./examples --watch=./src/** --respawn --transpile-only ./src/vanil.ts",
     "start": "ts-node ./src/vanil.ts",
     "test:init": "ts-node ./src/vanil.ts init",

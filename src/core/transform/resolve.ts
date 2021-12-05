@@ -8,10 +8,7 @@ const nodeResolve = require('node-resolve')
  * import(path), import ... from path, Vanil.fetchContent(path)
  * relative import resolve logic (e.g. ../components or )
  */
-export const resolvePathRelative = (targetPath: string, path: string) => {
-  console.log('resolvePathRelative', targetPath)
-  return resolve(dirname(path), targetPath)
-}
+export const resolvePathRelative = (targetPath: string, path: string) => resolve(dirname(path), targetPath)
 
 /** decides if a path is a relative import (relative to a path) */
 export const isRelativePathImport = (path: string) => path.startsWith('../') || path.startsWith('./')

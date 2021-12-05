@@ -4,7 +4,7 @@ export const prettify = (code: string) => {
   return prettier.format(code, {
     parser: 'html',
     arrowParens: 'always',
-    bracketSameLine: false,
+    bracketSameLine: true,
     bracketSpacing: true,
     embeddedLanguageFormatting: 'auto',
     htmlWhitespaceSensitivity: 'css',

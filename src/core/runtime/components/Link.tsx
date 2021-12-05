@@ -1,10 +1,7 @@
-export interface LinkProps {
-    href: string
-    rel?: string
-}
+import { LinkFn, LinkProps } from "../../../@types/runtime/components/Link"
 
 /** component for <likn> injection that will prevent double-injection */
-export const Link = (props: LinkProps) => {
+export const Link: LinkFn = (props: LinkProps) => {
     if (
         // runtime-interactive multi-load prevention
         (Vanil.isBrowser && !document.querySelector(`link[href="${props.href}"]`)) ||
@@ -14,5 +11,4 @@ export const Link = (props: LinkProps) => {
     }
     return <></>
 }
-
 Vanil.Link = Link

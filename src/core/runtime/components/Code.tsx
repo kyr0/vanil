@@ -1,12 +1,6 @@
-export interface CodeProps {
-    code: string
-    lang: string
-    theme: string
-    wrap: boolean
-}
+import { CodeFn, CodeProps } from "../../../@types/runtime/components/Code"
 
-/**  */
-export const Code = ({ code, lang, theme, wrap }: CodeProps) => {
+export const Code: CodeFn = ({ code, lang, theme, wrap }: CodeProps) => {
 
     const wrapStyle: any = wrap ? {
         whiteSpace: 'normal',
@@ -30,5 +24,4 @@ export const Code = ({ code, lang, theme, wrap }: CodeProps) => {
         </Vanil.Script>
     </> 
 }
-
 Vanil.Code = Code

@@ -19,9 +19,10 @@ See [`examples/hellokitten`](examples/hellokitten)
 
 ## IDE Support
 
-There is experimental support for  `.astro`, `.scss` in `<style>` and `.json5`.
+There is experimental support for `.astro`, `.scss` in `<style>` and `.json5`.
 
 Please install the following extensions:
+
 - `.astro` file format support: [Vanil Extension](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode)
 - auto-complete in `<script>` tags: TODO https://github.com/microsoft/vscode/pull/121517
 - then disable `@builtin HTML Language Features` as these collide with the fixed ones (see extension above)
@@ -34,19 +35,19 @@ Please install the following extensions:
 In the modern world of frontend engineering, it seems like we have to accept complexity as given. However, according to caniuse, we can deploy modern JS, CSS language features and reach >95% market share now.
 
 Thinking critically, we'll find that TSX components need no frameworks to work.
-Any transpiler would turn them into a JSON tree, functionally describing a DOM structure. It takes only a trivial `render()` function and a real or mocked DOM API to construct a DOM tree. 
+Any transpiler would turn them into a JSON tree, functionally describing a DOM structure. It takes only a trivial `render()` function and a real or mocked DOM API to construct a DOM tree.
 
-This is exactly what happens in Vanil: 
+This is exactly what happens in Vanil:
 
 - on the server side, TSX is turned into a virtual DOM tree which is then, using a tree transform operation, turned into an HTML string
 - however, the same TSX written in a `<script>` tag is transpiled to a functional representation and rendered as a DOM tree fragment at runtime
 
-Using a small runtime library that is inspired by jQuery, component or page code can mutate the real DOM with those fragments explicitly -- there is no need for any  framework to use the power of component-oriented frontend-engineering.
+Using a small runtime library that is inspired by jQuery, component or page code can mutate the real DOM with those fragments explicitly -- there is no need for any framework to use the power of component-oriented frontend-engineering.
 
-Same for CSS-in-JS solutions: In Vanil, it's perfectly valid to write CSS code or SCSS code in `<style>` tags or load a stylesheet via `<link />`. The `lang` attribute indicates the language dialect (e.g. `scss`). Evaluating the `<style>` content as a 
-JavaScript template string in the exact same SSG Node.js execution context allows 
+Same for CSS-in-JS solutions: In Vanil, it's perfectly valid to write CSS code or SCSS code in `<style>` tags or load a stylesheet via `<link />`. The `lang` attribute indicates the language dialect (e.g. `scss`). Evaluating the `<style>` content as a
+JavaScript template string in the exact same SSG Node.js execution context allows
 direct templating of CSS in JS. Post-processing with PostCSS leverages all benefits
-of auto-prefixing, and CSS selector nesting. 
+of auto-prefixing, and CSS selector nesting.
 
 Again, there is no need for any framework or complex tooling.
 
@@ -55,10 +56,11 @@ full control over the very internals of the Vanil compiler. Even the configurati
 of the transpilation can be directly mutated, using e.g. the `onContext` hook.
 Implementing one simple function is enough -- no complex setup.
 
-Most configuration can be directly managed in the project `package.json`s `vanil` 
+Most configuration can be directly managed in the project `package.json`s `vanil`
 object.
 
 Here are a few ideas on how it feels to work with Vanil:
+
 - each page you want to have is saved as `$pageName.astro`
 - you fetch the initial state data via Node.js `fetch()` on top of that file
 - you write your initial TSX+HTML+CSS code below
@@ -67,7 +69,7 @@ Here are a few ideas on how it feels to work with Vanil:
 - to define your pages routes, you just create folders and files with dynamic names: `pages/index.astro`, `pages/blog/[blogPostSlug].astro`, etc.
 - of course you can use TSX functional components in an isomorphic way - like in React
 - the Vanil compiler will render all HTML files to `dist/**/*.html`
-- the hot-module-reload (HMR) devServer brings in perfect developer experience 
+- the hot-module-reload (HMR) devServer brings in perfect developer experience
 - there is a preview HTTP server to preview the results
 - the config and hooks API allows to customize every compiler-internal config
 - file loaders allow to load and parse any file format (maybe via your own custom loaders)
@@ -78,27 +80,28 @@ Here are a few ideas on how it feels to work with Vanil:
 
 ## Near-term roadmap (till beta release)
 
-- `init` using `simple-scaffold`
-- move to other repo name
-- publish package
-- publish on github pages with Cloudflare in front 
+- fix all types
+- `Markdown` component
+- `init` scaffolding with a new version of `st-create`
+- make `npx vanil init` work; also `./node_modules/.bin/vanil init`
+- build docs website with Vanil; publish to netlify
+- build homepage website with Vanil; publish to vercel
+- publish examples to github pages
+- basic unit tests
+- basic integration tests
 
 ## Mid-term roadmap
 
 - refactor: rewrite import split parser (support multi-line dynamic / sync imports)
-- docs: build preview website with it
-- docs: build api docs website with it
 - perf: linkedom can be probably constructed directly in tsx()
 - perf: better codeCache with fileOrigin map, FNV hash algo and bloom filter
 - perf: generator for `serviceWorker.js` and caching using FNV hash algo and bloom filter
 - feat: generator for `manifest.json`
 - test: 100% test coverage; currently: 0%
-- feat: Markdown support for `fetchContent`
 - feat: Pagination support for `getStaticPaths`
 - feat: auto-schema-generating GraphQL client and on-the-fly OpenAPI client API generator / client
 - perf: use `cluster` for build parallelization
 - chore: async hook API
 - security: `vm2` secure mode support
 - feat: `download` attribute on all elements with href and src to download files to dist dir and use the dist target path as `src`
-- feat: `setup` to simply change the `package.json` with an interactive mode
 - feat: `check` to implement `webhint` / https://webhint.io/docs/user-guide/hints/hint-typescript-config/target/#what-does-the-hint-check

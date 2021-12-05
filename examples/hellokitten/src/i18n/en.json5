@@ -1,11 +1,11 @@
 {
   // no namespace case
-  "Hello world": "Hello world",
-  "Hello <b>World</b>": "Hello <b>World</b>",
+  'Hello world': 'Hello world',
+  'Hello <b>World</b>': 'Hello <b>World</b>',
   'Hello world {name}': 'Hello {name} world',
 
-  "fooSpace": {
-    "Max length {length}": "Max length {length}",
-    "I drove about {km} km per {period} with an {carType}.": "I drove about {km} km per {period} with an {carType}."
-  }
+  fooSpace: {
+    'Max length {length}': 'Max length {length}',
+    'I drove about {km} km per {period} with an {carType}.': 'I drove about {km} km per {period} with an {carType}.',
+  },
 }

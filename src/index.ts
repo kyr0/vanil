@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-require('ts-node').register()
-require('./vanil.ts')
+//require('ts-node').register()
+require('./vanil.js')

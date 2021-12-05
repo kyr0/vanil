@@ -2,6 +2,7 @@
 // THIS CODE IS 1x SERVER-SIDE EXECUTED
 // THE RESULTING FILE IS DYNAMICALLY SERVED via `vanil dev` 
 // AND CAN BE BUILD / PREVIEWED VIA `vanil build` AND `vanil preview`
+// TODO: more exports
 import { set, t, changeLanguage, language, translations, 
     setTranslations, Debug, Trans, fetchContent, 
     resolve, props, Code } from "vanil"
@@ -49,8 +50,6 @@ const svgs = fetchContent("resolve:../../public/assets/*.svg")
   
 // VANIL logo
 const vanilLogo = fetchContent("../../public/assets/vanil.svg")[0]
-   
-const vanilLogoRaw  = fetchContent("raw:../../public/assets/vanil.svg")[0]
 
 //console.log('vanilLogo', vanilLogo)
 
@@ -112,7 +111,7 @@ props.setState({
 
         <KittenHeader title={genTitle()} />
  
-        <KittenLayout>
+        <KittenLayout foo="asd">
             <!-- first level TypeScript / ES2020 support; unopiniated -->
             {catData.catNames.map((catName: string, index: number) => (
                 <div class="foo" style="background-color: orange">

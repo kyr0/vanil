@@ -1,11 +1,7 @@
-export interface ScriptProps {
-    src: string
-    type?: string
-    children?: Array<string>
-}
+import { ScriptFn, ScriptProps } from "../../../@types/runtime/components/Script"
 
 /** component for <script> injection that will prevent double-injection */
-export const Script = (props: ScriptProps) => {
+export const Script: ScriptFn = (props: ScriptProps) => {
 
     // runtime-interactive multi-load prevention for scripts with source
     if (props.src) {
@@ -20,11 +16,8 @@ export const Script = (props: ScriptProps) => {
     } else {
 
         const scriptCode = props.children ? props.children[0] : ''
-      
         delete props.children
-
         return <script {...props}>{ scriptCode }</script>
     }
 }
-
 Vanil.Script = Script

@@ -3,18 +3,17 @@ import { PageParamsAndProps } from './routing'
 import { ChangeLanguageFn, i18nApi, Language, SetTranslationsFn, TranslationFn, Translations } from './runtime/i18n'
 import { LoadFn, LoadForSessionFn, SaveFn, SaveForSessionFn, Store, StoreApi } from './runtime/store'
 import { IVirtualChild, VDomApi } from './runtime/vdom'
-
-import { Debug } from '../core/runtime/components/Debug'
-import { Script } from '../core/runtime/components/Script'
-import { Link } from '../core/runtime/components/Link'
-import { Code } from '../core/runtime/components/Code'
-import { Trans } from '../core/runtime/components/Trans'
 import { AddEventHandlerFn, EventApi, EventRegistryMap, GenericEventHandlerFn } from './runtime/event'
 import { ElementRefs, RenderApi, RenderFn } from './runtime/render'
 import { BusApi, EmitFn, ListenFn, MuteFn, Subscribers } from './runtime/bus'
 import { QueryApi, QueryFn } from './runtime/query'
 import { TsxFn } from './runtime/vdom'
 import { GetFn, SetFn } from './runtime/store'
+import { DebugFn } from './runtime/components/Debug'
+import { CodeFn } from './runtime/components/Code'
+import { LinkFn } from './runtime/components/Link'
+import { ScriptFn } from './runtime/components/Script'
+import { TransFn } from './runtime/components/Trans'
 export interface SSGRuntime extends StoreApi, i18nApi {
   mode: 'development' | 'production'
 
@@ -50,6 +49,33 @@ export interface InteractiveRuntime extends SSGRuntime, BusApi, QueryApi, EventA
    */
   exports: (exportsType: string) => { [exportName: string]: any }
 }
+
+// (Astro/Vanil).props, (Astro/Vanil).request
+export declare const props: {
+  [key: string]: any
+  context: Context
+  setState: () => void
+}
+
+export declare const request: {
+  params: {
+    [key: string]: any
+  }
+  url: string
+}
+
+export type FetchContentFn = (pathGlob: string) => Array<any>
+export declare const fetchContent: FetchContentFn
+
+export type ResolveFn = (path: string) => string
+export declare const resolve: ResolveFn
+
+// built-in Components
+export declare const Debug: DebugFn
+export declare const Code: CodeFn
+export declare const Link: LinkFn
+export declare const Script: ScriptFn
+export declare const Trans: TransFn
 
 // VdomApi
 export declare const tsx: TsxFn

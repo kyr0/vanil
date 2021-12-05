@@ -1,5 +1,5 @@
-import { Context } from "vanil"
+import { Context } from 'vanil'
 
-export const onFinish = async(context: Context) => {
-    console.log('Transform finished.')
+export const onFinish = async (context: Context) => {
+  console.log('Transform finished.')
 }

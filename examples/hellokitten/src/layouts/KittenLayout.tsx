@@ -2,14 +2,18 @@
 // TODO: provide standard components from vanil
 // import { Props } from "vanil"
 
-interface Props {
+// TODO: PropsWithChildren case
+export interface KittenLayoutProps {
+    foo: string
     children?: any
 }
 
-export const KittenLayout = ({ children }: Props) => {
+export const KittenLayout = (props: KittenLayoutProps) => {
+
+    console.log('KittenLayout props', props)
     return (
         <div class="kittenLayout">
-            {children}
+            {props.children}
         </div>
     )
 }

@@ -1,16 +1,23 @@
-import { CodeBundle, Attrs, processRequireFunctionCalls, processScriptTags, processStyleTags, splitTopLevelImports } from "./parse"
-import ts from "typescript"
-import { transformImportPaths } from "./typescript/rewritepath"
-import { resolveNodeImport } from "./resolve"
-import { bundleRequires } from "./bundle"
-import { readFileSyncUtf8 } from "../io/file"
-import { mayDeclareExports, mayWrapInAsyncIIFE, transformTemplate, transformVanilImports } from "./transform"
-import { addFileDependency } from "./context"
-import { Context } from "../../@types/context"
-import { addToCache, getFromCache } from "./cache"
+import {
+  CodeBundle,
+  Attrs,
+  processRequireFunctionCalls,
+  processScriptTags,
+  processStyleTags,
+  splitTopLevelImports,
+} from './parse'
+import ts from 'typescript'
+import { transformImportPaths } from './typescript/rewritepath'
+import { resolveNodeImport } from './resolve'
+import { bundleRequires } from './bundle'
+import { readFileSyncUtf8 } from '../io/file'
+import { mayDeclareExports, mayWrapInAsyncIIFE, transformTemplate, transformVanilImports } from './transform'
+import { addFileDependency } from './context'
+import { Context } from '../../@types/context'
+import { addToCache, getFromCache } from './cache'
 const postcss = require('postcss')
 
-export type ResultLanguageType = 'js' | 'css' 
+export type ResultLanguageType = 'js' | 'css'
 export type SourceLanguageType = 'tsx' | 'scss'
 export type InjectionIntent = 'import' | 'hoist'
 
@@ -21,26 +28,24 @@ const RE_HAS_ASYNC_CODE = /await[\S]*/
 export const TS_IMPORT_POLYFILL_SCRIPT = `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });`
 
-/** strips away the getStaticPaths function impl that may occur 
- * in dynamic routing .astro page templates. 
- * These use "export" which is prohibited here because we're 
+/** strips away the getStaticPaths function impl that may occur
+ * in dynamic routing .astro page templates.
+ * These use "export" which is prohibited here because we're
  * running the code in a CommonJS setting */
-export const stripGetStaticPathsFnDecl = (code: string, context: Context) => 
-    code
-        .replace(/export(.*?)getStaticPaths/, 'getStaticPaths')
-        .replace(`${(context as any).isolatedGetStaticPathsFnCode}`, '')
- 
+export const stripGetStaticPathsFnDecl = (code: string, context: Context) =>
+  code
+    .replace(/export(.*?)getStaticPaths/, 'getStaticPaths')
+    .replace(`${(context as any).isolatedGetStaticPathsFnCode}`, '')
+
 /** takes the typeScriptCode and htmlCode; transpiles into an atomic async function */
-export const transpileTemplate = (
-    codeBundle: CodeBundle, context: Context): string => {
+export const transpileTemplate = (codeBundle: CodeBundle, context: Context): string => {
+  const importsAndCode = splitTopLevelImports(codeBundle.typeScriptCode)
+  const preparedTSXCode = escapeAndNumbInlineStyleAndScriptTags(codeBundle.htmlCode, context)
 
-    const importsAndCode = splitTopLevelImports(codeBundle.typeScriptCode)
-    const preparedTSXCode = escapeAndNumbInlineStyleAndScriptTags(codeBundle.htmlCode, context)
+  // e.g. .astro components should be sync
+  const hasAsyncImpl = !!RE_HAS_ASYNC_CODE.test(importsAndCode.codeStatements)
 
-    // e.g. .astro components should be sync 
-    const hasAsyncImpl = !!RE_HAS_ASYNC_CODE.test(importsAndCode.codeStatements)
-
-    const scriptCode = `\n
+  const scriptCode = `\n
     // merge runtime and context-provided parts to a uniform global object
     // where direct use of Vanil and access to globalThis.Vanil is both valid
     globalThis.Vanil = Vanil = { ...(globalThis.Vanil || {}), ...(Vanil || {}), tsx }
@@ -59,63 +64,66 @@ export const transpileTemplate = (
 
         // evaluation of CSS styles via executing template literals
         // and storing the computation result in context
-        ${context.styleReplacements!.map((styleReplacement, index) => 
+        ${context.styleReplacements!.map(
+          (styleReplacement, index) =>
             `Vanil.props.context.styleReplacements[${index}].replacement = 
                 \`${styleReplacement.original}\`
-            `)}
+            `,
+        )}
         
         return ( ${preparedTSXCode} )
     }\n
     `
 
-    const cachedCode = getFromCache(scriptCode, context)
-    if (cachedCode) return cachedCode
+  const cachedCode = getFromCache(scriptCode, context)
+  if (cachedCode) return cachedCode
 
-    let transpiledCode = ts.transpileModule(scriptCode, {
-        ...context.transpileOptions,
-        transformers: {
-            // relative imports must be re-written to apply the 
-            // specific sourcePath-relative import logic
-            // (code is evaluated in runtime scope of vanil later)
-            before: [transformImportPaths({
-                rewrite: (importPath: string, fileName: string, localName: string) => 
-                    resolveNodeImport(importPath, context)
-            })]
-        }
-    }).outputText.replace(TS_IMPORT_POLYFILL_SCRIPT, '')
+  let transpiledCode = ts
+    .transpileModule(scriptCode, {
+      ...context.transpileOptions,
+      transformers: {
+        // relative imports must be re-written to apply the
+        // specific sourcePath-relative import logic
+        // (code is evaluated in runtime scope of vanil later)
+        before: [
+          transformImportPaths({
+            rewrite: (importPath: string, fileName: string, localName: string) =>
+              resolveNodeImport(importPath, context),
+          }),
+        ],
+      },
+    })
+    .outputText.replace(TS_IMPORT_POLYFILL_SCRIPT, '')
 
-    // make sure SSG code can import .astro component templates
-    transpiledCode = inlineTranspileImportedVanilComponents(transpiledCode, context)
+  // make sure SSG code can import .astro component templates
+  transpiledCode = inlineTranspileImportedVanilComponents(transpiledCode, context)
 
-    // top-level import statements come first
-    // async immediately invoked function execution follows (a-iife)
-    // providing a local Vanil argument including all config properties 
-    // and the path to the source template
-    // a-iife starts with the rest of the code (imports stipped and reordered on top), 
-    // followed by returning the htmlCode which is assumed to be JSX/TSX
-    return addToCache(scriptCode, transpiledCode, context)
+  // top-level import statements come first
+  // async immediately invoked function execution follows (a-iife)
+  // providing a local Vanil argument including all config properties
+  // and the path to the source template
+  // a-iife starts with the rest of the code (imports stipped and reordered on top),
+  // followed by returning the htmlCode which is assumed to be JSX/TSX
+  return addToCache(scriptCode, transpiledCode, context)
 }
 
 /** inlines code of require() calls towards .astro component template files */
 export const inlineTranspileImportedVanilComponents = (transpiledCode: string, context: Context) => {
-    // only do .astro component require("**/*.astro") code rewrites 
-    // when the code contains such requires
-    if (RE_CONTAINS_REQUIRE_STMT_FOR_ASTRO_COMPONENT.test(transpiledCode)) {
+  // only do .astro component require("**/*.astro") code rewrites
+  // when the code contains such requires
+  if (RE_CONTAINS_REQUIRE_STMT_FOR_ASTRO_COMPONENT.test(transpiledCode)) {
+    transpiledCode = processRequireFunctionCalls(transpiledCode, (importPath: string) => {
+      if (importPath.endsWith('.astro')) {
+        // make sure the .astro page template will HMR when this .astro
+        // component dependency changes
+        addFileDependency(importPath, context)
 
-        transpiledCode = processRequireFunctionCalls(transpiledCode, (importPath: string) => {
+        const transformedComponentCode = transformTemplate(importPath, context)
 
-            if (importPath.endsWith('.astro')) {
-
-                // make sure the .astro page template will HMR when this .astro
-                // component dependency changes 
-                addFileDependency(importPath, context)
-
-                const transformedComponentCode = transformTemplate(importPath, context)
-
-                // assigning the original local name here (too)
-                // as this is a multi-step, isolated transpile without shared 
-                // name cache, locally declared names diverge
-                const componentCode = `{ default: (function() {
+        // assigning the original local name here (too)
+        // as this is a multi-step, isolated transpile without shared
+        // name cache, locally declared names diverge
+        const componentCode = `{ default: (function() {
                     
                     const _origVanilProps = { ...Vanil.props }
                     const _origIsPage = Vanil.isPage
@@ -133,158 +141,158 @@ export const inlineTranspileImportedVanilComponents = (transpiledCode: string, c
 
                     return vdom
                  })}`
-                return componentCode
-            }
-            return `require("${importPath}")`
-        })
-    }
-    return transpiledCode
+        return componentCode
+      }
+      return `require("${importPath}")`
+    })
+  }
+  return transpiledCode
 }
 
 /** transpiles SSG code in general */
 export const transpileSSGCode = (scriptCode: string, context: Context) => {
+  const cachedCode = getFromCache(scriptCode, context)
+  if (cachedCode) return cachedCode
 
-    const cachedCode = getFromCache(scriptCode, context)
-    if (cachedCode) return cachedCode
+  // pre-process vanil imports
+  scriptCode = transformVanilImports(scriptCode)
 
-    // pre-process vanil imports
-    scriptCode = transformVanilImports(scriptCode)
+  let transpiledCode = ts
+    .transpileModule(scriptCode, {
+      ...context.transpileOptions,
+      transformers: {
+        // relative imports must be re-written to apply the
+        // specific sourcePath-relative import logic
+        // (code is evaluated in runtime scope of vanil later)
+        before: [
+          transformImportPaths({
+            rewrite: (importPath: string) => resolveNodeImport(importPath, context),
+          }),
+        ],
+      },
+    })
+    .outputText.replace(TS_IMPORT_POLYFILL_SCRIPT, '')
 
-    let transpiledCode = ts.transpileModule(scriptCode, {
-        ...context.transpileOptions,
-        transformers: {
-            // relative imports must be re-written to apply the 
-            // specific sourcePath-relative import logic
-            // (code is evaluated in runtime scope of vanil later)
-            before: [transformImportPaths({
-                rewrite: (importPath: string) => 
-                    resolveNodeImport(importPath, context)
-            })]
-        }
-    }).outputText.replace(TS_IMPORT_POLYFILL_SCRIPT, '')
+  // make sure SSG code can import .astro component templates
+  transpiledCode = inlineTranspileImportedVanilComponents(transpiledCode, context)
 
-    // make sure SSG code can import .astro component templates
-    transpiledCode = inlineTranspileImportedVanilComponents(transpiledCode, context)
-
-    // top-level import statements come first
-    // async immediately invoked function execution follows (a-iife)
-    // providing a local Vanil argument including all config properties 
-    // and the path to the source template
-    // a-iife starts with the rest of the code (imports stipped and reordered on top), 
-    // followed by returning the htmlCode which is assumed to be JSX/TSX
-    return addToCache(scriptCode, transpiledCode, context)
+  // top-level import statements come first
+  // async immediately invoked function execution follows (a-iife)
+  // providing a local Vanil argument including all config properties
+  // and the path to the source template
+  // a-iife starts with the rest of the code (imports stipped and reordered on top),
+  // followed by returning the htmlCode which is assumed to be JSX/TSX
+  return addToCache(scriptCode, transpiledCode, context)
 }
 
 /** transpiles and wraps runtime code; cares for re-ordering imports */
 export const transpileRuntimeInteractiveScriptCode = (
-    scriptCode: string, splitImports = true, path: string = '.', 
-    injectionIntent: InjectionIntent = 'import', context: Context): string => {
-    
-    let code = scriptCode
-    let transpiledCode = getFromCache(scriptCode, context)
+  scriptCode: string,
+  splitImports = true,
+  path: string = '.',
+  injectionIntent: InjectionIntent = 'import',
+  context: Context,
+): string => {
+  let code = scriptCode
+  let transpiledCode = getFromCache(scriptCode, context)
 
-    if (!transpiledCode) {
+  if (!transpiledCode) {
+    if (splitImports) {
+      const importsAndCode = splitTopLevelImports(scriptCode)
 
-        if (splitImports) {
-
-            const importsAndCode = splitTopLevelImports(scriptCode)
-            
-            // support for top-level await
-            code = `${importsAndCode.importStatements}
+      // support for top-level await
+      code = `${importsAndCode.importStatements}
                 ${mayWrapInAsyncIIFE(importsAndCode.codeStatements)}`
-        }
-
-        transpiledCode = transpileTSX(code, context, injectionIntent)
-
-        // hoisted code might need an async() iife wrapper,
-        // while imported code is safely wrapped already
-        if (injectionIntent === 'hoist') {
-            transpiledCode = mayWrapInAsyncIIFE(transpiledCode)
-        }
-        addToCache(scriptCode, transpiledCode, context)
     }
-    return bundleRequires(transpiledCode, path, context)
+
+    transpiledCode = transpileTSX(code, context, injectionIntent)
+
+    // hoisted code might need an async() iife wrapper,
+    // while imported code is safely wrapped already
+    if (injectionIntent === 'hoist') {
+      transpiledCode = mayWrapInAsyncIIFE(transpiledCode)
+    }
+    addToCache(scriptCode, transpiledCode, context)
+  }
+  return bundleRequires(transpiledCode, path, context)
 }
 
 /** transpiles arbitrary ts/tsx code as CJS module type code */
 export const transpileTSX = (code: string, context: Context, injectionIntent: InjectionIntent = 'import') => {
+  const cachedCode = getFromCache(code, context)
+  if (cachedCode) return cachedCode
 
-    const cachedCode = getFromCache(code, context)
-    if (cachedCode) return cachedCode
+  // pre-process vanil imports
+  code = transformVanilImports(code)
 
-    // pre-process vanil imports
-    code = transformVanilImports(code)
+  let transpiledCode = ts
+    .transpileModule(code, {
+      ...context.transpileOptions,
+    })
+    .outputText // typescript outputs an exports initializer that
+    // counters the window-local unified exports object concept
+    .replace(RE_TS_EXPORTS_COMMONJS_INIT, '')
+    .replace(TS_IMPORT_POLYFILL_SCRIPT, '')
 
-    let transpiledCode = ts.transpileModule(code, {
-        ...context.transpileOptions
-    }).outputText
-        // typescript outputs an exports initializer that 
-        // counters the window-local unified exports object concept
-        .replace(RE_TS_EXPORTS_COMMONJS_INIT, '')
-        .replace(TS_IMPORT_POLYFILL_SCRIPT, '')
-
-    if (injectionIntent === 'import') {
-        return mayDeclareExports(transpiledCode)
-    }
-    return addToCache(code, transpiledCode, context)
+  if (injectionIntent === 'import') {
+    return mayDeclareExports(transpiledCode)
+  }
+  return addToCache(code, transpiledCode, context)
 }
 
 /** transpiles style code using PostCSS; this is called from different stages */
 export const transpileStyleCode = (styleCode: string, lang: SourceLanguageType = 'scss', context: Context) => {
+  const cachedCode = getFromCache(styleCode, context)
+  if (cachedCode) return cachedCode
 
-    const cachedCode = getFromCache(styleCode, context)
-    if (cachedCode) return cachedCode
-
-    return addToCache(
-        styleCode, 
-        postcss(context.postCssPlugins).process(styleCode).css, 
-        context
-    )
+  return addToCache(styleCode, postcss(context.postCssPlugins).process(styleCode).css, context)
 }
 
 /** style code that has been marked for post-processing is replaced here */
 export const replaceStyleReplacements = (htmlCode: string, context: Context) => {
-    context.styleReplacements?.forEach(styleReplacement => {
-
-        htmlCode = htmlCode.replace(styleReplacement.original, 
-            transpileStyleCode(styleReplacement.replacement, styleReplacement.lang, context))
-    })
-    return htmlCode
+  context.styleReplacements?.forEach((styleReplacement) => {
+    htmlCode = htmlCode.replace(
+      styleReplacement.original,
+      transpileStyleCode(styleReplacement.replacement, styleReplacement.lang, context),
+    )
+  })
+  return htmlCode
 }
 
 /** helper function, used to transpile code hoised in tsx() transform  */
 export const loadAndTranspileCode = (
-    absolutePath: string, 
-    type: ResultLanguageType, 
-    lang: SourceLanguageType = 'tsx', 
-    injectionIntent: InjectionIntent = 'import',
-    context: Context
+  absolutePath: string,
+  type: ResultLanguageType,
+  lang: SourceLanguageType = 'tsx',
+  injectionIntent: InjectionIntent = 'import',
+  context: Context,
 ) => {
+  const fileContents = readFileSyncUtf8(absolutePath)
 
-    const fileContents = readFileSyncUtf8(absolutePath)
+  switch (type) {
+    case 'css':
+      return transpileStyleCode(fileContents, lang, context)
 
-    switch (type) {
-        case "css":
-            return transpileStyleCode(fileContents, lang, context)
-
-        case "js":
-        default:
-            return transpileRuntimeInteractiveScriptCode(fileContents, false, absolutePath, injectionIntent, context)
-    }
+    case 'js':
+    default:
+      return transpileRuntimeInteractiveScriptCode(fileContents, false, absolutePath, injectionIntent, context)
+  }
 }
 
 /** escapes syntax characters prone to immediate evaluation */
 export const escapeCurlyBracketsAndBackticks = (code: string) => {
-    return code.replace(/`/gm,  '__VANIL_BACKTICK__')
-               .replace(/\{/gm, '__VANIL_CURLY_BACKET_OPEN__')
-               .replace(/\}/gm, '__VANIL_CURLY_BACKET_CLOSE__')
+  return code
+    .replace(/`/gm, '__VANIL_BACKTICK__')
+    .replace(/\{/gm, '__VANIL_CURLY_BACKET_OPEN__')
+    .replace(/\}/gm, '__VANIL_CURLY_BACKET_CLOSE__')
 }
 
 /** unescapes syntax characters prone to immediate evaluation */
 export const uncapeCurlyBracketsAndBackticks = (code: string) => {
-    return code.replace(/__VANIL_BACKTICK__/gm, '`')
-               .replace(/__VANIL_CURLY_BACKET_OPEN__/gm, '{')
-               .replace(/__VANIL_CURLY_BACKET_CLOSE__/gm, '}')
+  return code
+    .replace(/__VANIL_BACKTICK__/gm, '`')
+    .replace(/__VANIL_CURLY_BACKET_OPEN__/gm, '{')
+    .replace(/__VANIL_CURLY_BACKET_CLOSE__/gm, '}')
 }
 
 /** wraps innerText JSX node content in curly backets to block evaluation */
@@ -293,32 +301,29 @@ const wrapInJSXCurlyBracketsString = (code: string) => `{\`${code}\`}`
 // 1. escape { and ` characters globally (1st step numbing)
 // 2. wrap in {``} to really numb the code while in SSG evaluation regarding TSX transforms
 const numbCodeForSSGEvaluation = (code: string) => {
-    code = escapeCurlyBracketsAndBackticks(code)
-    return wrapInJSXCurlyBracketsString(code)
+  code = escapeCurlyBracketsAndBackticks(code)
+  return wrapInJSXCurlyBracketsString(code)
 }
 
-/** 
- * escapes and transpiles inline script code before it is passed to the 
+/**
+ * escapes and transpiles inline script code before it is passed to the
  * server-side transpiler and evaluation; this is necessary to "numb" such
  * runtime-interactive code as it shouldn't be executed server-side at all
  */
 export const escapeAndNumbInlineStyleAndScriptTags = (tsxCode: string, context: Context): string => {
+  // walk thru all <script> tags and
+  // 1. transpile them (.ts -> .js)
+  // 2. numb code for SSG evaluation
 
-    // walk thru all <script> tags and
-    // 1. transpile them (.ts -> .js)
-    // 2. numb code for SSG evaluation
-    
-    tsxCode = processScriptTags(tsxCode, (codeOfTag: string) => 
-        numbCodeForSSGEvaluation(codeOfTag))
- 
-    return processStyleTags(tsxCode, (codeOfTag: string, attrs: Attrs) => {
-  
-        // remember style to be evaluated via codegen
-        context.styleReplacements!.push({
-            original: codeOfTag,
-            replacement: codeOfTag,
-            lang: attrs['lang'] as SourceLanguageType
-        })
-        return numbCodeForSSGEvaluation(codeOfTag)
+  tsxCode = processScriptTags(tsxCode, (codeOfTag: string) => numbCodeForSSGEvaluation(codeOfTag))
+
+  return processStyleTags(tsxCode, (codeOfTag: string, attrs: Attrs) => {
+    // remember style to be evaluated via codegen
+    context.styleReplacements!.push({
+      original: codeOfTag,
+      replacement: codeOfTag,
+      lang: attrs['lang'] as SourceLanguageType,
     })
+    return numbCodeForSSGEvaluation(codeOfTag)
+  })
 }

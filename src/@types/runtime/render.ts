@@ -1,11 +1,14 @@
-import { ElementRefs } from "../context/refs";
-import { RenderFn } from "./vdom";
+export interface ElementRefs {
+  [refName: string]: Element
+}
+
+export type RenderFn = (
+  virtualNode: VDOMNode,
+  parentDomElement: Element,
+) => Array<Element | Text | undefined> | Element | Text | undefined
 
 export interface RenderApi {
-    
-    tsx: (type: any, attributes: any, ...children: any) => any
-
-    // runtime DOM refs
-    refs: ElementRefs
-    render: RenderFn
+  // runtime DOM refs
+  refs: ElementRefs
+  render: RenderFn
 }

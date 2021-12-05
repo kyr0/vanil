@@ -7,7 +7,7 @@ export interface MaterializedPaths {
 
 /** maps the hash of untranspiled code -> transpiled code */
 export interface CodeCache {
-    [filePath: string]: {
-        [hash: string]: string;
-    };
+  [filePath: string]: {
+    [hash: string]: string
+  }
 }

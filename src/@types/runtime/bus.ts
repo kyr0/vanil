@@ -5,9 +5,14 @@ export interface Subscriber {
   handler: EventHandler
 }
 
+export type EmitFn = (topic: string, event: any) => void
+export type MuteFn = (subscriberId: number) => void
+export type ListenFn = (topic: string, handler: EventHandler) => number
+export type Subscribers = Array<Subscriber | undefined>
+
 export interface BusApi {
-  subscribers: Array<Subscriber | undefined>
-  listen(topic: string, handler: EventHandler): number
-  mute(subscriberId: number): void
-  emit(topic: string, event: any): void
+  subscribers: Subscribers
+  listen: ListenFn
+  mute: MuteFn
+  emit: EmitFn
 }

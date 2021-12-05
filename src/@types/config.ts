@@ -1,10 +1,9 @@
-import { SecureContextOptions } from "tls";
+import { SecureContextOptions } from 'tls'
 
 /**
  * The Vanil User Config Format
  */
 export interface Config {
-
   /**
    * Where to resolve all URLs relative to. Useful if you have a monorepo project.
    * Default: '.' (current working directory)
@@ -43,7 +42,7 @@ export interface Config {
    * File extensions .js, and .jsm are supported as well.
    * Every hook file must export one function with the exact hook name, such as:
    * export const onContext = (context: Context) => { your code to change the context }
-   * 
+   *
    * Default: './src/hooks'
    */
   hooks?: string
@@ -56,17 +55,16 @@ export interface Config {
 }
 
 export interface BuildOptions {
-
   /**
    * You can specify the target language level here
    * Default: ES2018
    */
   target?: string
 
-  /** 
-   * Your public domain, e.g.: https://my-vanil-site.dev/. Used to generate sitemaps and canonical URLs. 
+  /**
+   * Your public domain, e.g.: https://my-vanil-site.dev/. Used to generate sitemaps and canonical URLs.
    * Default: Evaluated as http://devOptions.hostname:devOptions.port and its default values
-  */
+   */
   site?: string
 
   /**
@@ -77,12 +75,12 @@ export interface BuildOptions {
 
   /**
    * Automatically generates a robots.txt for your page
-   * 
+   *
    * Default: {
    *   enabled: true
    * }
    */
-  robotsTxt?: RobotsTxtOptions|Array<RobotsTxtOptions>
+  robotsTxt?: RobotsTxtOptions | Array<RobotsTxtOptions>
 
   /**
    * Control the output file URL format of each page.
@@ -93,35 +91,16 @@ export interface BuildOptions {
   pageUrlFormat?: 'file' | 'directory'
 }
 
-// TODO: remove
-// You can e.g. use Certbot by Let's Encrypt or create a self-signed cert pair.
-// see: https://nodejs.org/api/tls.html#tlsssl-concepts
-export interface TlsOptions {
-
-  /**
-   * PEM key file path, relative to the project root folder
-   * Default: 'key.pem' 
-   */
-  keyPath: string
-
-  /**
-   * PEM key cert path, relative to the project root folder 
-   * Default: 'cert.pem'
-   */
-  certPath: string
-}
-
 export interface DevOptions {
-
-  /** 
-   * The hostname to run the server on (listening). 
-   * Default: localhost 
+  /**
+   * The hostname to run the server on (listening).
+   * Default: localhost
    */
   hostname?: string
 
-  /** 
-   * The port to run the dev server on. 
-   * Default: 3000 
+  /**
+   * The port to run the dev server on.
+   * Default: 3000
    */
   port?: number
 
@@ -143,7 +122,6 @@ export interface DevOptions {
 }
 
 export interface RobotsTxtOptions {
-
   enabled: boolean
 
   /**
@@ -156,7 +134,7 @@ export interface RobotsTxtOptions {
    * Setting this limits the validity of a definition to a specific crawler bot,
    * depending on the UserAgent(s)
    */
-  userAgent?: Array<string>|string
+  userAgent?: Array<string> | string
 
   /**
    * Usually sets the delay / rate a crawler hits the site (in seconds)
@@ -164,7 +142,7 @@ export interface RobotsTxtOptions {
   crawlDelay?: string
 
   /**
-   * URL path to the sitemap 
+   * URL path to the sitemap
    * Default: auto-generated, points to dist folder sitemap.xml
    */
   sitemap?: string

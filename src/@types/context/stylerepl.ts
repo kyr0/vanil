@@ -1,9 +1,9 @@
-import { SourceLanguageType } from "../../core/transform/transpile";
+import { SourceLanguageType } from '../../core/transform/transpile'
 
 export interface StyleReplacement {
-    original: string;
-    replacement: string;
+  original: string
+  replacement: string
 
-    // e.g. scss
-    lang: SourceLanguageType;
+  // e.g. scss
+  lang: SourceLanguageType
 }

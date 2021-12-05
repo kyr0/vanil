@@ -1,13 +1,11 @@
-// TODO: fix type exports
-import { on, $, render, 
-    props, fetchContent, resolve, refs, emit } from "vanil"
+import { on, $, render, props, fetchContent, resolve, refs, emit } from 'vanil';
 
 export const mixButtonHandler = (evt: MouseEvent) => {
-    console.log('mixButtonHandler', evt)
+  console.log('mixButtonHandler', evt);
 
-    emit('transactionComplete', {
-        mixIt: Date.now()
-    })
+  emit('transactionComplete', {
+    mixIt: Date.now(),
+  });
 
-    refs.mixBtn2.update('Just wow!')
-}
+  refs.mixBtn2.update('Just wow!');
+};

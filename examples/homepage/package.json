@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vanil dev",
+    "dev:head": "npm --prefix ../../ run start:dev -- dev --project-root ./examples/homepage",
     "build": "vanil build",
     "preview": "vanil preview",
     "clean": "vanil clean",
@@ -17,6 +18,6 @@
     "not ie > 0"
   ],
   "dependencies": {
-    "vanil": "^0.0.11"
+    "vanil": "^0.0.12"
   }
 }

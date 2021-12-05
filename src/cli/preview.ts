@@ -55,7 +55,13 @@ export const preview = async (config: Config, autoListen = true) => {
       res.send(readFileSyncUtf8(target404PageHtml))
       next()
     } else {
-      next('Page not found. You can implement a custom 404 page by creating an 404.astro page template.')
+      const notFoundError = `Error: Requested resource ${req.path} not found! You can implement a custom 404 page by creating a 404.astro page template.`
+
+      // show 404 in console too
+      console.error(colors.red(notFoundError))
+
+      res.send(notFoundError)
+      next()
     }
   })
 

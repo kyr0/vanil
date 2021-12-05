@@ -89,7 +89,7 @@ const printHelp = () => {
   vanil init            Scaffolds a new project from scratch.
   ${colors.bold('Flags:')}
   --config <path>       Specify the path to the Vanil config file.
-  --project-root <path> Specify the path to the project root folder.
+  --project-root <path> Specify the path to the project root folder, relative to CWD
   --site <uri>          Specify site to use as site location.
   --use-tls             Enables https:// for all URIs.
   --dist                Specify the distribution folder (build result).

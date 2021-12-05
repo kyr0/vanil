@@ -86,7 +86,7 @@ export const createProject = async (context: Context, tplName: string = 'init', 
   }
 
   const packageJson: { homepage: string; bugs: { url: string } } = JSON.parse(
-    readFileSync(resolve(__dirname, '../../../../../package.json'), { encoding: 'utf8' }),
+    readFileSync(resolve(__dirname, '../../package.json'), { encoding: 'utf8' }),
   )
   printFooter(packageJson.homepage, projectPath, packageJson.bugs.url)
 }

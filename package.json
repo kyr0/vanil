@@ -7,12 +7,10 @@
     "vanil": "./dist/src/index.js"
   },
   "types": "./dist/src/@types/index.d.js",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Vanilla JSX + HTML + CSS compiler and static-site generator (SSG)",
   "scripts": {
-    "prerelease": "npm run build",
-    "release": "npm version patch --force && git add package.json && git commit -m 'version bump' && git push",
-    "postrelease": "npm publish",
+    "release": "ts-node ./scripts/release.ts patch",
     "start:dev": "ts-node-dev --rs --ignore-watch=./examples --watch=./src/** --respawn --transpile-only ./src/vanil.ts",
     "start": "ts-node ./src/vanil.ts",
     "test:init": "ts-node ./src/vanil.ts init",

@@ -126,24 +126,23 @@ globalThis._tsx = (type: any, attributes: any, context: Context, Vanil: Partial<
     type = 'fragment'
   }
 
-  // support <></>
-  if (typeof type === 'undefined') {
-    type = 'fragment'
-  }
-
   // support for <slot>
   if (type === 'slot' && Vanil.slots && (Vanil.slots[attributes.name] || Vanil.slots!['default'])) {
-    const targetSlotNode: IVirtualNode = Vanil.slots[attributes.name] || Vanil.slots['default']
+    let targetSlotNode: IVirtualNode = Vanil.slots[attributes.name] || Vanil.slots['default']
+
+    // innerText case
+    if (typeof targetSlotNode === 'string') {
+      targetSlotNode = {
+        type: 'fragment',
+        attributes: {},
+        children: [targetSlotNode],
+      }
+    }
 
     // replace the <slot> VDOM node by the actual slot node (can be fragmented)
     type = targetSlotNode.type
     attributes = targetSlotNode.attributes || {}
     children = targetSlotNode.children || []
-  }
-
-  // effectively unwrap by directly returning the children
-  if (type === 'fragment') {
-    return filterComments(children)
   }
 
   // adding files to fileDependencies for specific HMR reload
@@ -173,6 +172,16 @@ globalThis._tsx = (type: any, attributes: any, context: Context, Vanil: Partial<
   const hoistedStyle = hoistRelativeLocalImportStyle(type, attributes, context, ...children)
   type = hoistedStyle.type
   children = hoistedStyle.children
+
+  // support <></>
+  if (typeof type === 'undefined') {
+    type = 'fragment'
+  }
+
+  // effectively unwrap by directly returning the children
+  if (type === 'fragment') {
+    return filterComments(children)
+  }
 
   // attach event handlers via Vanil.event runtime
   runtimeAttachEventHandlers(attributes)

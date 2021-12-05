@@ -9,9 +9,9 @@ import { preview } from './preview'
 import { finalizeConfig, getDefaultConfig } from '../core/config'
 import { readFileSyncUtf8 } from '../core/io/file'
 import { clean } from './clean'
-import { getProjectRootFolder } from '../core/io/folders'
 import { Command } from '../@types/context/command'
 import { init, InitOptions } from './init'
+import { CONFIG_SCAFFOLD_DEFAULT_PROJECT_NAME, CONFIG_SCAFFOLD_DEFAULT_TEMPLATE } from '../core/config/defaults'
 
 const dotenv = require('dotenv')
 
@@ -45,8 +45,8 @@ const resolveArgs = (flags: Arguments): CLIState => {
     config: typeof flags.config === 'string' ? flags.config : undefined,
     dist: typeof flags.dist === 'string' ? flags.dist : undefined,
     useTls: typeof flags.useTls === 'boolean' ? flags.useTls : undefined,
-    name: typeof flags.name === 'string' ? flags.name : 'myNewVanilProject',
-    tpl: typeof flags.tpl === 'string' ? flags.tpl : 'homepage',
+    name: typeof flags.name === 'string' ? flags.name : CONFIG_SCAFFOLD_DEFAULT_PROJECT_NAME,
+    tpl: typeof flags.tpl === 'string' ? flags.tpl : CONFIG_SCAFFOLD_DEFAULT_TEMPLATE,
   }
 
   if (flags.version) {
@@ -99,7 +99,7 @@ const printHelp = () => {
   --version             Show the version number and exit.
   --help                Show this help message.
   --name <project-name> Name of the project (only useful with "init")
-  --tpl <project-tpl>   Name of the template (example) to init from
+  --tpl <dir-or-repo>   Path to a template folder or git repository
 `)
 }
 

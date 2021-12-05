@@ -1,5 +1,5 @@
-import { join, resolve } from 'path'
 import * as colors from 'kleur/colors'
+import { createProject } from '../scaffold/createProject'
 
 export interface InitOptions {
   /** name of the new project (output folder name and inline code replacement) */
@@ -19,7 +19,7 @@ export const init = async (options: InitOptions) => {
     '...',
   )
 
-  // TODO
+  await createProject(options.tpl, options.name)
 
   return 0
 }

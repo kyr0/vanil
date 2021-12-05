@@ -66,8 +66,11 @@ export const transpileTemplate = (codeBundle: CodeBundle, context: Context): str
         // and storing the computation result in context
         ${context.styleReplacements!.map(
           (styleReplacement, index) =>
-            `Vanil.props.context.styleReplacements[${index}].replacement = 
+            `
+            if (Vanil.props.context.styleReplacements[${index}]) {
+              Vanil.props.context.styleReplacements[${index}].replacement = 
                 \`${styleReplacement.original}\`
+            }
             `,
         )}
         

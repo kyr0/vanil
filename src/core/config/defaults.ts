@@ -33,3 +33,7 @@ export const CONFIG_DEVOPTIONS_USETLS = false
 
 // devOptions.useOptimizer
 export const CONFIG_DEVOPTIONS_USEOPTIMIZER = true
+
+// scaffolding
+export const CONFIG_SCAFFOLD_DEFAULT_TEMPLATE = 'examples/init'
+export const CONFIG_SCAFFOLD_DEFAULT_PROJECT_NAME = 'myVanilProject'

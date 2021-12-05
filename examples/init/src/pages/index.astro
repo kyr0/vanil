@@ -1,0 +1,24 @@
+---
+import { Markdown, fetchContent } from "vanil"
+
+import PageLayout from "../layouts/PageLayout.astro"
+
+const vanilLogo = fetchContent("../../public/assets/vanil-logo.svg")[0]
+
+// direct VDOM access/mutation
+vanilLogo.attributes.id = 'vanilLogo'
+
+---
+<PageLayout title="TemplateName">
+
+    { vanilLogo }
+
+    <Markdown src="../../content/index.md" />
+
+    <style lang="scss">
+
+        /* CSS4 is fully supported */
+        @import "./index.scss";
+
+    </style>
+</PageLayout> 

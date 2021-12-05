@@ -81,6 +81,9 @@ export declare const fetchContent: FetchContentFn
 export type ResolveFn = (path: string) => string
 export declare const resolve: ResolveFn
 
+// (Astro/Vanil).isPage
+export declare const isPage: boolean
+
 // built-in Components
 export declare const Debug: DebugFn
 export declare const Code: CodeFn

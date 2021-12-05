@@ -12,18 +12,18 @@ import { installModules } from './installModules'
 import { copyTemplate } from './copyTemplate'
 
 /** creates a new project from a template named (default: examples/init), given a projectName */
-export const createProject = async (context: Context, tplName: string = 'init', projectName?: string) => {
-  if (!tplName) {
+export const createProject = async (tplDir: string, projectName?: string) => {
+  if (!tplDir) {
     console.log('[!!] Error: No template argument provided. Make sure you provide -t $templateFolderOrGitUrl. Exiting.')
     process.exit(1)
   }
 
-  const isGitRepo = tplName.startsWith('http')
+  const isGitRepo = tplDir.startsWith('http')
 
   if (isGitRepo) {
-    tplName = await cloneRepository(tplName)
-  } else if (!existsSync(tplName)) {
-    console.log(`[!!] Error: The template ${tplName} doesn't exist. Exiting.`)
+    tplDir = await cloneRepository(tplDir)
+  } else if (!existsSync(tplDir)) {
+    console.log(`[!!] Error: The template ${tplDir} doesn't exist. Exiting.`)
     process.exit(1)
   }
 
@@ -65,18 +65,18 @@ export const createProject = async (context: Context, tplName: string = 'init', 
     return false
   }
   const packageJSON: { dependencies: any; devDependencies: any } = JSON.parse(
-    readFileSync(join(tplName, 'package.json'), { encoding: 'utf8' }),
+    readFileSync(join(tplDir, 'package.json'), { encoding: 'utf8' }),
   )
 
   const dependenciesAsString: Array<string> = transformPackageDependenciesToStrings(packageJSON, 'dependencies')
   const devDependenciesAsString: Array<string> = transformPackageDependenciesToStrings(packageJSON, 'devDependencies')
 
-  if (!copyTemplate(projectPath, tplName, projectName!)) {
+  if (!copyTemplate(projectPath, tplDir, projectName!)) {
     return false
   }
 
   if (isGitRepo) {
-    execSync(`rm -rf ${tplName}`, {
+    execSync(`rm -rf ${tplDir}`, {
       stdio: 'inherit',
     })
   }

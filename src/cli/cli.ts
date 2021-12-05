@@ -157,21 +157,33 @@ export const cli = async (args: string[]) => {
   const flags = yargs(args)
   const state = resolveArgs(flags)
   const options = { ...state.options }
-  const projectRoot = options.projectRoot || flags._[3]
+  const projectRootOverride = options.projectRoot || flags._[3]
 
   let userConfig: Config = {
     buildOptions: {},
     devOptions: {},
   }
 
+  const defaultConfig = getDefaultConfig()
+
+  if (projectRootOverride) {
+    // if a custom projectRoot was set by a flag like --project-root,
+    // relatively resolve it to current process.cwd()
+    // current cwd can be futher modified by using npm --prefix $dir $command
+    defaultConfig.projectRoot = resolve(defaultConfig.projectRoot!, projectRootOverride)
+  }
+
   // support for package.json provided vanil config
-  if (projectRoot) {
-    const userConfigCandidate = getProjectPackageJson(projectRoot).vanil
+  if (defaultConfig.projectRoot) {
+    const userConfigCandidate = getProjectPackageJson(projectRootOverride).vanil
 
     if (userConfigCandidate) {
       userConfig = userConfigCandidate
     }
   }
+
+  // read project .env files
+  dotenv.config({ path: resolve(defaultConfig.projectRoot!, '.env') })
 
   // support for ENV provided VANIL_CONFIG
   if (process.env.VANIL_CONFIG) {
@@ -181,8 +193,6 @@ export const cli = async (args: string[]) => {
       throwAndExit(e)
     }
   }
-
-  const defaultConfig = getDefaultConfig()
 
   const config: Config = {
     // apply defaults
@@ -199,13 +209,6 @@ export const cli = async (args: string[]) => {
     },
   }
 
-  if (projectRoot) {
-    // if a custom projectRoot was set by a flag like --project-root,
-    // relatively resolve it to current process.cwd()
-    // current cwd can be futher modified by using npm --prefix $dir $command
-    config.projectRoot = resolve(defaultConfig.projectRoot!, projectRoot)
-  }
-
   try {
     // override config options by CLI parameters
     mergeCLIFlags(config, options)
@@ -216,9 +219,6 @@ export const cli = async (args: string[]) => {
     console.error(colors.red((err as any).toString() || err))
     process.exit(1)
   }
-
-  // read project .env files
-  dotenv.config({ path: resolve(getProjectRootFolder(config), '.env') })
 
   // reset console
   console.clear()

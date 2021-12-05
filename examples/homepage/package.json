@@ -7,6 +7,7 @@
     "dev:head": "npm --prefix ../../ run start:dev -- dev --project-root ./examples/homepage",
     "build": "vanil build",
     "preview": "vanil preview",
+    "config": "vanil config",
     "clean": "vanil clean",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,7 +17,12 @@
     "> 0.05%",
     "not ie > 0"
   ],
+  "vanil": {
+    "devOptions": {
+      "useOptimizer": false
+    }
+  },
   "dependencies": {
-    "vanil": "^0.0.12"
+    "vanil": "^0.0.14"
   }
 }

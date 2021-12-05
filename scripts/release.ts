@@ -33,4 +33,5 @@ execSync(`git push`, { stdio: 'inherit' })
 
 console.log(`Done git add, commit, push: ${commitMsg}`)
 
-// npm version patch --force && git add package.json && git commit -m 'version bump' && git push
+console.log(`Publishing to npm registry...`)
+execSync(`npm publish`, { stdio: 'inherit' })

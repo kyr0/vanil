@@ -2,7 +2,6 @@ import ts from 'typescript'
 import { RobotsTxtOptions } from '../../@types'
 
 // meaningful defaults
-export const CONFIG_ROOT_FOLDER = '.'
 export const CONFIG_DIST_FOLDER = './dist'
 export const CONFIG_SRC_FOLDER = './src'
 export const CONFIG_PAGES_FOLDER = './src/pages'

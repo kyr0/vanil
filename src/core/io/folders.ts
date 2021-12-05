@@ -7,7 +7,7 @@ const fs = require('fs-extra')
 
 // TODO: perf: can be cached
 /** return absolutely resolved paths for the specific project folders */
-export const getProjectRootFolder = (config: Config) => resolve(__dirname, '../../../', config.projectRoot!)
+export const getProjectRootFolder = (config: Config) => config.projectRoot!
 export const getPagesFolder = (config: Config) => resolve(getProjectRootFolder(config), config.pages!)
 export const getDistFolder = (config: Config) => resolve(getProjectRootFolder(config), config.dist!)
 export const getPublicFolder = (config: Config) => resolve(getProjectRootFolder(config), config.public!)

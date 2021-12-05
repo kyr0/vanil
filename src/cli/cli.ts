@@ -142,7 +142,6 @@ const printConfig = (config: Config) => {
 
 /** merge CLI flags & config options (CLI flags take priority) */
 const mergeCLIFlags = (config: Config | undefined, flags: CLIState['options']) => {
-  if (typeof flags.projectRoot === 'string') config!.projectRoot = flags.projectRoot
   if (typeof flags.dist === 'string') config!.dist = flags.dist
 
   if (typeof flags.sitemap === 'boolean') config!.buildOptions!.sitemap = flags.sitemap
@@ -198,6 +197,13 @@ export const cli = async (args: string[]) => {
       ...defaultConfig.devOptions,
       ...userConfig.devOptions,
     },
+  }
+
+  if (projectRoot) {
+    // if a custom projectRoot was set by a flag like --project-root,
+    // relatively resolve it to current process.cwd()
+    // current cwd can be futher modified by using npm --prefix $dir $command
+    config.projectRoot = resolve(defaultConfig.projectRoot!, projectRoot)
   }
 
   try {

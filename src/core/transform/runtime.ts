@@ -96,9 +96,7 @@ globalThis.fetch = fetch
 globalThis.isRelativeSrcTarget = isRelativeSrcTarget
 
 /** resolves a relative local file path into an absolute */
-globalThis.resolvePathRelative = (targetPath: string, path: string) => {
-  return nativeResolve(nativeDirname(path), targetPath)
-}
+globalThis.resolvePathRelative = (targetPath: string, path: string) => nativeResolve(nativeDirname(path), targetPath)
 
 /** hoists a CSS <link> by href */
 globalThis.getStyleSheetHoisted = getStyleSheetHoisted

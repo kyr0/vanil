@@ -11,7 +11,6 @@ import {
   CONFIG_HOOKS_FOLDER,
   CONFIG_PAGES_FOLDER,
   CONFIG_PUBLIC_FOLDER,
-  CONFIG_ROOT_FOLDER,
   CONFIG_SRC_FOLDER,
 } from './defaults'
 
@@ -19,7 +18,7 @@ export const getExecutionMode = (): Mode => (process.env.NODE_ENV || 'developmen
 
 /** returns the default project config */
 export const getDefaultConfig = (): Config => ({
-  projectRoot: CONFIG_ROOT_FOLDER,
+  projectRoot: process.cwd(),
   dist: CONFIG_DIST_FOLDER,
   src: CONFIG_SRC_FOLDER,
   pages: CONFIG_PAGES_FOLDER,

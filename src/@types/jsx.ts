@@ -284,9 +284,6 @@ declare global {
     export type PointerEventHandler = EventHandler<PointerEvent>
 
     export interface DOMAttributeEventHandlersLowerCase {
-      // SpringType custom events
-      onmount?: Function
-
       // Image Events
       onload?: GenericEventHandler
       onloadcapture?: GenericEventHandler

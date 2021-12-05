@@ -80,6 +80,9 @@ Here are a few ideas on how it feels to work with Vanil:
 
 ## Near-term roadmap (till beta release)
 
+- fix: runtime/state included even if not necessary
+- fix: eliminate <fragment>
+- fix: 404 reload issue / style replacements across .astro components
 - `init` scaffolding with a new version of `st-create`
 - build docs website with Vanil; publish to netlify
 - build homepage website with Vanil; publish to vercel

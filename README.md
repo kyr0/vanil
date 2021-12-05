@@ -80,7 +80,6 @@ Here are a few ideas on how it feels to work with Vanil:
 
 ## Near-term roadmap (till beta release)
 
-- fix all types
 - `Markdown` component
 - `init` scaffolding with a new version of `st-create`
 - make `npx vanil init` work; also `./node_modules/.bin/vanil init`

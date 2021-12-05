@@ -9,6 +9,9 @@ const projectRootDir = resolve(__dirname, '../')
 // enforce execution of commands in project root dir
 process.chdir(projectRootDir)
 
+const prevPackageJSON = JSON.parse(readFileSync(resolve(projectRootDir, 'package.json'), { encoding: 'utf8' }))
+const prevVersion = prevPackageJSON.version
+
 const level = process.argv[2]
 
 console.log(`Building next ${level} level version...`)

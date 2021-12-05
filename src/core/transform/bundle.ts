@@ -20,11 +20,15 @@ import { mayWrapInAsyncIIFE, wrapInIIFE } from './transform'
 import { loadAndTranspileCode, transpileRuntimeInteractiveScriptCode, transpileTSX } from './transpile'
 import { Mode } from '../../@types/context/Mode'
 
+/** returns the feature flags as an array of names */
+export const featureFlagsArray = (featureFlags: FeatureFlags) =>
+  Object.keys(featureFlags).filter((moduleName) => featureFlags[moduleName])
+
 /** generates a distinct name for a interactive runtime library variant */
-export const getInteractiveRuntimeVariantName = (featureFlags: FeatureFlags) => {
-  const runtimeModulesActivated = Object.keys(featureFlags).filter((moduleName) => featureFlags[moduleName])
-  return `${runtimeModulesActivated.join('_')}`
-}
+export const getInteractiveRuntimeVariantName = (featureFlags: FeatureFlags) =>
+  `${featureFlagsArray(featureFlags)
+    .map((featureFlagName) => featureFlagName[0])
+    .join('')}`
 
 /** verifies if the runtime lib needs to be injected by checking if at least one of the flags are active */
 export const requiresInteractiveRuntimeLibrary = (featureFlags: FeatureFlags) =>
@@ -293,10 +297,9 @@ export const injectInteractiveRuntimeLibrary = (
       console.log('Interactive runtime unnecessary and deactivated.')
       return
     }
-
     const runtimeVariantName = getInteractiveRuntimeVariantName(featureFlags)
 
-    console.log('Activating interactive runtime with modules:', runtimeVariantName.split('_'))
+    console.log('Activating interactive runtime with modules:', featureFlagsArray(featureFlags))
 
     const distDirPath = getDistFolder(context.config)
     const runtimeVariantDistPath = resolve(distDirPath, 'runtime', `${runtimeVariantName}.js`)

@@ -1,5 +1,5 @@
-import ts from "typescript"
-import { RobotsTxtOptions } from "../../@types"
+import ts from 'typescript'
+import { RobotsTxtOptions } from '../../@types'
 
 // meaningful defaults
 export const CONFIG_ROOT_FOLDER = '.'
@@ -14,7 +14,7 @@ export const CONFIG_BUILD_SITEMAP = true
 
 // buildOptions.robotsTxt
 export const CONFIG_BUILD_ROBOTS_TXT: RobotsTxtOptions = {
-    enabled: true
+  enabled: true,
 }
 
 // buildOptions.target
@@ -31,4 +31,3 @@ export const CONFIG_DEVOPTIONS_PORT = 3000
 
 // devOptions.useTls
 export const CONFIG_DEVOPTIONS_USETLS = false
-

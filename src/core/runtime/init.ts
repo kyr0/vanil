@@ -1,6 +1,6 @@
 // create shallow object
 Vanil = Astro = {
-    props: {}
+  props: {},
 } as any
 
 Vanil.isBrowser = typeof window !== 'undefined'

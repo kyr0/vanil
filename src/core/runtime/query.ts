@@ -1,4 +1,4 @@
-// === CSS 
+// === CSS
 
 export const addSingleClass = (ref: Element, className: string) => {
   if (!ref.classList.contains(className)) {
@@ -37,11 +37,11 @@ export const removeClass = (ref: Element, impl: Query) => (className: Array<stri
 export const toggleClass = (ref: Element, impl: Query) => (className: string) => {
   ref.classList.toggle(className)
   return impl
-};
+}
 
 export const hasClass = (ref: Element) => (className: string) => ref.classList.contains(className)
 
-// === DOM HIERARCHY 
+// === DOM HIERARCHY
 
 export const attr = (ref: Element, impl: Query) => (name: string, value?: any) => {
   if (typeof value === 'undefined') return ref.getAttribute(name)
@@ -55,9 +55,9 @@ export const val = (ref: Element, impl: Query) => (value?: any) => {
     return isCheckbox ? (ref as any).checked : (ref as any).value
   }
   if (isCheckbox) {
-    (ref as any).checked = value
+    ;(ref as any).checked = value
   } else {
-    (ref as any).value = value
+    ;(ref as any).value = value
   }
   return impl
 }
@@ -106,7 +106,7 @@ export const replaceWith = (ref: Element, impl: Query) => (vdom: VDOMNode) => {
   return impl
 }
 
-// === DOM EVENTS 
+// === DOM EVENTS
 
 export const off = (ref: Element | Window, impl: Query) => (eventName: string, handler: EventListener) => {
   ref.removeEventListener(eventName, handler)
@@ -119,17 +119,15 @@ export const on = (ref: Element | Window, impl: Query) => (eventName: string, ha
 }
 
 /** $(...), Vanil.query(...), Vanil.$(...) or even recursively down the tree  */
-Vanil.$ = function(selector: string|Element, root?: Element) {
-
-  const el = (selector instanceof Element) ? 
-    selector : root ? 
-      root.querySelector(selector) : document.querySelector(selector)
+Vanil.$ = function (selector: string | Element, root?: Element) {
+  const el =
+    selector instanceof Element ? selector : root ? root.querySelector(selector) : document.querySelector(selector)
 
   if (!el) {
     throw new Error(`Element for selector ${selector} not found!`)
   }
 
-  const queryFn = (selector: string) => Vanil.$(selector, el) 
+  const queryFn = (selector: string) => Vanil.$(selector, el)
 
   const getImpl = (el: Element) => {
     let impl: Query = {

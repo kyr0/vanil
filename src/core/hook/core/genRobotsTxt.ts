@@ -1,12 +1,12 @@
-import { RobotsTxtOptions } from "../../../@types"
-import { Context } from "../../../@types/context"
-import { persistFileDist } from "../../transform/persist"
-import { HookFn } from "../hook"
+import { RobotsTxtOptions } from '../../../@types'
+import { Context } from '../../../@types/context'
+import { persistFileDist } from '../../transform/persist'
+import { HookFn } from '../hook'
 
 const EOL = '\n'
 
-export const genRobotsTxt: HookFn = async(context: Context) => {
-    persistFileDist('robots.txt', render(context.config.buildOptions?.robotsTxt!), context)
+export const genRobotsTxt: HookFn = async (context: Context) => {
+  persistFileDist('robots.txt', render(context.config.buildOptions?.robotsTxt!), context)
 }
 
 const toArray = (value: any) => {
@@ -15,42 +15,46 @@ const toArray = (value: any) => {
   return [value]
 }
 
-const render = (config: Array<RobotsTxtOptions>|RobotsTxtOptions) => {
-
+const render = (config: Array<RobotsTxtOptions> | RobotsTxtOptions) => {
   console.log('[hook:genRobotsTxt] Generating robots.txt...')
 
   let SitemapArray: Array<string> = []
   let HostArray: Array<string> = []
 
-  let output = toArray(config).map((robot: RobotsTxtOptions) => {
-    
-    let userAgentArray = []
-    
-    if (robot.userAgent && Array.isArray(robot.userAgent)) {
-      userAgentArray = robot.userAgent.map((userAgent: string) => `User-agent: ${userAgent}`)
-    } else if (robot.userAgent) {
-      userAgentArray.push(`User-agent: ${robot.userAgent}`)
-    }
+  let output = toArray(config)
+    .map((robot: RobotsTxtOptions) => {
+      let userAgentArray = []
 
-    if (robot.crawlDelay) {
-      userAgentArray.push(`Crawl-delay: ${robot.crawlDelay}`)
-    }
-
-    if (robot.sitemap) {
-      SitemapArray = SitemapArray.concat(robot.sitemap)
-    }
-
-    if (robot.host) {
-      HostArray = HostArray.concat(robot.host)
-    }
-
-    return userAgentArray.concat(toArray(robot.disallow).map((disallow) => {
-      if (Array.isArray(disallow)) {
-        return disallow.map((line) => `Disallow: ${line}`).join('\n')
+      if (robot.userAgent && Array.isArray(robot.userAgent)) {
+        userAgentArray = robot.userAgent.map((userAgent: string) => `User-agent: ${userAgent}`)
+      } else if (robot.userAgent) {
+        userAgentArray.push(`User-agent: ${robot.userAgent}`)
       }
-      return `Disallow: ${disallow}`
-    })).join(EOL)
-  }).join(EOL)
+
+      if (robot.crawlDelay) {
+        userAgentArray.push(`Crawl-delay: ${robot.crawlDelay}`)
+      }
+
+      if (robot.sitemap) {
+        SitemapArray = SitemapArray.concat(robot.sitemap)
+      }
+
+      if (robot.host) {
+        HostArray = HostArray.concat(robot.host)
+      }
+
+      return userAgentArray
+        .concat(
+          toArray(robot.disallow).map((disallow) => {
+            if (Array.isArray(disallow)) {
+              return disallow.map((line) => `Disallow: ${line}`).join('\n')
+            }
+            return `Disallow: ${disallow}`
+          }),
+        )
+        .join(EOL)
+    })
+    .join(EOL)
 
   if (SitemapArray.length > 0) {
     output += `${EOL}${SitemapArray.map((sitemap) => `Sitemap: ${sitemap}`).join(EOL)}`

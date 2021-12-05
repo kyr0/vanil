@@ -36,7 +36,6 @@ interface CLIState {
 
 /** Determine which action the user requested */
 const resolveArgs = (flags: Arguments): CLIState => {
-
   const options: CLIState['options'] = {
     projectRoot: typeof flags.projectRoot === 'string' ? flags.projectRoot : undefined,
     site: typeof flags.site === 'string' ? flags.site : undefined,
@@ -46,8 +45,8 @@ const resolveArgs = (flags: Arguments): CLIState => {
     config: typeof flags.config === 'string' ? flags.config : undefined,
     dist: typeof flags.dist === 'string' ? flags.dist : undefined,
     useTls: typeof flags.useTls === 'boolean' ? flags.useTls : undefined,
-    name: typeof flags.name === 'string' ? flags.name : "myNewVanilProject",
-    tpl: typeof flags.tpl === 'string' ? flags.tpl : "homepage",
+    name: typeof flags.name === 'string' ? flags.name : 'myNewVanilProject',
+    tpl: typeof flags.tpl === 'string' ? flags.tpl : 'homepage',
   }
 
   if (flags.version) {
@@ -56,7 +55,7 @@ const resolveArgs = (flags: Arguments): CLIState => {
     return { cmd: 'help', options }
   }
 
-  const cmd = flags._[2];
+  const cmd = flags._[2]
   switch (cmd) {
     case 'init':
       return { cmd: 'init', options }
@@ -105,17 +104,16 @@ const printHelp = () => {
 }
 
 /** get vanil config from package.json */
-const getProjectPackageJson = (projectRoot: string) => 
+const getProjectPackageJson = (projectRoot: string) =>
   JSON.parse(readFileSyncUtf8(resolve(projectRoot, 'package.json')))
 
 /** display --version flag */
-const printVersion = async() => {
+const printVersion = async () => {
   console.error(getProjectPackageJson(resolve(__dirname, '..', '..')).version)
 }
 
 /** print the final config and explains how to customize it */
 const printConfig = (config: Config) => {
-
   console.log('')
   console.log('Raw config after finalizing:')
   console.log('')
@@ -126,21 +124,24 @@ const printConfig = (config: Config) => {
   console.log('in the package.json file like this:')
   console.log('')
   console.log('// in package.json:')
-  console.log(JSON.stringify({
-    name: "your_project_name",
-    vanil: {
-    }
-  }, null, 2))
+  console.log(
+    JSON.stringify(
+      {
+        name: 'your_project_name',
+        vanil: {},
+      },
+      null,
+      2,
+    ),
+  )
   console.log('')
   console.log('In case you need to change the config by environment, ')
   console.log('set VANIL_CONFIG as an environment variable and assign ')
   console.log('the stringified value of your vanil config JSON.')
-
 }
 
 /** merge CLI flags & config options (CLI flags take priority) */
 const mergeCLIFlags = (config: Config | undefined, flags: CLIState['options']) => {
-
   if (typeof flags.projectRoot === 'string') config!.projectRoot = flags.projectRoot
   if (typeof flags.dist === 'string') config!.dist = flags.dist
 
@@ -153,8 +154,7 @@ const mergeCLIFlags = (config: Config | undefined, flags: CLIState['options']) =
 }
 
 /** The primary CLI action */
-export const cli = async(args: string[]) => {
-
+export const cli = async (args: string[]) => {
   const flags = yargs(args)
   const state = resolveArgs(flags)
   const options = { ...state.options }
@@ -162,7 +162,7 @@ export const cli = async(args: string[]) => {
 
   let userConfig: Config = {
     buildOptions: {},
-    devOptions: {}
+    devOptions: {},
   }
 
   // support for package.json provided vanil config
@@ -178,7 +178,7 @@ export const cli = async(args: string[]) => {
   if (process.env.VANIL_CONFIG) {
     try {
       userConfig = JSON.parse(process.env.VANIL_CONFIG)
-    } catch(e) {
+    } catch (e) {
       throwAndExit(e)
     }
   }
@@ -187,7 +187,7 @@ export const cli = async(args: string[]) => {
 
   const config: Config = {
     // apply defaults
-    ...defaultConfig, 
+    ...defaultConfig,
     ...userConfig,
     // override by vanil config options set in package.json (maybe)
     buildOptions: {
@@ -197,17 +197,15 @@ export const cli = async(args: string[]) => {
     devOptions: {
       ...defaultConfig.devOptions,
       ...userConfig.devOptions,
-    }
-  };
+    },
+  }
 
   try {
-
     // override config options by CLI parameters
     mergeCLIFlags(config, options)
 
     // e.g. evaluate site from hostname + port if not set
     finalizeConfig(config)
-
   } catch (err) {
     console.error(colors.red((err as any).toString() || err))
     process.exit(1)
@@ -253,7 +251,7 @@ export const cli = async(args: string[]) => {
     }
     case 'preview': {
       try {
-         // run forever
+        // run forever
         await preview(config)
       } catch (err) {
         throwAndExit(err)

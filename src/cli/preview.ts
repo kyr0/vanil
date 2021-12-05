@@ -1,128 +1,122 @@
-import { Config } from "../@types/config"
+import { Config } from '../@types/config'
 import * as colors from 'kleur/colors'
-import express, { Response } from "express"
-import { getDistFolder, getProjectRootFolder } from "../core/io/folders"
-import { setupContext } from "../core/orchestrate"
-import { getExecutionMode } from "../core/config"
-import { runHooks } from "../core/hook/hook"
-import { createServer } from "http"
-import { createServer as createSecureServer, Server } from "https"
-import { resolve } from "path"
-import { existsSync } from "fs"
-import { readFileSyncUtf8 } from "../core/io/file"
-import { SecureContextOptions } from "tls"
+import express, { Response } from 'express'
+import { getDistFolder, getProjectRootFolder } from '../core/io/folders'
+import { setupContext } from '../core/orchestrate'
+import { getExecutionMode } from '../core/config'
+import { runHooks } from '../core/hook/hook'
+import { createServer } from 'http'
+import { createServer as createSecureServer } from 'https'
+import { resolve } from 'path'
+import { existsSync } from 'fs'
+import { readFileSyncUtf8 } from '../core/io/file'
+import { SecureContextOptions } from 'tls'
 
 /** preview HTTP server that exactly mimics a static webserver */
-export const preview = async(config: Config, autoListen = true) => {
+export const preview = async (config: Config, autoListen = true) => {
+  const app = express()
+  const distFolder = getDistFolder(config)
 
-    const app = express()
-    const distFolder = getDistFolder(config)
+  const context = await setupContext({
+    config,
+    command: 'preview',
+    mode: getExecutionMode(),
+  })
 
-    const context = await setupContext({
-        config,
-        command: 'preview',
-        mode: getExecutionMode()
-    })
+  console.log('Serving files from dist folder: ', distFolder)
 
-    console.log('Serving files from dist folder: ', distFolder)
+  // serve all files from the dist folder
+  app.use(
+    '/',
+    express.static(distFolder, {
+      etag: false,
+      setHeaders: (res: Response, path: string, stat: any) => {
+        const targetDir = resolve(getDistFolder(config), path)
 
-    // serve all files from the dist folder
-    app.use('/', express.static(distFolder, {
-        etag: false,
-        setHeaders: (res: Response, path: string, stat: any) => {
-            
-            const targetDir = resolve(getDistFolder(config), path)
-
-            // it's not a directory (directory requests never end up here), 
-            // but also has no file extension; default to text/html
-            if (!targetDir.match(/\.[0-9a-z]+$/i)) {
-                // this is necessary for config.buildOptions?.pageUrlFormat === 'directory'
-                // because express.static doesn't support the no-file-extension "serve as HTML" 
-                // case by default
-                res.setHeader('Content-Type', 'text/html; charset=UTF-8')
-            }
-        },
-        index: config.buildOptions?.pageUrlFormat === 'directory' ? 'index' : 'index.html'
-    })) 
-
-    // custom 404 page handler support
-    app.get("/*", (req, res, next) => {
-
-        const page404 = config.buildOptions?.pageUrlFormat === 'directory' ? '404' : '404.html'
-        const target404PageHtml = resolve(getDistFolder(config), page404)
-
-        if (existsSync(target404PageHtml)) {
-            res.send(readFileSyncUtf8(target404PageHtml))
-            next()
-        } else {
-            next("Page not found. You can implement a custom 404 page by creating an 404.astro page template.")
+        // it's not a directory (directory requests never end up here),
+        // but also has no file extension; default to text/html
+        if (!targetDir.match(/\.[0-9a-z]+$/i)) {
+          // this is necessary for config.buildOptions?.pageUrlFormat === 'directory'
+          // because express.static doesn't support the no-file-extension "serve as HTML"
+          // case by default
+          res.setHeader('Content-Type', 'text/html; charset=UTF-8')
         }
-    })
+      },
+      index: config.buildOptions?.pageUrlFormat === 'directory' ? 'index' : 'index.html',
+    }),
+  )
 
-    let tlsOptions: SecureContextOptions = {}
+  // custom 404 page handler support
+  app.get('/*', (req, res, next) => {
+    const page404 = config.buildOptions?.pageUrlFormat === 'directory' ? '404' : '404.html'
+    const target404PageHtml = resolve(getDistFolder(config), page404)
 
-    if (config.devOptions?.useTls) {
-
-        tlsOptions = { ...config.devOptions!.tlsOptions }
-
-        const projectRootFolder = getProjectRootFolder(config)
-
-        console.log(
-            '[config.devOptions] TLS enabled (devOptions.useTls). Trying to read key/cert relative to', 
-            projectRootFolder, tlsOptions)
-
-        try {
-
-            tlsOptions.cert = readFileSyncUtf8(
-                resolve(projectRootFolder, tlsOptions.cert as string))
-
-            tlsOptions.key = readFileSyncUtf8(
-                resolve(projectRootFolder, tlsOptions.key as string))
-
-        } catch (err) {
-            
-            console.error(colors.red("Error reading TLS certificate files:"))
-            console.error(colors.red(String(err)))
-
-            console.error(
-                colors.yellow("Did you miss creating (self-signed) TLS key files?"))
-                
-            console.log()
-
-            console.error(
-                colors.yellow("e.g.> openssl req -x509 -new -nodes -keyout key.pem -out cert.pem -days 365 -subj '/CN=localhost'"))
-            
-            console.log()
-            
-            console.error(
-                colors.yellow("NEVER GIT COMMIT CRYPTOGRAPHIC KEY FILES!"))
-
-            console.error(
-                colors.white("e.g. see: https://www.sitepoint.com/how-to-use-ssltls-with-node-js"))
-
-            process.exit(1)
-        }
+    if (existsSync(target404PageHtml)) {
+      res.send(readFileSyncUtf8(target404PageHtml))
+      next()
+    } else {
+      next('Page not found. You can implement a custom 404 page by creating an 404.astro page template.')
     }
+  })
 
-    const server = config.devOptions?.useTls ?
-        createSecureServer(tlsOptions, app) : createServer(app)
+  let tlsOptions: SecureContextOptions = {}
 
-    // automatically start to listen on port
-    // is deactivated when dev CLI command hooks into this
-    if (autoListen) {
+  if (config.devOptions?.useTls) {
+    tlsOptions = { ...config.devOptions!.tlsOptions }
 
-        // register in context for onDevServerStart hooks to apply
-        context.devServer = server
+    const projectRootFolder = getProjectRootFolder(config)
 
-        await runHooks('onDevServerStart', context)
+    console.log(
+      '[config.devOptions] TLS enabled (devOptions.useTls). Trying to read key/cert relative to',
+      projectRootFolder,
+      tlsOptions,
+    )
 
-        server.listen(config.devOptions?.port, printServerReady(config))
+    try {
+      tlsOptions.cert = readFileSyncUtf8(resolve(projectRootFolder, tlsOptions.cert as string))
+
+      tlsOptions.key = readFileSyncUtf8(resolve(projectRootFolder, tlsOptions.key as string))
+    } catch (err) {
+      console.error(colors.red('Error reading TLS certificate files:'))
+      console.error(colors.red(String(err)))
+
+      console.error(colors.yellow('Did you miss creating (self-signed) TLS key files?'))
+
+      console.log()
+
+      console.error(
+        colors.yellow(
+          "e.g.> openssl req -x509 -new -nodes -keyout key.pem -out cert.pem -days 365 -subj '/CN=localhost'",
+        ),
+      )
+
+      console.log()
+
+      console.error(colors.yellow('NEVER GIT COMMIT CRYPTOGRAPHIC KEY FILES!'))
+
+      console.error(colors.white('e.g. see: https://www.sitepoint.com/how-to-use-ssltls-with-node-js'))
+
+      process.exit(1)
     }
-    return {
-        app,
-        server
-    }
+  }
+
+  const server = config.devOptions?.useTls ? createSecureServer(tlsOptions, app) : createServer(app)
+
+  // automatically start to listen on port
+  // is deactivated when dev CLI command hooks into this
+  if (autoListen) {
+    // register in context for onDevServerStart hooks to apply
+    context.devServer = server
+
+    await runHooks('onDevServerStart', context)
+
+    server.listen(config.devOptions?.port, printServerReady(config))
+  }
+  return {
+    app,
+    server,
+  }
 }
 
-export const printServerReady = (config: Config) => () => 
-    console.log(`Server listening on port: ${config.buildOptions?.site}`)
+export const printServerReady = (config: Config) => () =>
+  console.log(`Server listening on port: ${config.buildOptions?.site}`)

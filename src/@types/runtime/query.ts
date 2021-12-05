@@ -1,4 +1,4 @@
-export type QueryFn = (selector: string, rootElement?: Element) => Query
+export type QueryFn = (selector: string | Element, rootElement?: Element) => Query
 
 export interface Query {
   $: QueryFn

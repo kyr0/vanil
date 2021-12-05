@@ -1,18 +1,19 @@
-import { GetSetStorage, StoreApi } from "../../@types/runtime/store";
+import { GetSetStorage, StoreApi } from '../../@types/runtime/store'
 
 Vanil.store = {}
 
 export const getMockStorage = (): GetSetStorage => {
   return {
     getItem: (key: string) => Vanil.store[key],
-    setItem: (key: string, value: any) => Vanil.store[key] = value,
+    setItem: (key: string, value: any) => (Vanil.store[key] = value),
   }
 }
 
 export const getSessionStorage = () => {
   try {
     return sessionStorage
-  } catch (e) { // can throw SecurityException
+  } catch (e) {
+    // can throw SecurityException
     return getMockStorage()
   }
 }
@@ -20,7 +21,8 @@ export const getSessionStorage = () => {
 export const getLocalStorage = () => {
   try {
     return localStorage
-  } catch (e) { // can throw SecurityException
+  } catch (e) {
+    // can throw SecurityException
     return getMockStorage()
   }
 }
@@ -34,8 +36,8 @@ export const restore = (key: string, store: StoreApi, api: GetSetStorage, defaul
   store.set(key, JSON.parse(api.getItem(key) || '""') || defaultValue)
 }
 
-Vanil.get = (key: string, defaultValue?: any) => 
-  (typeof Vanil.store[key] === 'undefined' ? defaultValue : Vanil.store[key])
+Vanil.get = (key: string, defaultValue?: any) =>
+  typeof Vanil.store[key] === 'undefined' ? defaultValue : Vanil.store[key]
 
 Vanil.set = (key: string, value: any) => {
   Vanil.store[key] = value

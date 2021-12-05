@@ -1,4 +1,5 @@
 import { Context } from '../../@types/context'
+import * as colors from 'kleur/colors'
 import { prettify } from './development/prettify'
 const { minify } = require('html-minifier-terser')
 
@@ -12,8 +13,14 @@ export const optimize = async (html: string, context: Context) => {
     // add panic-overlay
     html = '<script src="https://unpkg.com/panic-overlay"></script>' + html
 
-    // format HTML nicely
-    optimizedHtml = prettify(html)
+    if (context.config.devOptions!.useOptimizer) {
+      // format HTML nicely
+      optimizedHtml = prettify(html)
+
+      console.log(colors.dim(`perf (ms):`), colors.green(Date.now() - optimizeStartTime), colors.dim(`(optimizer)`))
+    } else {
+      optimizedHtml = html
+    }
   } else {
     // optimize for size (performance) -> minify
     optimizedHtml = await minify(html, {
@@ -32,7 +39,7 @@ export const optimize = async (html: string, context: Context) => {
       removeStyleLinkTypeAttributes: true,
       useShortDoctype: true,
     })
+    console.log(colors.dim(`perf (ms):`), colors.green(Date.now() - optimizeStartTime), colors.dim(`(optimizer)`))
   }
-  console.log(`Optimize time (ms)`, Date.now() - optimizeStartTime)
   return optimizedHtml
 }

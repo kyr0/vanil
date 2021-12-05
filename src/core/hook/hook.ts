@@ -42,10 +42,12 @@ export const registerHook = (context: Context, stage: HookStage, fn: HookFn) => 
 export const loadProjectHooks = (context: Context) => {
   const hookFiles = fg.sync(`${getHooksFolder(context.config)}/*.{ts,jsm,js}`)
 
-  console.log(
-    'Found project hooks.',
-    hookFiles.map((hookFilePath) => toProjectRootRelativePath(hookFilePath, context.config)),
-  )
+  if (hookFiles.length) {
+    console.log(
+      'Found custom project hooks:',
+      hookFiles.map((hookFilePath) => toProjectRootRelativePath(hookFilePath, context.config)),
+    )
+  }
 
   hookFiles.forEach((hookFile) => {
     if (isHookFile(hookFile)) {

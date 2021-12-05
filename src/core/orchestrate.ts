@@ -1,8 +1,9 @@
-import { getPagesFolder, isDynamicRoutingPath } from './io/folders'
+import { getPagesFolder, isDynamicRoutingPath, toProjectRootRelativePath } from './io/folders'
 import { addMaterializedHtmlFilePath, validateContext } from './transform/context'
 import { Context } from '../@types/context'
 import { transformAndPersistSingle } from './transform/transform'
 import fg from 'fast-glob'
+import * as colors from 'kleur/colors'
 import { registerHooks, runHooks } from './hook/hook'
 import { materializeDynamicRoutingPaths } from './transform/routing'
 
@@ -22,7 +23,10 @@ export const orchestrateTransformAll = async (context: Context): Promise<Context
 
   const astroFiles = await fg(`${getPagesFolder(context.config)}/**/*.astro`)
 
-  console.log('Reflush all .astro templates...', astroFiles)
+  console.log(
+    colors.white('Render all .astro templates...'),
+    astroFiles.map((file) => toProjectRootRelativePath(file, context.config)),
+  )
 
   for (let i = 0; i < astroFiles.length; i++) {
     context = await orchestrateTransformSingle({
@@ -41,6 +45,12 @@ export const orchestrateTransformSingle = async (context: Context): Promise<Cont
   await setupContext(context)
 
   await runHooks('onBeforePage', context)
+
+  console.log(
+    colors.white('Rendering'),
+    colors.green(toProjectRootRelativePath(context.path!, context.config)),
+    colors.grey('...'),
+  )
 
   // makes sure, initial recognition of dynamic paths is happening, including processing
   // then recursively transform each permutation

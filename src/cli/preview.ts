@@ -1,7 +1,7 @@
 import { Config } from '../@types/config'
 import * as colors from 'kleur/colors'
 import express, { Response } from 'express'
-import { getDistFolder, getProjectRootFolder } from '../core/io/folders'
+import { getDistFolder, getProjectRootFolder, toProjectRootRelativePath } from '../core/io/folders'
 import { setupContext } from '../core/orchestrate'
 import { getExecutionMode } from '../core/config'
 import { runHooks } from '../core/hook/hook'
@@ -22,8 +22,6 @@ export const preview = async (config: Config, autoListen = true) => {
     command: 'preview',
     mode: getExecutionMode(),
   })
-
-  console.log('Serving files from dist folder: ', distFolder)
 
   // serve all files from the dist folder
   app.use(
@@ -55,10 +53,9 @@ export const preview = async (config: Config, autoListen = true) => {
       res.send(readFileSyncUtf8(target404PageHtml))
       next()
     } else {
-      const notFoundError = `Error: Requested resource ${req.path} not found! You can implement a custom 404 page by creating a 404.astro page template.`
-
-      // show 404 in console too
-      console.error(colors.red(notFoundError))
+      const notFoundError = `ERROR 404: ${req.path} not found! 
+      You can implement a custom 404 page by creating a 404.astro page template. 
+      Resources can be placed in the ./public folder for static file serving.`
 
       res.send(notFoundError)
       next()
@@ -116,7 +113,7 @@ export const preview = async (config: Config, autoListen = true) => {
 
     await runHooks('onDevServerStart', context)
 
-    server.listen(config.devOptions?.port, printServerReady(config))
+    server.listen(config.devOptions?.port, () => printServerRunning('PreviewServer', config))
   }
   return {
     app,
@@ -124,5 +121,15 @@ export const preview = async (config: Config, autoListen = true) => {
   }
 }
 
-export const printServerReady = (config: Config) => () =>
-  console.log(`Server listening on port: ${config.buildOptions?.site}`)
+export const printServerRunning = (tag: string, config: Config) => {
+  console.log(
+    colors.yellow('[VA]'),
+    colors.bgMagenta(colors.bold(`${tag} running`)),
+    colors.cyan(config.buildOptions?.site!),
+  )
+
+  console.log(
+    colors.dim('Serving files from dist folder: '),
+    colors.dim(toProjectRootRelativePath(getDistFolder(config), config)),
+  )
+}

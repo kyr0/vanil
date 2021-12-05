@@ -21,12 +21,14 @@ import { paginate } from './routing'
 import '../runtime/store'
 import '../runtime/i18n'
 
-// components
+// built-in Components
 import '../runtime/components/Script'
 import '../runtime/components/Link'
 import '../runtime/components/Debug'
 import '../runtime/components/Code'
 import '../runtime/components/Trans'
+import '../runtime/components/Markdown'
+
 import { SSGRuntime } from '../../@types/runtime'
 import { dirname as nativeDirname, resolve as nativeResolve } from 'path'
 

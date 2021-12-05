@@ -119,6 +119,14 @@ export interface DevOptions {
    * }
    */
   tlsOptions?: SecureContextOptions
+
+  /**
+   * Activates/disables Prettier as an optimizer
+   * for code readability (compile output might be more readable)
+   * but it's a drawback on processing time of course.
+   * Default: true
+   */
+  useOptimizer?: boolean
 }
 
 export interface RobotsTxtOptions {

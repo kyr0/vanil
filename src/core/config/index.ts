@@ -12,6 +12,7 @@ import {
   CONFIG_PAGES_FOLDER,
   CONFIG_PUBLIC_FOLDER,
   CONFIG_SRC_FOLDER,
+  CONFIG_DEVOPTIONS_USEOPTIMIZER,
 } from './defaults'
 
 export const getExecutionMode = (): Mode => (process.env.NODE_ENV || 'development') as Mode
@@ -36,6 +37,7 @@ export const getDefaultConfig = (): Config => ({
     useTls: CONFIG_DEVOPTIONS_USETLS,
     hostname: CONFIG_DEVOPTIONS_HOSTNAME,
     port: CONFIG_DEVOPTIONS_PORT,
+    useOptimizer: CONFIG_DEVOPTIONS_USEOPTIMIZER,
   },
 })
 

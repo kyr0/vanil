@@ -1,4 +1,5 @@
 import { dirname } from 'path'
+import * as colors from 'kleur/colors'
 import { parseImportStatements, parseTemplate, rewriteVanilImports } from './parse'
 import { transpileTemplate } from './transpile'
 import { materializeDOM } from './dom'
@@ -41,11 +42,18 @@ export const transformSingle = async (context: Context) => {
 
     const timeRenderFinish = Date.now()
 
-    console.log('transpile time (ms)', timeTransformFinish - timeStart)
-    console.log('SSG execution time (ms)', timeExecutionFinish - timeTransformFinish)
-    console.log('SSG render time (ms)', timeRenderFinish - timeExecutionFinish)
+    // TODO: color times according to actual time spent
+    console.log(
+      colors.dim('perf (ms):'),
+      colors.green(timeTransformFinish - timeStart),
+      colors.dim('(compile)'),
+      colors.green(timeExecutionFinish - timeTransformFinish),
+      colors.dim('(run)'),
+      colors.green(timeRenderFinish - timeExecutionFinish),
+      colors.dim('(render)'),
+    )
   } catch (e) {
-    console.error('[E] SSG HTML materialization error', e)
+    console.error(colors.red('ERROR: Transfrom, run or render failed!'), e)
 
     html = renderSSGErrorReport(
       toProjectRootRelativePath(context.path!, context.config),

@@ -30,3 +30,6 @@ export const CONFIG_DEVOPTIONS_PORT = 3000
 
 // devOptions.useTls
 export const CONFIG_DEVOPTIONS_USETLS = false
+
+// devOptions.useOptimizer
+export const CONFIG_DEVOPTIONS_USEOPTIMIZER = true

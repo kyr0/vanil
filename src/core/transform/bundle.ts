@@ -101,6 +101,10 @@ export const bundleInteractiveRuntimeLibrary = (context: Context, featureFlags: 
     runtimeCode += '\n' + readFileSyncUtf8(resolve(__dirname, '../runtime/components/Trans.tsx'))
   }
 
+  if (featureFlags.Markdown) {
+    runtimeCode += '\n Vanil.Markdown = () => "Error: Markdown> is not supported at runtime in browser."'
+  }
+
   // warp in async iife to enclose from polluting global scope
   return mayWrapInAsyncIIFE(
     transpileRuntimeInteractiveScriptCode(`${runtimeCode};`, false, context.path!, 'hoist', context),
@@ -141,11 +145,12 @@ export const getRuntimeLibraryFeatureActivationMap = (code: string, mode: Mode):
       /\{[\s\S]*?setTranslations[\s\S]*?\}[\s]*?=[\s]*?Vanil/.test(code), // all variants of { setTranslations } = Vanil usage
 
     // components runtime support
-    Code: /Vanil.tsx\(Code/.test(code),
-    Debug: /Vanil.tsx\(Debug/.test(code),
-    Script: /Vanil.tsx\(Script/.test(code),
-    Link: /Vanil.tsx\(Link/.test(code),
-    Trans: /Vanil.tsx\(Trans/.test(code),
+    Code: /Vanil.tsx\(Code/.test(code) || /\{[\s\S]*?Code[\s\S]*?\}[\s]*?=[\s]*?Vanil/.test(code),
+    Debug: /Vanil.tsx\(Debug/.test(code) || /\{[\s\S]*?Debug[\s\S]*?\}[\s]*?=[\s]*?Vanil/.test(code),
+    Script: /Vanil.tsx\(Script/.test(code) || /\{[\s\S]*?Script[\s\S]*?\}[\s]*?=[\s]*?Vanil/.test(code),
+    Link: /Vanil.tsx\(Link/.test(code) || /\{[\s\S]*?Link[\s\S]*?\}[\s]*?=[\s]*?Vanil/.test(code),
+    Trans: /Vanil.tsx\(Trans/.test(code) || /\{[\s\S]*?Trans[\s\S]*?\}[\s]*?=[\s]*?Vanil/.test(code),
+    Markdown: /Vanil.tsx\(Markdown/.test(code) || /\{[\s\S]*?Markdown[\s\S]*?\}[\s]*?=[\s]*?Vanil/.test(code),
 
     // always add HMR support in dev mode
     livereload: isInDevMode,
@@ -298,9 +303,6 @@ export const injectInteractiveRuntimeLibrary = (
       return
     }
     const runtimeVariantName = getInteractiveRuntimeVariantName(featureFlags)
-
-    console.log('Activating interactive runtime with modules:', featureFlagsArray(featureFlags))
-
     const distDirPath = getDistFolder(context.config)
     const runtimeVariantDistPath = resolve(distDirPath, 'runtime', `${runtimeVariantName}.js`)
 

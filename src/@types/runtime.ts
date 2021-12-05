@@ -14,6 +14,7 @@ import { CodeFn } from './runtime/components/Code'
 import { LinkFn } from './runtime/components/Link'
 import { ScriptFn } from './runtime/components/Script'
 import { TransFn } from './runtime/components/Trans'
+import { MarkdownFn } from './runtime/components/Markdown'
 
 export interface SSGRuntime extends StoreApi, i18nApi {
   mode: 'development' | 'production'
@@ -41,6 +42,7 @@ export interface SSGRuntime extends StoreApi, i18nApi {
   Link: typeof Link
   Code: typeof Code
   Trans: typeof Trans
+  Markdown: typeof Markdown
 }
 
 export interface InteractiveRuntime extends SSGRuntime, BusApi, QueryApi, EventApi, VDomApi, RenderApi {
@@ -85,6 +87,7 @@ export declare const Code: CodeFn
 export declare const Link: LinkFn
 export declare const Script: ScriptFn
 export declare const Trans: TransFn
+export declare const Markdown: MarkdownFn
 
 // VdomApi
 export declare const tsx: TsxFn

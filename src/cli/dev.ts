@@ -2,7 +2,7 @@ import { Config } from '../@types/config'
 import { watch } from 'chokidar'
 import { resolve } from 'path'
 import * as WebSocket from 'ws'
-import { preview, printServerReady } from './preview'
+import { preview, printServerRunning } from './preview'
 import { getExecutionMode } from '../core/config'
 import { orchestrateTransformAll, orchestrateTransformSingle } from '../core/orchestrate'
 import { Context } from '../@types/context'
@@ -27,7 +27,7 @@ export const dev = async (config: Config) => {
   })
 
   // listen for HTTP and WS connections
-  serverConfig.server.listen(config.devOptions?.port, printServerReady(config))
+  serverConfig.server.listen(config.devOptions?.port, () => printServerRunning('DevServer', config))
 
   let context: Context = await orchestrateTransformAll({
     config,
@@ -46,9 +46,6 @@ export const dev = async (config: Config) => {
   const projectDir = resolve(__dirname, '../../', config.projectRoot!)
   const projectDistDir = resolve(projectDir, config.dist!)
   const projectNodeModulesDir = resolve(projectDir, 'node_modules')
-
-  console.log('Watching for file changes in: ', projectDir)
-  console.log('DevServer listening on: ', config.buildOptions?.site)
 
   // TODO: add excluded dirs to project config devServer as a flag
   const excludedFolders = [projectDistDir, projectNodeModulesDir]

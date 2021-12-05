@@ -1,8 +1,9 @@
 import { Context } from '../../../@types/context'
-import { getDistFolder } from '../../io/folders'
+import { getDistFolder, toProjectRootRelativePath } from '../../io/folders'
 import { getPageUrl } from '../../transform/routing'
 import { HookFn } from '../hook'
 import { parse } from 'js2xmlparser'
+import * as colors from 'kleur/colors'
 import { persistFileDist } from '../../transform/persist'
 
 interface SitemapUrl {
@@ -18,9 +19,12 @@ const genSitemapUrl = (url: string): SitemapUrl => ({
 
 export const genSitemapXml: HookFn = async (context: Context, props: any) => {
   if (context.config.buildOptions?.sitemap && context.materializedHtmlFilePaths) {
-    console.log('[hook:genSitemapXml] Generating sitemap.xml...')
-
     const distFolder = getDistFolder(context.config)
+
+    console.log(
+      colors.bold(colors.dim('hook (genSitemapXml):')),
+      colors.gray(`Generating ${toProjectRootRelativePath(distFolder, context.config)}/sitemap.xml...`),
+    )
 
     const pageUrls: Array<SitemapUrl> = [
       {

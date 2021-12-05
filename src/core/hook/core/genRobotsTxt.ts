@@ -2,11 +2,13 @@ import { RobotsTxtOptions } from '../../../@types'
 import { Context } from '../../../@types/context'
 import { persistFileDist } from '../../transform/persist'
 import { HookFn } from '../hook'
+import * as colors from 'kleur/colors'
+import { toProjectRootRelativePath, getDistFolder } from '../../io/folders'
 
 const EOL = '\n'
 
 export const genRobotsTxt: HookFn = async (context: Context) => {
-  persistFileDist('robots.txt', render(context.config.buildOptions?.robotsTxt!), context)
+  persistFileDist('robots.txt', render(context.config.buildOptions?.robotsTxt!, context), context)
 }
 
 const toArray = (value: any) => {
@@ -15,8 +17,11 @@ const toArray = (value: any) => {
   return [value]
 }
 
-const render = (config: Array<RobotsTxtOptions> | RobotsTxtOptions) => {
-  console.log('[hook:genRobotsTxt] Generating robots.txt...')
+const render = (config: Array<RobotsTxtOptions> | RobotsTxtOptions, context: Context) => {
+  console.log(
+    colors.bold(colors.dim('hook (genRobotsTxt):')),
+    colors.gray(`Generating ${toProjectRootRelativePath(getDistFolder(context.config), context.config)}/robots.txt...`),
+  )
 
   let SitemapArray: Array<string> = []
   let HostArray: Array<string> = []

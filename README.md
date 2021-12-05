@@ -80,9 +80,7 @@ Here are a few ideas on how it feels to work with Vanil:
 
 ## Near-term roadmap (till beta release)
 
-- `Markdown` component
 - `init` scaffolding with a new version of `st-create`
-- make `npx vanil init` work; also `./node_modules/.bin/vanil init`
 - build docs website with Vanil; publish to netlify
 - build homepage website with Vanil; publish to vercel
 - publish examples to github pages

@@ -1,8 +1,7 @@
 {
-  "name": "homepage",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "vanil-example-homepage",
+  "version": "0.0.1",
+  "description": "Vanil homepage example",
   "scripts": {
     "dev": "vanil dev",
     "dev:head": "npm --prefix ../../ run start:dev -- dev --project-root ./examples/homepage",
@@ -11,8 +10,8 @@
     "clean": "vanil clean",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Aron Homberg <info@aron-homberg>",
+  "license": "MIT",
   "browserslist": [
     "> 0.05%",
     "not ie > 0"

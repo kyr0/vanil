@@ -7,7 +7,7 @@
     "vanil": "./dist/src/index.js"
   },
   "types": "./dist/src/@types/index.d.js",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Vanilla JSX + HTML + CSS compiler and static-site generator (SSG)",
   "scripts": {
     "release:patch": "ts-node ./scripts/release.ts patch",

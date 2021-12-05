@@ -51,3 +51,6 @@ export interface InteractiveRuntime extends SSGRuntime, BusApi, QueryApi, EventA
      */
     exports: (exportsType: string) => { [exportName: string]: any }
 }
+
+// export defaults
+export default InteractiveRuntime

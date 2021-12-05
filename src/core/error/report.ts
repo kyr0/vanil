@@ -9,11 +9,10 @@ export const renderSSGErrorReport = (relativePath: string, ssgError: ScriptExecu
 
     // connect to dev server for HMR on code changes
     const liveReloadRuntime = loadAndTranspileCode(
-        resolve(__dirname, '../runtime/development/livereload.ts'), 'js', 'scss', 'import', context)
+        resolve(__dirname, '../runtime/livereload.ts'), 'js', 'scss', 'import', context)
             .replace('__VANIL_LIVE_RELOAD_URL', `"${getLiveReloadUrl(context.config)}"`)
 
     if (!ssgError.linesOfError) ssgError.linesOfError = []
-    // TODO: this works, but it's rather hacky
 
     // error reporting panic-overlay 
     return `<html>

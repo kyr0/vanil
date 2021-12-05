@@ -13,25 +13,13 @@
   },
   "author": "",
   "license": "ISC",
-  "vanil": {
-    "public": "./public",
-    "buildOptions": {
-      "pageUrlFormat": "directory",
-      "sitemap": true,
-      "robotsTxt": {
-        "enabled": true,
-        "disallow": [
-          "/"
-        ]
-      }
-    }
-  },
   "browserslist": [
     "> 0.05%",
     "not ie > 0"
   ],
   "dependencies": {
     "js-base64": "^3.7.2",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "vanil": "^0.0.1"
   }
 }

@@ -1,3 +1,4 @@
+// TODO: fix type exports
 import { on, $, render, 
     props, fetchContent, resolve, refs, emit } from "vanil"
 

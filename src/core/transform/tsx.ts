@@ -165,7 +165,6 @@ globalThis._tsx = (type: any, attributes: any, context: Context, Vanil: Partial<
     }
   }
 
-
   // mid-term goal
   // TODO: target: extreme performance
   // TODO: support download attribute with target path, 

@@ -214,7 +214,7 @@ export const cli = async(args: string[]) => {
   }
 
   // read project .env files
-  dotenv.config({ path: getProjectRootFolder(config) })
+  dotenv.config({ path: resolve(getProjectRootFolder(config), '.env') })
 
   console.log(`> ${colors.bold('vanil')} ${colors.green(state.cmd)} configured`, config)
 

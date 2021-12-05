@@ -74,6 +74,7 @@ export const run = async <D,S>(scriptCode: string, context: Context): Promise<Ex
         const runContext = new vm.createContext({
             globalThis: globalThis, // pass globals by reference
             exports: {}, // don't share exports
+            process: process, // process global exposed
             console: console, // pipe console
             require: require, // allow SSG code to require()
             context: context, // passing the compilation context for cross-stage transforms

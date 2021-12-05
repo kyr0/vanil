@@ -6,6 +6,7 @@ import { set, t, changeLanguage, language, translations,
     setTranslations, Debug, Trans, fetchContent, 
     resolve, props, Code } from "vanil"
 
+
 set('testKey', 123)
 
 // load and set translations; it's remembered in browser
@@ -19,6 +20,7 @@ console.log('test t in SSG', t('Hello world'))
 
 // markdown
 const markdownVDom = fetchContent('../data/test.md')[0]
+console.log('markdownVDom', markdownVDom)
 
 // exmaple with params
 //console.log('t', t('Hello world {name}', { name: 'lol' }))
@@ -39,7 +41,7 @@ const catImages = await fetchKittens()
 
 // dynamic imports are supported
 const catData: { catNames: Array<string> } = fetchContent("../data/catNames.json")[0]
- 
+
 // resolve all paths of files in a folder; can be outside root dir; 
 // you can use all kinds of loaders; such as, raw:, binary:
 const svgs = fetchContent("resolve:../../public/assets/*.svg")
@@ -48,9 +50,13 @@ const svgs = fetchContent("resolve:../../public/assets/*.svg")
 // VANIL logo
 const vanilLogo = fetchContent("../../public/assets/vanil.svg")[0]
    
+const vanilLogoRaw  = fetchContent("raw:../../public/assets/vanil.svg")[0]
+
+//console.log('vanilLogo', vanilLogo)
+
 // mutate SVG VDOM on the fly
-vanilLogo.attributes.width = 120
-vanilLogo.attributes.height = 120
+vanilLogo.attributes.width = 150
+vanilLogo.attributes.height = 150
  
 // JSON5 support
 const catQuotes = fetchContent("../data/catNames.json5")[0]
@@ -63,7 +69,8 @@ const red = '#cc0000'
 // store kitten data so that it's available at runtime
 props.setState({
     catImages,
-    catData
+    catData,
+    fooEnv: process.env.FOO
 })
 
 // THE FOLLOWING TEMPALTE WILL BE 1x SERVER-SIDE RENDERED
@@ -78,7 +85,7 @@ props.setState({
     </head>
     <body>
 
-        <Debug { Astro.request } />
+        <Debug { {...Vanil.request, tom: true} } />
 
         <h1>Some markdown</h1>
         { markdownVDom }
@@ -121,13 +128,9 @@ props.setState({
             <div>is <u>there</u> too</div>
         </>
 
-        <!-- of course you can add scripts for interavtivity -->
-        <button ref="mixBtn" style={{ color: 'red' }} onclick="mixClick">Mix!</button>
-        
         <!-- interactive script, runs in browser only -->
         <script> 
   
-            // TODO: support const has = await import('lodash/has') without syntax error!
             import * as has from 'lodash/has'
 
             const has = await import('lodash')
@@ -154,12 +157,14 @@ props.setState({
  
             on('mixClick', mixButtonHandler) 
 
+            console.log('body', $('body'))
+
             set('foo', { hey: 'so nice' })
 
             console.log('can read store', get('foo'))
              
             // using SSG-only API at runtime throws thoughtful exceptions
-            // fetchContent('test')
+            // fetchContent('../lala.json')
             // resolve('test')
 
             const tFoo = t('fooSpace')
@@ -186,8 +191,16 @@ props.setState({
             </>, document.body)
         </script>
    
+        <!-- of course you can add scripts for interavtivity -->
+        <button ref="mixBtn" style={{ color: 'red' }} onclick="mixClick">Mix!</button>
+        
         <style lang="css">
             @import "module.css";
+            :root {
+
+                --var-lala: ${red}
+            }
+
             .foo {
                 border: 1px dotted #334433;
  

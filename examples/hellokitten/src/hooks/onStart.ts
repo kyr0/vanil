@@ -1,4 +1,4 @@
-import { Context } from "../../../../dist"
+import { Context } from "vanil"
 
 export const onStart = async(context: Context) => {
     console.log('project onStart hook called')

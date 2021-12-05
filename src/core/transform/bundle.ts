@@ -115,7 +115,7 @@ export const getRuntimeLibraryFeatureActivationMap = (code: string, mode: Mode):
         query:  /\$[\s]*?\(/.test(code) || // all variants of $('#query')
                 /ref: \"/.test(code) ||  // generated result of ref="$refName" usage
                 /refs[\s]*?\./.test(code) || // all variants of refs.$refName usage
-                /\{[\s\S]*?\$[\s\S]*?\}[\s]*?=[\s]*?Vanil/.test(code), // all variants of { $ } = Vanil usage
+                /\{[\s\S]*?refs[\s\S]*?\}[\s]*?=[\s]*?Vanil/.test(code), // all variants of { $ } = Vanil usage
         tsx:    /Vanil\.tsx\(/.test(code) || // generated result of <tsx> syntax usage (fn)
                 /\{[\s\S]*?tsx[\s\S]*?\}[\s]*?=[\s]*?Vanil/.test(code), // all variants of { tsx } = Vanil usage
         vdom:   /\{[\s\S]*?render[\s\S]*?\}[\s]*?=[\s]*?Vanil/.test(code), // all variants of { render } = Vanil usage
@@ -222,7 +222,7 @@ export const bundleRequires = (code: string, path: string = '.', context: Contex
 /** stringifies the state to be accessible via Vanil.state  */
 export const bundleRuntimeState = (runtimeState: any, context: Context, runtimeLibraryFeatureFlags: FeatureFlags) => {
 
-    if (!runtimeState) return ''
+    if (!runtimeState && !runtimeLibraryFeatureFlags.query && !context.refs && !runtimeLibraryFeatureFlags.i18n) return ''
 
     // TODO: perf: potential opportunity for caching
 

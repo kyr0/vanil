@@ -30,15 +30,13 @@ export const transformSingle = async(context: Context) => {
         const timeStart = Date.now()
         const transformedTemplateCode = transformTemplate(context.path!, context)
         const timeTransformFinish = Date.now()
+
         const result = await run(transformedTemplateCode, context)
 
         if (result.error) {
-
             console.error('[E] SSG Node.js execution error', result.error.original)
-
             return renderSSGErrorReport(toProjectRootRelativePath(context.path!, context.config), result.error, context) 
         }
-
         const timeExecutionFinish = Date.now()
  
         html = await materializeDOM(result, context)
@@ -57,7 +55,6 @@ export const transformSingle = async(context: Context) => {
             errorType: (e as Error).name,
             errorMessage: (e as Error).message.split('\n')[0]
         }, context) 
-
     }
     return optimize(html, context)
 }

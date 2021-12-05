@@ -93,7 +93,7 @@ export interface BuildOptions {
   pageUrlFormat?: 'file' | 'directory'
 }
 
-
+// TODO: remove
 // You can e.g. use Certbot by Let's Encrypt or create a self-signed cert pair.
 // see: https://nodejs.org/api/tls.html#tlsssl-concepts
 export interface TlsOptions {

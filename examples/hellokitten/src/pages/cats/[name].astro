@@ -9,12 +9,17 @@ export const getStaticPaths = async() => {
         props: { foo: 'bar' }
     }, {
         params: { name: 'Felix' }, 
-        props: { foo: 'baz' }
+        props: { foo: 'baz1' }
     }, {
         params: { name: 'Felix1' }, 
         props: { foo: 'baz2' }
+    }, {
+        params: { name: 'Felix2' }, 
+        props: { foo: 'baz3' }
     }]
 }
+
+const lala = `${request.params.name} fun1 ${Date.now()}`
 
 ---
 <html>
@@ -24,10 +29,25 @@ export const getStaticPaths = async() => {
     <body>
 
         Hello, { request.params.name } :)
+
+        lala: { lala }
   
         <br /> 
 
         There is a prop called foo, it knows: { props.foo }
 
+        <div ref="dynamicCats"></div>
+
+        <script>
+
+            import { fetchKittens } from "../../isomorphic/fetchKittens"
+            import { render, refs } from "vanil"
+
+            const cats = await fetchKittens()
+            
+            render(<>
+                {cats.map(cat => <div>ID: {cat.id}</div>)}
+            </>, refs.dynamicCats.el)
+        </script>
     </body>
 </html> 

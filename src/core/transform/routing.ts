@@ -153,7 +153,12 @@ export const getPathUri = (materializedPath: string, context: Context) => {
   const path = materializedPath ? materializedPath : context.path!
 
   // removes absolute path till pages folder
-  const relativePath = path.replace(getPagesFolder(context.config), '')
+  let relativePath = path.replace(getPagesFolder(context.config), '')
+
+  // /index or /index.html should just fallback to the root URL
+  if (relativePath === '/index' || relativePath === '/index.html') {
+    relativePath = ''
+  }
 
   // removes .astro
   const relativePathNoFileExt = relativePath.split('.')[0]

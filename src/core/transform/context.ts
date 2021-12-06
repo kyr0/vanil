@@ -9,6 +9,8 @@ export const validateContext = (context: Context) => {
   // reset values per single page run
   context.styleReplacements = []
 
+  context.isProcessingComponent = false
+
   if (!context.hooks) {
     context.hooks = getDefaultHookConfig(context)
   }

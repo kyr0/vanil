@@ -3,7 +3,7 @@ import * as colors from 'kleur/colors'
 import { join } from 'path'
 import shelljs from 'shelljs'
 
-export const filesAllowedToResistInAppDir = [
+export const ignoredPaths = [
   '.DS_Store',
   'Thumbs.db',
   '.git',
@@ -16,7 +16,6 @@ export const filesAllowedToResistInAppDir = [
   '.hgcheck',
   '.npmignore',
   'mkdocs.yml',
-  'docs',
   '.travis.yml',
   '.gitlab-ci.yml',
   '.gitattributes',
@@ -45,7 +44,7 @@ export const createProjectFolder = (
 export const isSafeToCreateAppIn = async (rootPath: string, name: string) => {
   console.log()
   const conflicts = readdirSync(rootPath)
-    .filter((file: string) => !filesAllowedToResistInAppDir.includes(file))
+    .filter((file: string) => !ignoredPaths.includes(file))
     // IntelliJ IDEA creates module files before CRA is launched
     .filter((file: string) => !/\.iml$/.test(file))
     // Don't treat log files from previous installation as conflicts
@@ -55,12 +54,12 @@ export const isSafeToCreateAppIn = async (rootPath: string, name: string) => {
     console.log(`The directory ${colors.green(name)} contains files that could conflict:`)
     console.log()
     for (const file of conflicts) {
-      console.log(`  ${file}`)
+      console.log(colors.red(`  ${file}`))
     }
     console.log()
     console.log('Either try using a new directory name, or remove the files listed above.')
 
-    return false
+    process.exit(1)
   }
 
   // Remove any remnant files from a previous installation

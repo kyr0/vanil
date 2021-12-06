@@ -11,6 +11,9 @@ import { debounce } from '../core/time/debounce'
 import { copyPublicToDist } from '../core/hook/core/copyPublicToDist'
 import { invalidateCache } from '../core/transform/cache'
 
+const publicFolderChangeCopyDebounceMs = 25
+const fileChangeDebounceMs = 25
+
 /**
  * dev HTTP server that watches for src folder changes and
  * informs connected webrowsers for when rebuilds of pages have happened
@@ -75,7 +78,7 @@ export const dev = async (config: Config) => {
             invalidateCache(context)
 
             // adds the .astro file to the list of .astro files
-            // to retransform when the file changed is an (in)direct
+            // to re-transform when the file changed is an (in)direct
             // dependency of it
             astroTemplatesToTransform.push(astroFile)
           }
@@ -117,14 +120,14 @@ export const dev = async (config: Config) => {
   }
 
   /** triggers file change handling, but debounced to we don't get too many re-transforms  */
-  const handleFileChangeDebounced: (path: string) => void = debounce(handleFileChange, 100)
+  const handleFileChangeDebounced: (path: string) => void = debounce(handleFileChange, fileChangeDebounceMs)
 
   /** copies over public/** to dist/** on file change in public dir */
   const handlePublicDirFileOperationDebounced: (path: string) => void = debounce((path: string) => {
     if (path.startsWith(getPublicFolder(context.config))) {
       copyPublicToDist(context)
     }
-  }, 250 /* ms, to prevent triggering the copy too many times */)
+  }, publicFolderChangeCopyDebounceMs /* ms, to prevent triggering the copy too many times */)
 
   // watch for file changes
   watch(`${projectDir}/**`).on('all', async (eventName: string, path: string) => {

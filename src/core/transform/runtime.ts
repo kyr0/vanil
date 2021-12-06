@@ -1,7 +1,7 @@
 import fg from 'fast-glob'
 import { resolvePathRelative, isRelativeSrcTarget } from './resolve'
 import fetch from 'cross-fetch'
-import { loadAndTranspileCode, ResultLanguageType, SourceLanguageType } from './transpile'
+import { loadAndTranspileCode, ResultLanguageType } from './transpile'
 import { RAW_LOADER_NAME } from '../loader/core/raw'
 import { LoaderRegistration } from '../loader/interface'
 import { addFileDependency } from './context'
@@ -80,16 +80,12 @@ export const astroFetchContent = (globalThis.vanilFetchContent = (targetPath: st
 })
 
 /** hoisting of relative <script> imports -> <script>code</script> */
-export const getScriptHoisted = (path: string, type: ResultLanguageType, lang: SourceLanguageType, context: Context) =>
-  loadAndTranspileCode(path, type, lang, 'hoist', context)
+export const getScriptHoisted = (path: string, type: ResultLanguageType, attributes: any, context: Context) =>
+  loadAndTranspileCode(path, type, attributes, 'hoist', context)
 
 /** hoisting of relative <link> imports -> <style> sheets */
-export const getStyleSheetHoisted = (
-  path: string,
-  type: ResultLanguageType,
-  lang: SourceLanguageType,
-  context: Context,
-) => loadAndTranspileCode(path, type, lang, 'hoist', context)
+export const getStyleSheetHoisted = (path: string, type: ResultLanguageType, attributes: any, context: Context) =>
+  loadAndTranspileCode(path, type, attributes, 'hoist', context)
 
 /** implements fetch() in a isomorphic way */
 globalThis.fetch = fetch
@@ -137,7 +133,7 @@ export const preprocessVanilComponentPropsAndSlots = (props: any, Vanil: Partial
                 type: 'fragment',
                 children: [
                   ...(Array.isArray(Vanil.slots![SLOT_DEFAULT_NAME])
-                    ? (Vanil.slots![SLOT_DEFAULT_NAME] as IVirtualNode).children
+                    ? (Vanil.slots![SLOT_DEFAULT_NAME] as IVirtualNode).children || []
                     : // handling the else case when only a single child
                       // has been assigned before
                       [Vanil.slots![SLOT_DEFAULT_NAME]]),

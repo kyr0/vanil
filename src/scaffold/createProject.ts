@@ -61,9 +61,12 @@ export const createProject = async (tplDir: string, projectName?: string) => {
 
   const projectPath = join(process.cwd(), projectPathName)
 
+  console.log('projectPath', projectPath)
+
   if (!createProjectFolder(projectPath, projectPathName, folderAlreadyExist)) {
     return false
   }
+
   const packageJSON: { dependencies: any; devDependencies: any } = JSON.parse(
     readFileSync(join(tplDir, 'package.json'), { encoding: 'utf8' }),
   )

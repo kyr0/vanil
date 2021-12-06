@@ -1,6 +1,7 @@
-import { dirname } from 'path'
 import { readPackageJson } from '../io/file'
 import { Context } from '../../@types/context'
+import { addFileDependency } from '../transform/context'
+import { dirname, resolve } from 'path'
 
 // https://github.com/postcss/autoprefixer
 const autoprefixer = require('autoprefixer')
@@ -22,7 +23,12 @@ export const getPostCSSPlugins = (context: Context) => {
   const defaultPlugins = [
     /** allows to @import stylesheets */
     postcssImport({
-      root: dirname(context.path! || ''),
+      resolve: (importPath: string) => {
+        const path = resolve(dirname(context.path!), importPath)
+        // add @import("$importPath") to file dependencies for HMR
+        addFileDependency(path, context)
+        return path
+      },
     }),
 
     /** allows prefixing for older browsers [compatibility] */

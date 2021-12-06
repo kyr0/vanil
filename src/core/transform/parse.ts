@@ -1,4 +1,3 @@
-import e from 'express'
 import * as colors from 'kleur/colors'
 import { basename, normalize } from 'path'
 import { readFileSyncUtf8 } from '../io/file'
@@ -231,7 +230,7 @@ export const processTags = (
 
         attributeAssocs.forEach((attrAssoc) => {
           const attrAssocAssignment = attrAssoc.split('=')
-          attrs[attrAssocAssignment[0].trim()] = attrAssocAssignment[1].replace(/"/g, '').trim()
+          attrs[attrAssocAssignment[0].trim()] = attrAssocAssignment[1].replace(/["']/g, '').trim()
         })
       }
 
@@ -345,7 +344,10 @@ export const processRequireFunctionCalls = (code: string, processFn: (importPath
       const codeStatementToReplace = code.substring(match.index, endRequireIndex + 1)
       code = code.replace(codeStatementToReplace, replacementCode)
 
-      return processRequireFunctionCall(code)
+      //console.log('replacementCode', codeStatementToReplace, replacementCode)
+      if (codeStatementToReplace !== replacementCode) {
+        return processRequireFunctionCall(code)
+      }
     }
     return code
   }

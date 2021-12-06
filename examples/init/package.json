@@ -4,7 +4,9 @@
   "description": "TemplateName generated using: npx vanil init",
   "scripts": {
     "dev": "vanil dev",
+    "dev:head": "npm --prefix ../../ run start:dev -- dev --project-root ./examples/init",
     "build": "vanil build",
+    "build:head": "npm --prefix ../../ run start:dev -- build --project-root ./examples/init",
     "preview": "vanil preview",
     "config": "vanil config",
     "clean": "vanil clean"

@@ -12,7 +12,7 @@ export const isJSXComment = (node: any): boolean =>
 
 /** filters comments and undefines like: ['a', 'b', false, {}] to: ['a', 'b', false] */
 // @ts-ignore
-export const filterComments = (children: any) => children.filter((child: any) => !isJSXComment(child))
+export const filterComments = (children: any) => children.filter((node: any) => !isJSXComment(node))
 
 /** generates code to attach name-assigned events to the Vanil.event runtime */
 // @ts-ignore
@@ -36,7 +36,7 @@ export const hoistRelativeLocalImportScript = (type: any, attributes: any, conte
 
   children = [
     // makes sure to load and transpile the code (ts -> js)
-    getScriptHoisted(attributes.src, 'js', attributes.lang, context),
+    getScriptHoisted(attributes.src, 'js', attributes, context),
   ]
 
   // hoised; doesn't need src="..."
@@ -75,7 +75,7 @@ export const hoistRelativeLocalImportStyle = (type: any, attributes: any, contex
 
   children = [
     // makes sure to load and transpile the code (scss, autoprfixer -> postcss -> css)
-    getStyleSheetHoisted(attributes.href, 'css', attributes.lang, context),
+    getStyleSheetHoisted(attributes.href, 'css', attributes, context),
   ]
 
   // <link> had rel and href set; remove it
@@ -113,17 +113,16 @@ globalThis._tsx = (type: any, attributes: any, context: Context, Vanil: Partial<
         context.pageRuntimeScriptsAndLinks!.push(refUri)
       } else {
         // double-injection, turn into fragement
-        type = 'fragment'
+        type = undefined
         children = []
         attributes = {}
       }
     }
   }
-
   // React fragment where type is { }
   if (typeof type === 'object') {
     children = type.children
-    type = 'fragment'
+    type = undefined
   }
 
   // support for <slot>
@@ -133,16 +132,25 @@ globalThis._tsx = (type: any, attributes: any, context: Context, Vanil: Partial<
     // innerText case
     if (typeof targetSlotNode === 'string') {
       targetSlotNode = {
-        type: 'fragment',
+        type: undefined,
         attributes: {},
         children: [targetSlotNode],
       }
     }
 
+    if (targetSlotNode.type === 'fragment' || typeof targetSlotNode.type === 'undefined') {
+      console.log('targetSlotNode', targetSlotNode)
+    }
     // replace the <slot> VDOM node by the actual slot node (can be fragmented)
     type = targetSlotNode.type
     attributes = targetSlotNode.attributes || {}
     children = targetSlotNode.children || []
+  }
+
+  // support <></> and support <fragment></fragment>
+  // effectively unwrap by directly returning the children
+  if (type === 'fragment' || typeof type === 'undefined') {
+    return filterComments(children)
   }
 
   // adding files to fileDependencies for specific HMR reload
@@ -172,16 +180,6 @@ globalThis._tsx = (type: any, attributes: any, context: Context, Vanil: Partial<
   const hoistedStyle = hoistRelativeLocalImportStyle(type, attributes, context, ...children)
   type = hoistedStyle.type
   children = hoistedStyle.children
-
-  // support <></>
-  if (typeof type === 'undefined') {
-    type = 'fragment'
-  }
-
-  // effectively unwrap by directly returning the children
-  if (type === 'fragment') {
-    return filterComments(children)
-  }
 
   // attach event handlers via Vanil.event runtime
   runtimeAttachEventHandlers(attributes)

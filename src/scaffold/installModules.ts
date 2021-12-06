@@ -1,14 +1,12 @@
 import { spawn } from 'cross-spawn'
 import { concatErrors } from './concatErrors'
 
-export const installModules = async (root: string, dependencies: string[], devDependencies: string[]) => {
+export const installModules = async (projectRootDir: string, dependencies: string[], devDependencies: string[]) => {
   await new Promise((resolve, reject) => {
-    process.chdir(root)
-
     console.log()
     console.log('Installing dependencies...')
 
-    const child = spawn('yarn', ['add', ...dependencies], { stdio: 'inherit' })
+    const child = spawn('npm', ['--prefix', projectRootDir, 'install', ...dependencies], { stdio: 'inherit' })
 
     child.on('close', (code: number) => {
       if (code !== 0) {
@@ -20,11 +18,13 @@ export const installModules = async (root: string, dependencies: string[], devDe
     })
   })
   await new Promise((resolve, reject) => {
-    process.chdir(root)
+    process.chdir(projectRootDir)
 
     console.log('Installing dev dependencies...')
 
-    const child = spawn('yarn', ['add', ...devDependencies, '--dev'], { stdio: 'inherit' })
+    const child = spawn('npm', ['--prefix', projectRootDir, 'install', ...devDependencies, '--save-dev'], {
+      stdio: 'inherit',
+    })
 
     child.on('close', async (code: number) => {
       if (code !== 0) {

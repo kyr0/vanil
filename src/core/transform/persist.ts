@@ -1,6 +1,6 @@
 import { dirname, join } from 'path'
 import shelljs from 'shelljs'
-import { promises } from 'fs'
+import { writeFileSync } from 'fs'
 import { getDistFolder } from '../io/folders'
 import { addMaterializedHtmlFilePath } from './context'
 import { Context } from '../../@types/context'
@@ -41,10 +41,10 @@ export const persistFileDist = async (relativeTargetPath: string, content: strin
   persistFileAbsolute(join(getDistFolder(context.config), relativeTargetPath), content)
 
 /** persists a file and recursively creates the path if necessary */
-export const persistFileAbsolute = async (destPath: string, content: string) => {
+export const persistFileAbsolute = (destPath: string, content: string) => {
   // create shallow directory structure
   shelljs.mkdir('-p', dirname(destPath))
 
   // write file contents
-  return promises.writeFile(destPath, content, { encoding: 'utf8' })
+  return writeFileSync(destPath, content, { encoding: 'utf8' })
 }

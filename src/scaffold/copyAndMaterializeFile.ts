@@ -3,6 +3,7 @@ import { relative, join, resolve } from 'path'
 import * as colors from 'kleur/colors'
 
 const TEMPLATE_LOWER_REGEX = /templatename/g
+const TEMPLATE_DASH_LOWER_REGEX = /template-name/g
 const TEMPLATE_LOWER_UPPER_REGEX = /templateName/g
 const TEMPLATE_UPPER_REGEX = /TemplateName/g
 
@@ -31,6 +32,7 @@ export const copyAndMaterializeFile = (options: CopyRenameReplaceFileOptions) =>
   if (isProgramCodeFile(options.filePath)) {
     const programCode = readFileSync(options.filePath, { encoding: 'utf8' })
       .replace(TEMPLATE_LOWER_REGEX, options.concreteName.toLocaleLowerCase())
+      .replace(TEMPLATE_DASH_LOWER_REGEX, options.concreteName.toLocaleLowerCase())
       .replace(TEMPLATE_LOWER_UPPER_REGEX, lcfirst(options.concreteName))
       .replace(TEMPLATE_UPPER_REGEX, kebabToCamelCase(options.concreteName))
 

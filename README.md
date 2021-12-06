@@ -80,16 +80,9 @@ Here are a few ideas on how it feels to work with Vanil:
 
 ## Near-term roadmap (till beta release)
 
-- fix: sitemap /index in directory mode on dev
-- fix: robots/sitemap not building on build
-- fix: don't copy node_modules in scaffolding
-- fix: template-name not replaced
 - fix: replace README.md in init
-- fix: move init project internally so it's available for scaffolding
 - fix: runtime/state included even if not necessary
 - fix: eliminate <fragment>
-- fix: 404 reload issue / style replacements across .astro components
-- `init` scaffolding with a new version of `st-create`
 - build docs website with Vanil; publish to netlify
 - build homepage website with Vanil; publish to vercel
 - publish examples to github pages

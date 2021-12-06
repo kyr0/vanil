@@ -1,5 +1,5 @@
 import { buildSync } from 'esbuild'
-import { resolve } from 'path'
+import { dirname, resolve } from 'path'
 import { Config } from '../../@types/config'
 import { Context } from '../../@types/context'
 

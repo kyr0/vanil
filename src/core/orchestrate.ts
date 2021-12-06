@@ -48,7 +48,11 @@ export const orchestrateTransformSingle = async (context: Context): Promise<Cont
 
   console.log(
     colors.white('Rendering'),
-    colors.green(toProjectRootRelativePath(context.path!, context.config)),
+    colors.green(
+      context.materializedPath
+        ? toProjectRootRelativePath(context.materializedPath, context.config)
+        : toProjectRootRelativePath(context.path!, context.config),
+    ),
     colors.grey('...'),
   )
 

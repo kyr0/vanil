@@ -73,4 +73,7 @@ export interface Context {
 
   /** remembers <script> and <link> resources injected for runtime to prevent double-injection */
   pageRuntimeScriptsAndLinks?: Array<string>
+
+  /** indicates that the compiler is currently processing a component */
+  isProcessingComponent?: boolean
 }

@@ -8,13 +8,14 @@ import {
 } from './parse'
 import ts from 'typescript'
 import { transformImportPaths } from './typescript/rewritepath'
-import { resolveNodeImport } from './resolve'
+import { isRelativePathImport, resolveNodeImport } from './resolve'
 import { bundleRequires } from './bundle'
 import { readFileSyncUtf8 } from '../io/file'
 import { mayDeclareExports, mayWrapInAsyncIIFE, transformTemplate, transformVanilImports } from './transform'
 import { addFileDependency } from './context'
 import { Context } from '../../@types/context'
 import { addToCache, getFromCache } from './cache'
+import { dirname, resolve } from 'path'
 const postcss = require('postcss')
 
 export type ResultLanguageType = 'js' | 'css'
@@ -114,6 +115,7 @@ export const transpileTemplate = (codeBundle: CodeBundle, context: Context): str
 export const inlineTranspileImportedVanilComponents = (transpiledCode: string, context: Context) => {
   // only do .astro component require("**/*.astro") code rewrites
   // when the code contains such requires
+
   if (RE_CONTAINS_REQUIRE_STMT_FOR_ASTRO_COMPONENT.test(transpiledCode)) {
     transpiledCode = processRequireFunctionCalls(transpiledCode, (importPath: string) => {
       if (importPath.endsWith('.astro')) {
@@ -121,31 +123,56 @@ export const inlineTranspileImportedVanilComponents = (transpiledCode: string, c
         // component dependency changes
         addFileDependency(importPath, context)
 
+        // .astro template page path
+        const _contextPath = context.path
+
+        // for component transpilation change path to component path
+        context.path = importPath
+        context.isProcessingComponent = true
+
         const transformedComponentCode = transformTemplate(importPath, context)
+
+        // reset to .astro template page path
+        context.isProcessingComponent = false
+        context.path = _contextPath
 
         // assigning the original local name here (too)
         // as this is a multi-step, isolated transpile without shared
         // name cache, locally declared names diverge
         const componentCode = `{ default: (function() {
-                    
-                    const _origVanilProps = { ...Vanil.props }
-                    const _origIsPage = Vanil.isPage
+          
+          const _origVanilProps = { ...Vanil.props }
+          const _origIsPage = Vanil.isPage
+          const _contextPath = Vanil.props.context.path
 
-                    importVanilComponent(arguments[0])
+          importVanilComponent(arguments[0], '${importPath}')
 
-                    ${transformedComponentCode}\n
+          ${transformedComponentCode}\n
 
-                    const vdom = exports.default.apply(this, arguments)
+          const vdom = exports.default.apply(this, arguments)
 
-                    // restore Vanil.props to not leak/accumulate/override
-                    // them in outer scope
-                    Vanil.props = _origVanilProps
-                    Vanil.isPage = _origIsPage
+          // restore Vanil.props to not leak/accumulate/override
+          // them in outer scope
+          Vanil.props.context.path = _contextPath
+          Vanil.props = _origVanilProps
+          Vanil.isPage = _origIsPage
 
-                    return vdom
-                 })}`
+          return vdom
+        })}`
+
         return componentCode
       }
+      addFileDependency(importPath, context)
+      return `require("${importPath}")`
+    })
+  } else {
+    // imports in .astro components
+    transpiledCode = processRequireFunctionCalls(transpiledCode, (importPath: string) => {
+      if (isRelativePathImport(importPath)) {
+        // resolve relative to the .astro component, not relative to the importing .astro page template
+        importPath = resolve(dirname(context.path!), importPath)
+      }
+      addFileDependency(importPath, context)
       return `require("${importPath}")`
     })
   }
@@ -244,11 +271,24 @@ export const transpileTSX = (code: string, context: Context, injectionIntent: In
 }
 
 /** transpiles style code using PostCSS; this is called from different stages */
-export const transpileStyleCode = (styleCode: string, lang: SourceLanguageType = 'scss', context: Context) => {
+export const transpileStyleCode = (styleCode: string, attributes: any, context: Context) => {
   const cachedCode = getFromCache(styleCode, context)
   if (cachedCode) return cachedCode
 
-  return addToCache(styleCode, postcss(context.postCssPlugins).process(styleCode).css, context)
+  // style code is relative the an .astro component
+  // change the context for the time of processing
+  // (resolve() fn impl. in import plugin is affected)
+  const _contextPath = context.path
+  if (attributes.rel) {
+    context.path = attributes.rel
+  }
+
+  const transpiledCss = postcss(context.postCssPlugins).process(styleCode).css
+
+  if (attributes.rel) {
+    context.path = _contextPath
+  }
+  return addToCache(styleCode, transpiledCss, context)
 }
 
 /** style code that has been marked for post-processing is replaced here */
@@ -256,7 +296,7 @@ export const replaceStyleReplacements = (htmlCode: string, context: Context) => 
   context.styleReplacements?.forEach((styleReplacement) => {
     htmlCode = htmlCode.replace(
       styleReplacement.original,
-      transpileStyleCode(styleReplacement.replacement, styleReplacement.lang, context),
+      transpileStyleCode(styleReplacement.replacement, styleReplacement.attributes, context),
     )
   })
   return htmlCode
@@ -266,7 +306,7 @@ export const replaceStyleReplacements = (htmlCode: string, context: Context) => 
 export const loadAndTranspileCode = (
   absolutePath: string,
   type: ResultLanguageType,
-  lang: SourceLanguageType = 'tsx',
+  attributes: any,
   injectionIntent: InjectionIntent = 'import',
   context: Context,
 ) => {
@@ -274,7 +314,7 @@ export const loadAndTranspileCode = (
 
   switch (type) {
     case 'css':
-      return transpileStyleCode(fileContents, lang, context)
+      return transpileStyleCode(fileContents, attributes, context)
 
     case 'js':
     default:
@@ -325,7 +365,17 @@ export const escapeAndNumbInlineStyleAndScriptTags = (tsxCode: string, context: 
     context.styleReplacements!.push({
       original: codeOfTag,
       replacement: codeOfTag,
-      lang: attrs['lang'] as SourceLanguageType,
+      attributes: {
+        ...attrs,
+        ...(context.isProcessingComponent
+          ? {
+              // setting the .astro component relation so that
+              // @imports can be resolved relative to the component path
+              // not relative to the importing .astro page template path
+              rel: context.path,
+            }
+          : {}),
+      },
     })
     return numbCodeForSSGEvaluation(codeOfTag)
   })

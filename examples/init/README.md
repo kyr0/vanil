@@ -1,14 +1,37 @@
-# Homepage
+# TemplateName
 
-A tiny tech demo of VANIL and its capabilities.
-_Experimental_
+A tiny tech demo of VANIL.
 
-This example is not even finished - but you can imagine what's possible.
+## Run it
 
-## How to run
+Starts the development HMR server:
 
-1. Go to the parent directory and run `npm i`
-2. Come back here `./examples/homepage`
-3. Run `npm i` here
-4. Run `npm run dev` here
-5. Visit [`http://localhost:3000`](http://localhost:3000)
+`npm run dev`
+
+## Check current config
+
+Shows the current VANIL config as it is used:
+
+`npm run config`
+
+## Build and preview
+
+To create a production build, run:
+
+`npm run build`
+
+You can simulate a typical production webserver too:
+
+`npm run preview`
+
+## Clean
+
+Each `dev` or `build` run creates output files in the `./dist` folder
+that can be previewed and deployed. However, sometimes, we want to delete these:
+
+`npm run clean`
+
+## Deploy
+
+Just upload the `./dist` folders files to any hoster of choice,
+e.g. set as a deploy target for: GitHub Pages, Vercel or Netlify

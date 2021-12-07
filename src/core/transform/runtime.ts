@@ -126,14 +126,17 @@ export const preprocessVanilComponentPropsAndSlots = (props: any, Vanil: Partial
       if (Array.isArray(children)) {
         children.forEach((child) => {
           if (child.attributes && child.attributes.slot) {
-            Vanil.slots![child.attributes.slot] = child
+            Vanil.slots![child.attributes.slot] = {
+              type: 'fragment',
+              children: [child],
+            }
           } else {
             if (Vanil.slots![SLOT_DEFAULT_NAME]) {
               Vanil.slots![SLOT_DEFAULT_NAME] = {
                 type: 'fragment',
                 children: [
                   ...(Array.isArray(Vanil.slots![SLOT_DEFAULT_NAME])
-                    ? (Vanil.slots![SLOT_DEFAULT_NAME] as IVirtualNode).children || []
+                    ? (Vanil.slots![SLOT_DEFAULT_NAME] as IVirtualNode).children
                     : // handling the else case when only a single child
                       // has been assigned before
                       [Vanil.slots![SLOT_DEFAULT_NAME]]),
@@ -141,7 +144,10 @@ export const preprocessVanilComponentPropsAndSlots = (props: any, Vanil: Partial
                 ],
               }
             } else {
-              Vanil.slots![SLOT_DEFAULT_NAME] = child
+              Vanil.slots![SLOT_DEFAULT_NAME] = {
+                type: 'fragment',
+                children: [child],
+              }
             }
           }
         })

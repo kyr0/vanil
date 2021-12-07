@@ -36,8 +36,9 @@ export const requiresInteractiveRuntimeLibrary = (featureFlags: FeatureFlags) =>
 
 /** loads all parts of the interactive runtime library, concats them  */
 export const bundleInteractiveRuntimeLibrary = (context: Context, featureFlags: FeatureFlags) => {
-  let runtimeCode = '\n' + readFileSyncUtf8(resolve(__dirname, '../runtime/init.ts'))
-  runtimeCode += '\n' + `Vanil.mode = '${context.mode}'`
+  let runtimeCode = requiresInteractiveRuntimeLibrary(featureFlags)
+    ? '\n' + readFileSyncUtf8(resolve(__dirname, '../runtime/init.ts')) + '\n' + `Vanil.mode = '${context.mode}'`
+    : ''
 
   if (featureFlags.tsx) {
     runtimeCode += '\n' + readFileSyncUtf8(resolve(__dirname, '../runtime/tsx.ts'))
@@ -105,6 +106,8 @@ export const bundleInteractiveRuntimeLibrary = (context: Context, featureFlags: 
     runtimeCode += '\n Vanil.Markdown = () => "Error: Markdown> is not supported at runtime in browser."'
   }
 
+  if (!runtimeCode) return ''
+
   // warp in async iife to enclose from polluting global scope
   return mayWrapInAsyncIIFE(
     transpileRuntimeInteractiveScriptCode(`${runtimeCode};`, false, context.path!, 'hoist', context),
@@ -158,10 +161,6 @@ export const getRuntimeLibraryFeatureActivationMap = (code: string, mode: Mode):
     // when SSG runtime API is used in browser/interactive, add warnings as exceptions in dev
     warnOnSsgApiUse: isInDevMode && (/fetchContent[\s]*?\(/.test(code) || /resolve[\s]*?\(/.test(code)),
   }
-
-  // in case tsx is used, include
-  if (baseFeatureFlagsMap.tsx) baseFeatureFlagsMap.vdom = true
-
   return baseFeatureFlagsMap
 }
 
@@ -233,7 +232,13 @@ export const bundleRequires = (code: string, path: string = '.', context: Contex
 
 /** stringifies the state to be accessible via Vanil.state  */
 export const bundleRuntimeState = (runtimeState: any, context: Context, runtimeLibraryFeatureFlags: FeatureFlags) => {
-  if (!runtimeState && !runtimeLibraryFeatureFlags.query && !context.refs && !runtimeLibraryFeatureFlags.i18n) return ''
+  if (
+    !runtimeState &&
+    !runtimeLibraryFeatureFlags.query &&
+    !Object.keys(context.refs!).length &&
+    !runtimeLibraryFeatureFlags.i18n
+  )
+    return ''
 
   // TODO: perf: potential opportunity for caching
 
@@ -253,15 +258,20 @@ export const bundleRuntimeState = (runtimeState: any, context: Context, runtimeL
             : ''
         }
 
-        // backing data object for refs
-        Vanil._refs = ${JSON.stringify(context.refs, null, 2)}
+        ${
+          Object.keys(context.refs!).length
+            ? `
+            // backing data object for refs
+            Vanil._refs = ${JSON.stringify(context.refs, null, 2)}
 
-        // proxy refs to make sure we'll always return $-wrapped elements
-        Vanil.refs = new Proxy(Vanil._refs, {
-            get: function(target, prop, receiver) {
-                return Vanil.$(Reflect.get(...arguments)).el
-            }
-        });
+            // proxy refs to make sure we'll always return $-wrapped elements
+            Vanil.refs = new Proxy(Vanil._refs, {
+                get: function(target, prop, receiver) {
+                    return Vanil.$(Reflect.get(...arguments)).el
+                }
+            });`
+            : ''
+        }
     `,
     context,
     'hoist',
@@ -298,10 +308,6 @@ export const injectInteractiveRuntimeLibrary = (
       runtimeState: !!runtimeStateCode,
     }
 
-    if (!requiresInteractiveRuntimeLibrary(featureFlags)) {
-      console.log('Interactive runtime unnecessary and deactivated.')
-      return
-    }
     const runtimeVariantName = getInteractiveRuntimeVariantName(featureFlags)
     const distDirPath = getDistFolder(context.config)
     const runtimeVariantDistPath = resolve(distDirPath, 'runtime', `${runtimeVariantName}.js`)
@@ -330,13 +336,15 @@ export const injectInteractiveRuntimeLibrary = (
     } else if (context.mode === 'production') {
       // hoist interactive runtime lib in production
 
-      // bundle in Vanil runtime library (unstash, prepend)
-      injectVirtualDomElement(
-        headElement,
-        createVirtualDomScriptElement(document, interactiveRuntimeCode, {
-          role: 'runtime',
-        }),
-      )
+      if (interactiveRuntimeCode) {
+        // bundle in Vanil runtime library (unstash, prepend)
+        injectVirtualDomElement(
+          headElement,
+          createVirtualDomScriptElement(document, interactiveRuntimeCode, {
+            role: 'runtime',
+          }),
+        )
+      }
     }
   }
 }

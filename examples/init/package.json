@@ -9,7 +9,9 @@
     "build:head": "npm --prefix ../../ run start:dev -- build --project-root ./examples/init",
     "preview": "vanil preview",
     "config": "vanil config",
-    "clean": "vanil clean"
+    "config:head": "npm --prefix ../../ run start:dev -- config --project-root ./examples/init",
+    "clean": "vanil clean",
+    "clean:head": "npm --prefix ../../ run start:dev -- clean --project-root ./examples/init"
   },
   "author": "Aron Homberg <info@aron-homberg>",
   "license": "MIT",

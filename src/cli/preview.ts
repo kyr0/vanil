@@ -122,11 +122,7 @@ export const preview = async (config: Config, autoListen = true) => {
 }
 
 export const printServerRunning = (tag: string, config: Config) => {
-  console.log(
-    colors.yellow('[VA]'),
-    colors.bgMagenta(colors.bold(`${tag} running`)),
-    colors.cyan(config.buildOptions?.site!),
-  )
+  console.log(colors.magenta(colors.bold(`${tag} online`)), colors.gray('@'), colors.cyan(config.buildOptions?.site!))
 
   console.log(
     colors.dim('Serving files from dist folder: '),

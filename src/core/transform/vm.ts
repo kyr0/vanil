@@ -78,15 +78,15 @@ export const run = async <D, S>(scriptCode: string, context: Context): Promise<E
       context: context, // passing the compilation context for cross-stage transforms
       React: {}, // provided for <fragment> <> support
 
-      importVanilComponent: (props: any, componentPath: string) => {
+      importVanilComponent: (props: any) => {
         // maps the Vanil.props and Vanil.slots data for later tsx() tree construction
         preprocessVanilComponentPropsAndSlots(props, Vanil)
 
         // for time of execution, switch context.path to the component path
-        Vanil.props!.context.path = componentPath
+        //Vanil.props!.context.path = componentPath
 
         // it's an .astro component, not an .astro page
-        Vanil.isPage = false
+        //Vanil.isPage = false
       },
       // Vanil.fetchContent() and Vanil.resolve() with path-relative support
       Vanil,

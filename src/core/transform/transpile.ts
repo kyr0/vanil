@@ -111,41 +111,38 @@ export const transpileTemplate = (codeBundle: CodeBundle, context: Context): str
   return addToCache(scriptCode, transpiledCode, context)
 }
 
-/** inlines code of require() calls towards .astro component template files */
-export const inlineTranspileImportedVanilComponents = (transpiledCode: string, context: Context) => {
-  // only do .astro component require("**/*.astro") code rewrites
-  // when the code contains such requires
+const transpileInlineVanilComponent = (importPath: string, context: Context) => {
+  if (importPath.endsWith('.astro')) {
+    // make sure the .astro page template will HMR when this .astro
+    // component dependency changes
+    addFileDependency(importPath, context)
 
-  if (RE_CONTAINS_REQUIRE_STMT_FOR_ASTRO_COMPONENT.test(transpiledCode)) {
-    transpiledCode = processRequireFunctionCalls(transpiledCode, (importPath: string) => {
-      if (importPath.endsWith('.astro')) {
-        // make sure the .astro page template will HMR when this .astro
-        // component dependency changes
-        addFileDependency(importPath, context)
+    // .astro template page path
+    const _contextPath = context.path
 
-        // .astro template page path
-        const _contextPath = context.path
+    // for component transpilation change path to component path
+    context.path = importPath
+    context.isProcessingComponent = true
 
-        // for component transpilation change path to component path
-        context.path = importPath
-        context.isProcessingComponent = true
+    const transformedComponentCode = transformTemplate(importPath, context)
 
-        const transformedComponentCode = transformTemplate(importPath, context)
+    // reset to .astro template page path
+    context.isProcessingComponent = false
+    context.path = _contextPath
 
-        // reset to .astro template page path
-        context.isProcessingComponent = false
-        context.path = _contextPath
-
-        // assigning the original local name here (too)
-        // as this is a multi-step, isolated transpile without shared
-        // name cache, locally declared names diverge
-        const componentCode = `{ default: (function() {
+    // assigning the original local name here (too)
+    // as this is a multi-step, isolated transpile without shared
+    // name cache, locally declared names diverge
+    const componentCode = `{ default: (function() {
           
           const _origVanilProps = { ...Vanil.props }
           const _origIsPage = Vanil.isPage
           const _contextPath = Vanil.props.context.path
 
-          importVanilComponent(arguments[0], '${importPath}')
+          Vanil.props.context.path = '${importPath}'
+          Vanil.isPage = false
+
+          importVanilComponent(arguments[0])
 
           ${transformedComponentCode}\n
 
@@ -160,14 +157,35 @@ export const inlineTranspileImportedVanilComponents = (transpiledCode: string, c
           return vdom
         })}`
 
-        return componentCode
+    return componentCode
+  }
+}
+
+/** inlines code of require() calls towards .astro component template files */
+export const inlineTranspileImportedVanilComponents = (transpiledCode: string, context: Context) => {
+  // only do .astro component require("**/*.astro") code rewrites
+  // when the code contains such requires
+
+  if (RE_CONTAINS_REQUIRE_STMT_FOR_ASTRO_COMPONENT.test(transpiledCode)) {
+    transpiledCode = processRequireFunctionCalls(transpiledCode, (importPath: string) => {
+      const astroComponentInlineCode = transpileInlineVanilComponent(importPath, context)
+
+      if (astroComponentInlineCode) {
+        return astroComponentInlineCode
       }
+
       addFileDependency(importPath, context)
       return `require("${importPath}")`
     })
   } else {
     // imports in .astro components
     transpiledCode = processRequireFunctionCalls(transpiledCode, (importPath: string) => {
+      const astroComponentInlineCode = transpileInlineVanilComponent(importPath, context)
+
+      if (astroComponentInlineCode) {
+        return astroComponentInlineCode
+      }
+
       if (isRelativePathImport(importPath)) {
         // resolve relative to the .astro component, not relative to the importing .astro page template
         importPath = resolve(dirname(context.path!), importPath)

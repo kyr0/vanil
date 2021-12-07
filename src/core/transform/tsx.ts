@@ -88,6 +88,24 @@ export const hoistRelativeLocalImportStyle = (type: any, attributes: any, contex
   }
 }
 
+const stripFragments = (node: IVirtualNode) => {
+  const stripFragment = (currentNode: IVirtualNode) => {
+    if (!currentNode.children) return currentNode
+
+    let children: Array<IVirtualNode> = []
+    for (let i = 0; i < currentNode.children.length; i++) {
+      if (currentNode.children[i].type === 'fragment') {
+        children = [...children, ...(stripFragment(currentNode.children[i]).children || [])]
+      } else {
+        children.push(stripFragment(currentNode.children[i]))
+      }
+    }
+    currentNode.children = children
+    return currentNode
+  }
+  return stripFragment(node)
+}
+
 /**
  * tsx(React-like fn call structure) transform function
  * to return a JSON tree for actual DOM creation and string transformation
@@ -119,32 +137,16 @@ globalThis._tsx = (type: any, attributes: any, context: Context, Vanil: Partial<
       }
     }
   }
+
+  // support for <slot>
+  if (type === 'slot' && Vanil.slots && (Vanil.slots[attributes.name] || Vanil.slots!['default'])) {
+    return stripFragments(Vanil.slots[attributes.name] || Vanil.slots['default']).children
+  }
+
   // React fragment where type is { }
   if (typeof type === 'object') {
     children = type.children
     type = undefined
-  }
-
-  // support for <slot>
-  if (type === 'slot' && Vanil.slots && (Vanil.slots[attributes.name] || Vanil.slots!['default'])) {
-    let targetSlotNode: IVirtualNode = Vanil.slots[attributes.name] || Vanil.slots['default']
-
-    // innerText case
-    if (typeof targetSlotNode === 'string') {
-      targetSlotNode = {
-        type: undefined,
-        attributes: {},
-        children: [targetSlotNode],
-      }
-    }
-
-    if (targetSlotNode.type === 'fragment' || typeof targetSlotNode.type === 'undefined') {
-      console.log('targetSlotNode', targetSlotNode)
-    }
-    // replace the <slot> VDOM node by the actual slot node (can be fragmented)
-    type = targetSlotNode.type
-    attributes = targetSlotNode.attributes || {}
-    children = targetSlotNode.children || []
   }
 
   // support <></> and support <fragment></fragment>

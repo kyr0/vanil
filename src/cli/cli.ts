@@ -6,7 +6,7 @@ import { dev } from './dev'
 import { build } from './build'
 import { check } from './check'
 import { preview } from './preview'
-import { finalizeConfig, getDefaultConfig } from '../core/config'
+import { finalizeConfig, getDefaultConfig, getExecutionMode } from '../core/config'
 import { readFileSyncUtf8 } from '../core/io/file'
 import { clean } from './clean'
 import { Command } from '../@types/context/command'
@@ -221,7 +221,12 @@ export const cli = async (args: string[]) => {
   // reset console
   console.clear()
 
-  console.log(`> ${colors.bold('vanil')} ${colors.green(state.cmd)}`)
+  console.log(
+    colors.dim('>'),
+    `${colors.bold(colors.yellow('vanil'))} ${colors.magenta(colors.bold(state.cmd))}`,
+    colors.cyan(`(${getExecutionMode()})`),
+    colors.gray('...'),
+  )
 
   switch (state.cmd) {
     case 'help': {

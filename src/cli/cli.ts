@@ -11,7 +11,6 @@ import { readFileSyncUtf8 } from '../core/io/file'
 import { clean } from './clean'
 import { Command } from '../@types/context/command'
 import { init, InitOptions } from './init'
-import { CONFIG_SCAFFOLD_DEFAULT_PROJECT_NAME, CONFIG_SCAFFOLD_DEFAULT_TEMPLATE } from '../core/config/defaults'
 
 const dotenv = require('dotenv')
 
@@ -45,8 +44,8 @@ const resolveArgs = (flags: Arguments): CLIState => {
     config: typeof flags.config === 'string' ? flags.config : undefined,
     dist: typeof flags.dist === 'string' ? flags.dist : undefined,
     useTls: typeof flags.useTls === 'boolean' ? flags.useTls : undefined,
-    name: typeof flags.name === 'string' ? flags.name : CONFIG_SCAFFOLD_DEFAULT_PROJECT_NAME,
-    tpl: typeof flags.tpl === 'string' ? flags.tpl : CONFIG_SCAFFOLD_DEFAULT_TEMPLATE,
+    name: typeof flags.name === 'string' ? flags.name : undefined,
+    tpl: typeof flags.tpl === 'string' ? flags.tpl : undefined,
   }
 
   if (flags.version) {

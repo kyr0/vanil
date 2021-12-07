@@ -19,4 +19,7 @@ export const printFooter = (documentationUrl: string, projectPath: string, issue
   console.log('')
   console.log(`    ${colors.green(`cd ${projectPath}`)}`)
   console.log('')
+  console.log('Run:')
+  console.log('')
+  console.log(`    ${colors.green(`npm run dev`)}`)
 }

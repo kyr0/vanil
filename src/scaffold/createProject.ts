@@ -1,6 +1,5 @@
 import { existsSync, readFileSync } from 'fs'
 import { join, resolve } from 'path'
-import { Context } from '../@types'
 import * as inquirer from 'inquirer'
 import * as colors from 'kleur/colors'
 import { printFooter } from './printFooter'
@@ -14,8 +13,15 @@ import { copyTemplate } from './copyTemplate'
 /** creates a new project from a template named (default: examples/init), given a projectName */
 export const createProject = async (tplDir: string, projectName?: string) => {
   if (!tplDir) {
-    console.log('[!!] Error: No template argument provided. Make sure you provide -t $templateFolderOrGitUrl. Exiting.')
-    process.exit(1)
+    console.log(
+      colors.yellow(
+        '[??] WARN: No template path/git repo specified. Using default project template. You can set a git repo or local path to create a specific type of project: Add --tpl $templateFolderOrGitUrl',
+      ),
+    )
+    // fall-back to bundled "init" template
+    tplDir = resolve(__dirname, '../../examples/init')
+
+    console.log('tplDir', tplDir)
   }
 
   const isGitRepo = tplDir.startsWith('http')
@@ -28,12 +34,15 @@ export const createProject = async (tplDir: string, projectName?: string) => {
   }
 
   if (!projectName) {
+    console.log(colors.yellow('[??] WARN: No project name specified. Add --name $projectName to omit interactive mode'))
+
     // get project directory name
     const choiceProjectName = await inquirer.prompt([
       {
         type: 'input',
         name: 'projectName',
-        message: `Please specify the project name (e.g. ${colors.cyan('MyProject')}):`,
+        default: 'MyVanilProject',
+        message: `Please specify the project name (e.g. ${colors.cyan('MyVanilProject')}):`,
         validate: validateProjectDirectoryInput,
       },
     ])
@@ -50,7 +59,9 @@ export const createProject = async (tplDir: string, projectName?: string) => {
         type: 'confirm',
         default: false,
         name: 'answer',
-        message: 'The chosen directory already exists. Are you sure that you want to override it?',
+        message: colors.yellow(
+          '[??] WARN: The chosen directory already exists. Are you sure that you want to override it?',
+        ),
       },
     ])
 

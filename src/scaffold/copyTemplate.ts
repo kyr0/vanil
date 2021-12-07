@@ -7,7 +7,7 @@ const ignoredDirs = ['.git', 'node_modules', 'dist']
 const getFiles = (dir: string, tplBaseDir: string, fileDiscoveredCb: (filePath: string) => void) => {
   for (let i = 0; i < ignoredDirs.length; i++) {
     const ignoredDirectoryCandiate = ignoredDirs[i]
-    if (dir.replace(`${tplBaseDir}${sep}`, '').startsWith(ignoredDirectoryCandiate) || dir.indexOf('.DS_Store')) {
+    if (dir.replace(`${tplBaseDir}${sep}`, '').startsWith(ignoredDirectoryCandiate) || dir.indexOf('.DS_Store') > -1) {
       return
     }
   }

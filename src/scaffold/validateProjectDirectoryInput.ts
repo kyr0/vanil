@@ -6,15 +6,19 @@ const validateProjectName = require('validate-npm-package-name')
 
 export const validateProjectDirectoryInput = async (projectDirectory: string): Promise<boolean | string> => {
   if (!projectDirectory) {
-    return `Could not create a project called ${colors.red(`"${projectDirectory}"`)}:${concatErrors([
-      'empty project name',
-    ])}`
+    return colors.red(
+      `[!!] ERROR: Could not create a project called ${colors.red(`"${projectDirectory}"`)}:${concatErrors([
+        'Project name is empty!',
+      ])}`,
+    )
   }
 
   if (projectDirectory.startsWith(sep)) {
-    return `Could not create a project called ${colors.red(`"${projectDirectory}"`)}:${concatErrors([
-      'use relative path',
-    ])}`
+    return colors.red(
+      `[!!] ERROR: Could not create a project called ${colors.red(`"${projectDirectory}"`)}:${concatErrors([
+        'Setting a path is not allowed',
+      ])}`,
+    )
   }
 
   const root = resolve(projectDirectory)

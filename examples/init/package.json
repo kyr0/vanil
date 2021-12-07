@@ -4,14 +4,10 @@
   "description": "TemplateName generated using: npx vanil init",
   "scripts": {
     "dev": "vanil dev",
-    "dev:head": "npm --prefix ../../ run start:dev -- dev --project-root ./examples/init",
     "build": "vanil build",
-    "build:head": "npm --prefix ../../ run start:dev -- build --project-root ./examples/init",
     "preview": "vanil preview",
     "config": "vanil config",
-    "config:head": "npm --prefix ../../ run start:dev -- config --project-root ./examples/init",
-    "clean": "vanil clean",
-    "clean:head": "npm --prefix ../../ run start:dev -- clean --project-root ./examples/init"
+    "clean": "vanil clean"
   },
   "author": "Aron Homberg <info@aron-homberg>",
   "license": "MIT",
@@ -25,6 +21,6 @@
     }
   },
   "dependencies": {
-    "vanil": "^0.0.17"
+    "vanil": "^0.0.18"
   }
 }

@@ -15,13 +15,11 @@ export const createProject = async (tplDir: string, projectName?: string) => {
   if (!tplDir) {
     console.log(
       colors.yellow(
-        '[??] WARN: No template path/git repo specified. Using default project template. You can set a git repo or local path to create a specific type of project: Add --tpl $templateFolderOrGitUrl',
+        '[??] WARN: No template path/git repo specified. You can set it easily by adding --tpl $pathToTplOrGitRepo',
       ),
     )
     // fall-back to bundled "init" template
     tplDir = resolve(__dirname, '../../examples/init')
-
-    console.log('tplDir', tplDir)
   }
 
   const isGitRepo = tplDir.startsWith('http')
@@ -29,13 +27,11 @@ export const createProject = async (tplDir: string, projectName?: string) => {
   if (isGitRepo) {
     tplDir = await cloneRepository(tplDir)
   } else if (!existsSync(tplDir)) {
-    console.log(`[!!] Error: The template ${tplDir} doesn't exist. Exiting.`)
+    console.log(colors.red(`[!!] Error: The template ${tplDir} doesn't exist. Exiting.`))
     process.exit(1)
   }
 
   if (!projectName) {
-    console.log(colors.yellow('[??] WARN: No project name specified. Add --name $projectName to omit interactive mode'))
-
     // get project directory name
     const choiceProjectName = await inquirer.prompt([
       {
@@ -59,9 +55,7 @@ export const createProject = async (tplDir: string, projectName?: string) => {
         type: 'confirm',
         default: false,
         name: 'answer',
-        message: colors.yellow(
-          '[??] WARN: The chosen directory already exists. Are you sure that you want to override it?',
-        ),
+        message: colors.yellow('[??] WARN: The chosen directory already exists. Do you want to override it?'),
       },
     ])
 
@@ -71,8 +65,6 @@ export const createProject = async (tplDir: string, projectName?: string) => {
   }
 
   const projectPath = join(process.cwd(), projectPathName)
-
-  console.log('projectPath', projectPath)
 
   if (!createProjectFolder(projectPath, projectPathName, folderAlreadyExist)) {
     return false

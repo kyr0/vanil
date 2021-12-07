@@ -1,5 +1,6 @@
 node_modules
 .DS_Store
-assets
+/assets
 examples/hellokitten
 examples/homepage
+examples/init/dist

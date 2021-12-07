@@ -318,7 +318,7 @@ export const injectInteractiveRuntimeLibrary = (
       : // generate a new dynamic interactive runtime lib variant, not cached yet
         bundleInteractiveRuntimeLibrary(context, featureFlags)
 
-    if (!isVariantCached) {
+    if (!isVariantCached && interactiveRuntimeCode) {
       // ensure it's written to cache
       persistFileAbsolute(runtimeVariantDistPath, interactiveRuntimeCode)
     }

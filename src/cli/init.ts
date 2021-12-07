@@ -11,14 +11,7 @@ export interface InitOptions {
 
 /** allows to scaffold new projects from examples */
 export const init = async (options: InitOptions) => {
-  console.log(
-    colors.yellow('[VA]'),
-    colors.bgMagenta(colors.bold(`Scaffolding`)),
-    colors.cyan(options.name),
-    colors.white('from'),
-    colors.green(options.tpl),
-    colors.gray('...'),
-  )
+  console.log(colors.yellow('[VA]'), colors.bgMagenta(colors.bold(`Scaffolding`)), colors.gray('...'))
 
   await createProject(options.tpl, options.name)
 

@@ -174,10 +174,15 @@ export const cli = async (args: string[]) => {
   }
 
   // support for package.json provided vanil config
-  const userConfigCandidate = getProjectPackageJson(defaultConfig.projectRoot!).vanil
+  try {
+    const userConfigCandidate = getProjectPackageJson(defaultConfig.projectRoot!).vanil
 
-  if (userConfigCandidate) {
-    userConfig = userConfigCandidate
+    if (userConfigCandidate) {
+      userConfig = userConfigCandidate
+    }
+  } catch (e) {
+    // it's fine, this can happen e.g. on vanil init or when running the CLI
+    // in a directory where there is no package.json at all
   }
 
   // read project .env files

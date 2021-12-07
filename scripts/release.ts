@@ -1,7 +1,6 @@
 import { execSync } from 'child_process'
-import { readFileSync } from 'fs'
+import { readdirSync, readFileSync, writeFileSync } from 'fs'
 import { resolve } from 'path'
-
 // run: ts-node scripts/release.ts
 
 const projectRootDir = resolve(__dirname, '../')
@@ -24,6 +23,22 @@ execSync(`npm version ${level} --force`, { stdio: 'inherit' })
 
 // read version generated
 const packageJSON = JSON.parse(readFileSync(resolve(projectRootDir, 'package.json'), { encoding: 'utf8' }))
+
+// ahead of time update vanil dependency in all examples
+const examplesFolderPath = resolve(__dirname, '../examples')
+const exampleFolders = readdirSync(examplesFolderPath)
+
+console.log(`Updating examples ${exampleFolders} to version ${packageJSON.version} ahead-of-time...`)
+
+exampleFolders.forEach((exampleFolder) => {
+  const examplePackageJsonPath = resolve(examplesFolderPath, exampleFolder, 'package.json')
+  const examplePackageJSON = JSON.parse(readFileSync(examplePackageJsonPath, { encoding: 'utf8' }))
+
+  // update to upcoming released version ahead-of-time
+  examplePackageJSON.dependencies['vanil'] = `^${packageJSON.version}`
+
+  writeFileSync(examplePackageJsonPath, JSON.stringify(examplePackageJSON, null, 2), { encoding: 'utf8' })
+})
 
 console.log(`Version ${packageJSON.version} will be released now.`)
 

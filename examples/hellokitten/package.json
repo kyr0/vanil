@@ -20,6 +20,6 @@
   "dependencies": {
     "js-base64": "^3.7.2",
     "lodash": "^4.17.21",
-    "vanil": "^0.0.20"
+    "vanil": "^0.0.25"
   }
 }

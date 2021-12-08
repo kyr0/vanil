@@ -1,5 +1,6 @@
 import * as colors from 'kleur/colors'
 import { basename, normalize } from 'path'
+import { Context } from '../../@types'
 import { readFileSyncUtf8 } from '../io/file'
 import { stripHtmlComments } from './transform'
 
@@ -27,7 +28,7 @@ export interface CodeBundle {
 const ASTRO_SPLIT_REGEXP = /---\s+</
 
 /** Splits the --- typeScriptCode --- htmlCode sections */
-export const parseTemplate = (templatePath: string): CodeBundle => {
+export const parseTemplate = (templatePath: string, context: Context): CodeBundle => {
   const templateCode = readFileSyncUtf8(templatePath)
 
   if (!ASTRO_SPLIT_REGEXP.test(templateCode)) {

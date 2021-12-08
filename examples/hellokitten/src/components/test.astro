@@ -1,5 +1,7 @@
 ---
-import { get, props } from "vanil"
+import { get, props, request } from "vanil"
+
+import Subsequent from "./subsequent.astro"
 
 export interface Props {
     lala: string
@@ -9,6 +11,20 @@ export interface Props {
 const { lala = 'Foo' } = Astro.props
 ---
 <div>
+
+    <Subsequent lala="fuhuu">
+
+        <h1 slot="header">SubSome header</h1>
+        <p slot="para">SubWanna have fun11!</p>
+        SubDefault content
+        SubLala1
+        <p>Sublalala</p>
+        <span>SubURL { request.url }</span>
+
+    </Subsequent>
+
+    ---
+
     Test: {lala}
     Test get: { get('testKey') }
 

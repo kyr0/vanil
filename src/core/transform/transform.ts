@@ -12,7 +12,7 @@ import { toProjectRootRelativePath } from '../io/folders'
 
 /** does only parse, transpile, run a single .astro template without post-processing */
 export const transformTemplate = (templatePath: string, context: Context) => {
-  const codeBundle = parseTemplate(templatePath)
+  const codeBundle = parseTemplate(templatePath, context)
   return transpileTemplate(codeBundle, context)
 }
 

@@ -64,7 +64,7 @@ export interface MaterializedPage {
 export const materializeDynamicRoutingPaths = async (context: Context) => {
   const parsedParams = parseDynamicRoutingPath(context)
   const paramNames = Object.keys(parsedParams)
-  const codeBundle = parseTemplate(context.path!)
+  const codeBundle = parseTemplate(context.path!, context)
 
   let isolatedGetStaticPathsFnCode = await parseForGetStaticPathsFn(codeBundle.typeScriptCode)
 

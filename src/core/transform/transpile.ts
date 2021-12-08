@@ -91,8 +91,12 @@ export const transpileTemplate = (codeBundle: CodeBundle, context: Context): str
         // (code is evaluated in runtime scope of vanil later)
         before: [
           transformImportPaths({
-            rewrite: (importPath: string, fileName: string, localName: string) =>
-              resolveNodeImport(importPath, context),
+            rewrite: (importPath) => {
+              if (importPath.endsWith('.astro') && context.isProcessingComponent) {
+                return resolve(dirname(context.path!), importPath)
+              }
+              return resolveNodeImport(importPath, context)
+            },
           }),
         ],
       },
@@ -173,7 +177,6 @@ export const inlineTranspileImportedVanilComponents = (transpiledCode: string, c
       if (astroComponentInlineCode) {
         return astroComponentInlineCode
       }
-
       addFileDependency(importPath, context)
       return `require("${importPath}")`
     })

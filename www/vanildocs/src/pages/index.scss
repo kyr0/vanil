@@ -1,0 +1,19 @@
+#vanilLogo {
+  animation: flip-logo 10s infinite ease-in-out;
+
+  path {
+    fill: #f3e5ab !important;
+  }
+}
+
+@keyframes flip-logo {
+  0% {
+    transform: perspective(120px) rotateY(-179.9deg);
+  }
+  50% {
+    transform: perspective(120px) rotateY(0deg);
+  }
+  100% {
+    transform: perspective(120px) rotateY(-179.9deg);
+  }
+}

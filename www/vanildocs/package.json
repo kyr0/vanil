@@ -1,0 +1,30 @@
+{
+  "name": "vanildocs",
+  "version": "0.0.1",
+  "description": "VanilDocs generated using: npx vanil init",
+  "scripts": {
+    "dev": "vanil dev",
+    "build": "vanil build",
+    "preview": "vanil preview",
+    "config": "vanil config",
+    "clean": "vanil clean"
+  },
+  "author": "Aron Homberg <info@aron-homberg>",
+  "license": "MIT",
+  "browserslist": [
+    "> 0.05%",
+    "not ie > 0"
+  ],
+  "vanil": {
+    "dist": "../../docs",
+    "devOptions": {
+      "useOptimizer": false
+    },
+    "buildOptions": {
+      "pageUrlFormat": "file"
+    }
+  },
+  "dependencies": {
+    "vanil": "^0.0.27"
+  }
+}

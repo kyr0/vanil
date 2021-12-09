@@ -2,7 +2,7 @@ import * as colors from 'kleur/colors'
 
 export const printFooter = (documentationUrl: string, projectPath: string, issueUrl: string) => {
   console.log('')
-  console.log(colors.green(`Thank you for using ${colors.bgMagenta(colors.white('VANIL!'))}`))
+  console.log(colors.green(`Thank you for using ${colors.bold(colors.yellow('VANIL'))}!`))
   console.log('')
   console.log('If you are unfamiliar with Vanil, please head on to: 👩‍💻👨‍💻')
   console.log(`${colors.green(documentationUrl)}`)

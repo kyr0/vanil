@@ -224,7 +224,6 @@ export const cli = async (args: string[]) => {
   // reset console
   console.clear()
 
-  console.log('flags', flags)
   console.log(
     colors.dim('>'),
     `${colors.bold(colors.yellow('vanil'))} ${colors.magenta(colors.bold(state.cmd))}`,

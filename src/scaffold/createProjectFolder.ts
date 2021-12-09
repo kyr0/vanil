@@ -1,4 +1,4 @@
-import { mkdirSync, readdirSync } from 'fs'
+import { readdirSync } from 'fs'
 import * as colors from 'kleur/colors'
 import { join } from 'path'
 import shelljs from 'shelljs'
@@ -29,7 +29,8 @@ export const createProjectFolder = (
   folderAlreadyExist: boolean = false,
 ): boolean => {
   if (!folderAlreadyExist) {
-    mkdirSync(projectPath)
+    // create shallow directory structure
+    shelljs.mkdir('-p', projectPath)
   }
 
   if (!isSafeToCreateAppIn(projectPath, projectName)) {

@@ -23,6 +23,6 @@
     }
   },
   "dependencies": {
-    "vanil": "^0.0.39"
+    "vanil": "^0.0.40"
   }
 }

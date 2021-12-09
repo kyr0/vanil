@@ -11,4 +11,4 @@ const vanilRootDir = path.resolve(__dirname, '../../')
 // const tsNodeBin = path.join(nodeModulesDir, '.bin', 'ts-node')
 // const tsVanilBin = path.join(vanilRootDir, 'src', 'vanil.ts')
 
-child_process.execSync(`npm run start -- ${argLine}`, { stdio: 'inherit', cwd: vanilRootDir })
+child_process.execSync(`npm --prefix ${vanilRootDir} run start -- ${argLine}`, { stdio: 'inherit' })

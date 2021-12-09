@@ -3,11 +3,12 @@
 const child_process = require('child_process')
 const path = require('path')
 const yargs = require('yargs-parser')
+
 const flags = yargs(process.argv)
 const cmd = flags._[2]
-
 const vanilRootDir = path.resolve(__dirname, '../../')
-const argLine = [...process.argv].splice(2 /* remove the first two (node cmd, vanil bin) */).join(' ')
+
+const getArgLine = () => [...process.argv].splice(2 /* remove the first two (node cmd, vanil bin) */).join(' ')
 
 // CWD we're in atm will be chdir to package/module location dir
 // when npm is called to run ts-node, therefore target directory
@@ -18,13 +19,11 @@ if (cmd === 'init') {
   } else {
     process.argv[3] = process.cwd()
   }
-  console.log('process.argv[3]', process.argv, process.argv[3])
-
-  child_process.execSync(`npm --prefix ${vanilRootDir} run start -- ${argLine}`, { stdio: 'inherit' })
+  child_process.execSync(`npm --prefix ${vanilRootDir} run start -- ${getArgLine()}`, { stdio: 'inherit' })
 } else {
   const nodeModulesDir = path.resolve(__dirname, '../../../')
   const tsNodeBin = path.join(nodeModulesDir, '.bin', 'ts-node')
   const tsVanilBin = path.join(vanilRootDir, 'src', 'vanil.ts')
 
-  child_process.execSync(`${tsNodeBin} ${tsVanilBin} ${argLine}`, { stdio: 'inherit' })
+  child_process.execSync(`${tsNodeBin} ${tsVanilBin} ${getArgLine()}`, { stdio: 'inherit' })
 }

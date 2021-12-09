@@ -8,7 +8,7 @@ const cmd = flags._[2]
 
 // CWD we're in atm will be chdir to package/module location dir
 // when npm is called to run ts-node, therefore target directory
-// argument needs to be resolved
+// argument needs to be resolved (only relevant for npx vanil init use-case)
 if (cmd === 'init') {
   if (flags._[3]) {
     process.argv[3] = path.resolve(process.cwd(), flags._[3])

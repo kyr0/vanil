@@ -74,3 +74,7 @@ export const copyFiles = (fromPath: string, toPath: string) => {
     }
   }
 }
+
+/** verfies if a .astro template is stored in the pages folder */
+export const isAstroPageTemplate = (astroFileCandidate: string, config: Config) =>
+  astroFileCandidate.indexOf(getPagesFolder(config)) > -1 && astroFileCandidate.endsWith('.astro')

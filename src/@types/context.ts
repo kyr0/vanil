@@ -13,6 +13,7 @@ import { Mode } from './context/mode'
 import { PageParamsAndProps } from './routing'
 import { Application } from 'express'
 import { ElementRefs } from './runtime/render'
+import { Paths } from './context/paths'
 
 export interface Context {
   /** holds the project config read (default, read from package.json and maybe overridden by CLI flags) */
@@ -76,4 +77,7 @@ export interface Context {
 
   /** indicates that the compiler is currently processing a component */
   isProcessingComponent?: boolean
+
+  /** materialized paths of the configuration (cache) */
+  paths?: Paths
 }

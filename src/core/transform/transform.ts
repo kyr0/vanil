@@ -19,7 +19,6 @@ export const transformTemplate = (templatePath: string, context: Context) => {
 /** transforms a single .astro template file */
 export const transformSingle = async (context: Context) => {
   let html
-
   try {
     // change to file directory so that
     // SSG imports are relative to the .astro

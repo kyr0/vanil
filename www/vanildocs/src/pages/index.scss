@@ -1,19 +1,21 @@
-#vanilLogo {
-  animation: flip-logo 10s infinite ease-in-out;
+.vanilLogo {
+  &.margin-auto {
+    margin: auto;
+  }
 
-  path {
-    fill: #f3e5ab !important;
+  &.animated {
+    animation: flip-logo 10s infinite ease-in-out;
   }
 }
 
 @keyframes flip-logo {
   0% {
-    transform: perspective(120px) rotateY(-179.9deg);
+    transform: perspective(120px) rotateY();
   }
   50% {
-    transform: perspective(120px) rotateY(0deg);
+    transform: perspective(120px) rotateY(179.9deg);
   }
   100% {
-    transform: perspective(120px) rotateY(-179.9deg);
+    transform: perspective(120px) rotateY(0);
   }
 }

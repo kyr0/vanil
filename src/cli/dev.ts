@@ -6,7 +6,7 @@ import { preview, printServerRunning } from './preview'
 import { getExecutionMode } from '../core/config'
 import { orchestrateTransformAll, orchestrateTransformSingle } from '../core/orchestrate'
 import { Context } from '../@types/context'
-import { getPagesFolder, getPublicFolder, toDistFolderRelativePath } from '../core/io/folders'
+import { getPublicFolder, isAstroPageTemplate, toDistFolderRelativePath } from '../core/io/folders'
 import { debounce } from '../core/time/debounce'
 import { copyPublicToDist } from '../core/hook/core/copyPublicToDist'
 import { invalidateCache } from '../core/transform/cache'
@@ -67,13 +67,29 @@ export const dev = async (config: Config) => {
     // list of .astro files to retransform
     const astroTemplatesToTransform: Array<string> = []
 
+    // pre-process fileDependencies:  transient .astro component -> .astro page dependencies
+    if (context.fileDependencies![path]) {
+      const dependentAstroPages = context.fileDependencies![path]
+
+      dependentAstroPages.forEach((astroPageCandidate: string, index: number) => {
+        // .astro component dependent to .astro component -> resolve top level .astro page template deps
+        if (!isAstroPageTemplate(astroPageCandidate, config) && astroPageCandidate.endsWith('.astro')) {
+          // actual astro page dependencies
+          const astroPageDeps = context.fileDependencies![astroPageCandidate] || []
+
+          // replace transient dependency
+          dependentAstroPages.splice(index, astroPageDeps.length, ...astroPageDeps)
+        }
+      })
+    }
+
     Object.keys(context.fileDependencies!).forEach((depFilePath: string) => {
       // some module imports doesn't come with a file extension and it's
       // good enough to not resolve those with expensive ops but just assume
       // we might need to rebuild stochastically valid dependencies
       if (path.startsWith(depFilePath)) {
         context.fileDependencies![depFilePath].forEach((astroFile) => {
-          if (astroTemplatesToTransform.indexOf(astroFile) === -1) {
+          if (isAstroPageTemplate(astroFile, config) && astroTemplatesToTransform.indexOf(astroFile) === -1) {
             // invalidate the codeCache
             invalidateCache(context)
 
@@ -89,8 +105,8 @@ export const dev = async (config: Config) => {
     // if the file changed is an .astro template file and not yet part of the list
     // of .astro templates to retransform, add
     if (
-      path.indexOf(getPagesFolder(config)) > -1 &&
       path.endsWith('.astro') &&
+      isAstroPageTemplate(path, config) &&
       astroTemplatesToTransform.indexOf(path) === -1
     ) {
       astroTemplatesToTransform.push(path)

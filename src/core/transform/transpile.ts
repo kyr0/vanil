@@ -128,7 +128,14 @@ const transpileInlineVanilComponent = (importPath: string, context: Context) => 
     context.path = importPath
     context.isProcessingComponent = true
 
+    // stash/reset style replacements as they shouldn't affect relative .astro components
+    const _styleReplacements = context.styleReplacements!
+    context.styleReplacements = []
+
     const transformedComponentCode = transformTemplate(importPath, context)
+
+    // reply style replacements and merge with potential new ones
+    context.styleReplacements = [...context.styleReplacements, ..._styleReplacements]
 
     // reset to .astro template page path
     context.isProcessingComponent = false

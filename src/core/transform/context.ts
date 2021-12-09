@@ -3,6 +3,7 @@ import { geTranspileOptions } from '../config/transpileOptions'
 import { getDefaultHookConfig } from '../config/hook'
 import { getDefaultLoaderMap } from '../config/loader'
 import { Context } from '../../@types/context'
+import { getDistFolder } from '../io/folders'
 
 /** fills in emptiness such as initializing optional properties */
 export const validateContext = (context: Context) => {
@@ -61,6 +62,12 @@ export const validateContext = (context: Context) => {
 
   // invalidate runtime script and stylesheet injection cache per page
   context.pageRuntimeScriptsAndLinks = []
+
+  // cache materialized paths
+  context.paths = {
+    dist: getDistFolder(context.config),
+    // TODO: other paths
+  }
   return context
 }
 

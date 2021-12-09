@@ -1,24 +1,57 @@
 ---
-import { Markdown, fetchContent } from "vanil"
-
+import { Markdown, fetchContent, resolve } from "vanil"
 import PageLayout from "../layouts/PageLayout.astro"
+
+
+import { readFileSync } from "fs"
 
 const vanilLogo = fetchContent("../../public/assets/vanil-logo.svg")[0]
 
+const currentVersion = JSON.parse(readFileSync(resolve('../../../../package.json'), { encoding: 'utf-8'})).version
+
 // direct VDOM access/mutation
-vanilLogo.attributes.id = 'vanilLogo'
+vanilLogo.attributes.width = 180
+vanilLogo.attributes.height = 180
+vanilLogo.attributes.class = 'vanilLogo animated margin-auto'
 
 ---
 <PageLayout title="VanilDocs">
 
-    { vanilLogo }
+    <main>
+      <div class="bd-masthead mb-3" id="content">
+        <div class="container px-4 px-md-3">
+          <div class="row align-items-lg-center">
+            <div class="col-8 mx-auto col-md-4 order-md-2 col-lg-5 d-flex justify-content-center">
+              { vanilLogo }    
+            </div>
+            <div class="col-md-8 order-md-1 col-lg-7 text-center text-md-start">
 
-    <Markdown src="../../content/index.md" />
+                <Markdown src="../../content/index.md" />
+
+                <div class="d-flex flex-column flex-md-row">
+                  <a href="/getting-started/try-it-out" class="btn btn-lg btn-outline-primary mb-3">
+                    Try it out
+                  </a>
+                  <a href="/docs/5.1/getting-started/introduction/" class="btn btn-lg btn-bd-primary mb-3 me-md-3">
+                    Read more...
+                  </a>
+                </div>
+
+                <p class="text-muted mb-0">
+                  Currently <strong>v{currentVersion}</strong>
+                  <span class="px-1">·</span>
+                  <a href="https://www.npmjs.com/package/vanil" class="link-secondary">All releases</a>
+                </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
 
     <style lang="scss">
-
+ 
         /* CSS4 is fully supported */
         @import "./index.scss";
 
     </style>
-</PageLayout> 
+</PageLayout>

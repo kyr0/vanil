@@ -4,6 +4,7 @@
   "description": "VanilDocs generated using: npx vanil init",
   "scripts": {
     "dev": "vanil dev",
+    "dev:head": "npm --prefix ../../ run start:dev -- dev --project-root ./www/vanildocs",
     "build": "vanil build",
     "preview": "vanil preview",
     "config": "vanil config",
@@ -25,6 +26,8 @@
     }
   },
   "dependencies": {
+    "bootstrap": "^5.1.3",
+    "sass": "^1.44.0",
     "vanil": "^0.0.27"
   }
 }

@@ -88,6 +88,8 @@ Here are a few ideas on how it feels to work with Vanil:
 
 ## Mid-term roadmap
 
+- perf: use context.paths.\* instead of getter functions
+- feat: npm vanil init hook
 - refactor: rewrite import split parser (support multi-line dynamic / sync imports)
 - perf: linkedom can be probably constructed directly in tsx()
 - perf: better codeCache with fileOrigin map, FNV hash algo and bloom filter

@@ -1,44 +1,42 @@
 ---
+import Header from "../components/Header.astro"
+
 import { props } from "vanil"
 
-const mainBgColor = '#101010'
 const mainColor = '#eee'
+const brandPrimaryColor = '#f3e5ab'
+const brandSecondaryColor = '#101010'
 
 ---
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
         <title>{ props.title || "VanilDocs" }</title>
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+        <link href="/bootstrap-custom.css" rel="stylesheet" />
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        
+        <style lang="scss">    
+            :root {
+                --bs-dark: ${mainColor} !important;
+                --bs-body-color: ${mainColor};
+                --bs-primary: ${brandPrimaryColor} !important;
+                --bs-secondary: ${brandSecondaryColor} !important;
+                --main-bg-color: ${brandSecondaryColor};
+                --main-color: ${mainColor};
+                --brand-color: ${brandPrimaryColor};
+            }
+        </style>
+
+        <link href="./PageLayout.scss" rel="stylesheet"/>
     </head>
     <body>
+        <Header />
 
-        <!-- page content is rendered here -->
-        <!-- you can also use named slots -->
         <div class="content">
             <slot />
         </div>
-
-        <style lang="scss">
-            
-            :root {
-                --main-bg-color: ${mainBgColor};
-                --main-color: ${mainColor};
-            }
-
-            .content {
-                text-align: center;
-                color: var(--main-color);
-                max-width: 50vw;
-                margin: auto;
-                margin-top: 10rem;
-            }
-            
-            body, html {
-                background-color: var(--main-bg-color);
-            }
-        
-        </style>
     </body>
 </html>

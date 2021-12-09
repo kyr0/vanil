@@ -14,11 +14,11 @@ if (cmd === 'init') {
   console.log('init -> cwd path empty, defaulting to', process.cwd(), flags._[3])
 
   if (flags._[3]) {
-    path.resolve(process.cwd(), flags._[3])
+    process.argv[3] = path.resolve(process.cwd(), flags._[3])
   } else {
-    flags._[3] = process.cwd()
+    process.argv[3] = process.cwd()
   }
-  console.log('flags._[3] rew', flags._[3])
+  console.log('process.argv[3] rew', process.argv[3])
   process.exit(0)
 }
 

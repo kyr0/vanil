@@ -11,7 +11,7 @@ import { installModules } from './installModules'
 import { copyTemplate } from './copyTemplate'
 
 /** creates a new project from a template named (default: examples/init), given a projectName */
-export const createProject = async (tplDir: string, projectName?: string) => {
+export const createProject = async (tplDir: string, destDir: string, projectName?: string) => {
   if (!tplDir) {
     console.log(
       colors.yellow(
@@ -46,8 +46,8 @@ export const createProject = async (tplDir: string, projectName?: string) => {
   }
 
   const projectPathName = projectName!.toLowerCase()
-  const root = resolve(projectPathName)
-  const folderAlreadyExist = existsSync(root)
+  const projectPath = resolve(destDir, projectPathName)
+  const folderAlreadyExist = existsSync(projectPath)
 
   if (folderAlreadyExist) {
     const shouldOverride = await inquirer.prompt([
@@ -63,8 +63,6 @@ export const createProject = async (tplDir: string, projectName?: string) => {
       return false
     }
   }
-
-  const projectPath = join(process.cwd(), projectPathName)
 
   if (!createProjectFolder(projectPath, projectPathName, folderAlreadyExist)) {
     return false

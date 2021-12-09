@@ -85,10 +85,9 @@ const printHelp = () => {
   vanil config          Prints the final config and explains how to customize it.
   vanil clean           Removes the dist folder of your site; this cleans the cache.
   vanil check           Check your project for errors.
-  vanil init            Scaffolds a new project from scratch.
+  vanil init <dir>      Scaffolds a new project in <dir>.
   ${colors.bold('Flags:')}
-  --config <path>       Specify the path to the Vanil config file.
-  --project-root <path> Specify the path to the project root folder, relative to CWD
+  --project-root <path> Specify the path to the project root folder, relative to CWD.
   --site <uri>          Specify site to use as site location.
   --use-tls             Enables https:// for all URIs.
   --dist                Specify the distribution folder (build result).
@@ -97,8 +96,8 @@ const printHelp = () => {
   --no-sitemap          Disable sitemap generation (build only).
   --version             Show the version number and exit.
   --help                Show this help message.
-  --name <project-name> Name of the project (only useful with "init")
-  --tpl <dir-or-repo>   Path to a template folder or git repository
+  --name <project-name> Name of the project (only useful with "init").
+  --tpl <dir-or-repo>   Path to a template folder or git repository.
 `)
 }
 
@@ -225,6 +224,7 @@ export const cli = async (args: string[]) => {
   // reset console
   console.clear()
 
+  console.log('flags', flags)
   console.log(
     colors.dim('>'),
     `${colors.bold(colors.yellow('vanil'))} ${colors.magenta(colors.bold(state.cmd))}`,
@@ -279,7 +279,7 @@ export const cli = async (args: string[]) => {
     }
     case 'init': {
       try {
-        await init(options as InitOptions)
+        await init(options as InitOptions, flags._[3])
       } catch (err) {
         throwAndExit(err)
       }

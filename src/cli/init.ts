@@ -1,4 +1,5 @@
 import * as colors from 'kleur/colors'
+import { resolve } from 'path'
 import { createProject } from '../scaffold/createProject'
 
 export interface InitOptions {
@@ -10,10 +11,16 @@ export interface InitOptions {
 }
 
 /** allows to scaffold new projects from examples */
-export const init = async (options: InitOptions) => {
-  console.log(colors.yellow('[VA]'), colors.bgMagenta(colors.bold(`Scaffolding`)), colors.gray('...'))
+export const init = async (options: InitOptions, destFolder: string = '.') => {
+  console.log(
+    colors.yellow('[VA]'),
+    colors.bgMagenta(colors.bold(`Scaffolding project`)),
+    'in',
+    colors.green(resolve(destFolder)),
+    colors.gray('...'),
+  )
 
-  await createProject(options.tpl, options.name)
+  await createProject(options.tpl, destFolder, options.name)
 
   return 0
 }

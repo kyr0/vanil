@@ -18,6 +18,8 @@ if (cmd === 'init') {
   } else {
     process.argv[3] = process.cwd()
   }
+  console.log('process.argv[3]', process.argv, process.argv[3])
+
   child_process.execSync(`npm --prefix ${vanilRootDir} run start -- ${argLine}`, { stdio: 'inherit' })
 } else {
   const nodeModulesDir = path.resolve(__dirname, '../../../')

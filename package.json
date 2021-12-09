@@ -8,8 +8,8 @@
   },
   "types": "./dist/src/@types/index.d.js",
   "version": "0.0.35",
-  "homepage": "",
-  "documentationUrl": "",
+  "homepage": "https://vanil.build",
+  "documentationUrl": "https://vanil.build/docs",
   "repository": {
     "url": "git+https://github.com/kyr0/vanil.git",
     "type": "git"
@@ -39,13 +39,12 @@
     "start:dev": "ts-node-dev --rs --ignore-watch=./examples --watch=./src/** --respawn --transpile-only ./src/vanil.ts",
     "start": "ts-node ./src/vanil.ts",
     "test:init": "ts-node ./src/vanil.ts init",
-    "build": "tsc",
-    "test": "mocha --parallel --timeout 15000"
+    "build": "tsc"
   },
   "author": "Aron Homberg <info@aron-homberg.de>",
   "license": "MIT",
   "engines": {
-    "node": "^12.20.0 || ^14.13.1 || >=16.0.0",
+    "node": "^14.13.1 || >=16.0.0",
     "npm": ">=6.14.0"
   },
   "dependencies": {

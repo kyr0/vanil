@@ -1,5 +1,7 @@
 # VANIL
 
+[![Join the chat at https://gitter.im/vanil-build/community](https://badges.gitter.im/vanil-build/community.svg)](https://gitter.im/vanil-build/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 > Vanilla JSX + HTML + CSS compiler and static-site generator (SSG)
 
 VANIL is a compiler and static site generator (SSG) that combines TSX/JSX+HTML+CSS and modern web standards. Back in the day, _transpilers_, _bundlers_, _source maps_ and _frameworks_ have been invented to cope with web-tech limitations. However,

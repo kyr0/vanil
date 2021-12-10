@@ -13,4 +13,4 @@ readable way so we don't need source-maps at all?
 
 And when we finally write the resulting code to the disk, why not either `prettify` or `terser` optimize it, depending on if we want to work on code or ship it?
 
-That's Vanil! A pragmatic compiler for the JAMStack era. Vanil helps you to enjoy simplicity, speed and elegance. Think Node.js React, Vue, jQuery, Svelte and Next.js at the same time. It has all the concepts, but without any bloat.
+That's Vanil! A pragmatic compiler for the JAMStack era. Vanil helps you to enjoy simplicity, speed and elegance. Think Node.js React, Vue, jQuery, Svelte and Next.js at the same time. It has all the concepts, but no complexity.

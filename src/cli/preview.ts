@@ -23,6 +23,14 @@ export const preview = async (config: Config, autoListen = true) => {
     mode: getExecutionMode(),
   })
 
+  app.use('/*', (req, res, next) => {
+    //console.log('req head', req.headers)
+    console.log(
+      `${req.method} ${res.statusCode < 400 ? colors.green(res.statusCode) : colors.red(res.statusCode)} ${req.path}`,
+    )
+    next()
+  })
+
   // serve all files from the dist folder
   app.use(
     '/',
@@ -50,14 +58,14 @@ export const preview = async (config: Config, autoListen = true) => {
     const target404PageHtml = resolve(getDistFolder(config), page404)
 
     if (existsSync(target404PageHtml)) {
-      res.send(readFileSyncUtf8(target404PageHtml))
+      res.status(404).send(readFileSyncUtf8(target404PageHtml))
       next()
     } else {
       const notFoundError = `ERROR 404: ${req.path} not found! 
       You can implement a custom 404 page by creating a 404.astro page template. 
       Resources can be placed in the ./public folder for static file serving.`
 
-      res.send(notFoundError)
+      res.status(404).send(notFoundError)
       next()
     }
   })

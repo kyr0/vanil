@@ -19,7 +19,7 @@
   "vanil": {
     "dist": "../../docs",
     "devOptions": {
-      "useOptimizer": false
+      "useOptimizer": true
     },
     "buildOptions": {
       "pageUrlFormat": "file"
@@ -28,6 +28,6 @@
   "dependencies": {
     "bootstrap": "^5.1.3",
     "sass": "^1.44.0",
-    "vanil": "^0.0.27"
+    "vanil": "^0.0.43"
   }
 }

@@ -1,6 +1,6 @@
 import { dirname, join } from 'path'
 import shelljs from 'shelljs'
-import { writeFileSync } from 'fs'
+import { existsSync, writeFileSync } from 'fs'
 import { getDistFolder } from '../io/folders'
 import { addMaterializedHtmlFilePath } from './context'
 import { Context } from '../../@types/context'
@@ -44,6 +44,11 @@ export const persistFileDist = async (relativeTargetPath: string, content: strin
 export const persistFileAbsolute = (destPath: string, content: string) => {
   // create shallow directory structure
   shelljs.mkdir('-p', dirname(destPath))
+
+  // remove file first
+  if (existsSync(destPath)) {
+    shelljs.rm(destPath)
+  }
 
   // write file contents
   return writeFileSync(destPath, content, { encoding: 'utf8' })

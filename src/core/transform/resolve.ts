@@ -36,7 +36,10 @@ export const resolveNodeImport = (importPath: string, context: Context) => {
 
   // we can't support "localFile.*" cases, because these
   // cannot be separated from Node.js node_module imports
-  const resolvedImportPath = resolveImportForRuntimeInteractiveCode(importPath)
+  const resolvedImportPath = context.isProcessingComponent
+    ? // use .astro component-relative import path resolving
+      resolveImportForRuntimeInteractiveCode(importPath, context.path)
+    : resolveImportForRuntimeInteractiveCode(importPath)
 
   // register in dependency linked list
   addFileDependency(resolvedImportPath, context)

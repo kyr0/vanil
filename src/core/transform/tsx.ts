@@ -55,6 +55,8 @@ export const transpileInlineScript = (type: any, attributes: any, context: Conte
       context,
     )
 
+    delete attributes.src
+
     children[0] = scriptCode
   }
   return children

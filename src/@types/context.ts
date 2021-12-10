@@ -78,6 +78,9 @@ export interface Context {
   /** indicates that the compiler is currently processing a component */
   isProcessingComponent?: boolean
 
+  /** always tells the active .astro page template path name, also when processing .astro components  */
+  astroPageTemplatePath?: string
+
   /** materialized paths of the configuration (cache) */
   paths?: Paths
 }

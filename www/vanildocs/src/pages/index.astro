@@ -1,13 +1,9 @@
 ---
-import { Markdown, fetchContent, resolve } from "vanil"
+import { Markdown, fetchContent } from "vanil"
 import PageLayout from "../layouts/PageLayout.astro"
-
-
-import { readFileSync } from "fs"
+import { getCurrentVersion } from "../utils/getCurrentVersion"
 
 const vanilLogo = fetchContent("../../public/assets/vanil-logo.svg")[0]
-
-const currentVersion = JSON.parse(readFileSync(resolve('../../../../package.json'), { encoding: 'utf-8'})).version
 
 // direct VDOM access/mutation
 vanilLogo.attributes.width = 180
@@ -29,16 +25,16 @@ vanilLogo.attributes.class = 'vanilLogo animated margin-auto'
                 <Markdown src="../../content/index.md" />
 
                 <div class="d-flex flex-column flex-md-row">
-                  <a href="/getting-started/try-it-out" class="btn btn-lg btn-outline-primary mb-3">
+                  <a href="/docs/guides/getting-started" class="btn btn-lg btn-outline-primary mb-3">
                     Try it out
                   </a>
-                  <a href="/docs/5.1/getting-started/introduction/" class="btn btn-lg btn-bd-primary mb-3 me-md-3">
+                  <a href="/docs/guides/concepts" class="btn btn-lg btn-bd-primary mb-3 me-md-3">
                     Read more...
                   </a>
                 </div>
 
                 <p class="text-muted mb-0">
-                  Currently <strong>v{currentVersion}</strong>
+                  Currently <strong>v{getCurrentVersion()}</strong>
                   <span class="px-1">·</span>
                   <a href="https://www.npmjs.com/package/vanil" class="link-secondary">All releases</a>
                 </p>

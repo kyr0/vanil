@@ -3,7 +3,7 @@ import { geTranspileOptions } from '../config/transpileOptions'
 import { getDefaultHookConfig } from '../config/hook'
 import { getDefaultLoaderMap } from '../config/loader'
 import { Context } from '../../@types/context'
-import { getDistFolder } from '../io/folders'
+import { getDistFolder, getHooksFolder, getPagesFolder, getProjectRootFolder, getPublicFolder } from '../io/folders'
 
 /** fills in emptiness such as initializing optional properties */
 export const validateContext = (context: Context) => {
@@ -66,7 +66,10 @@ export const validateContext = (context: Context) => {
   // cache materialized paths
   context.paths = {
     dist: getDistFolder(context.config),
-    // TODO: other paths
+    public: getPublicFolder(context.config),
+    projectRoot: getProjectRootFolder(context.config),
+    hooks: getHooksFolder(context.config),
+    pages: getPagesFolder(context.config),
   }
   return context
 }

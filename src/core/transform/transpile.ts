@@ -91,12 +91,7 @@ export const transpileTemplate = (codeBundle: CodeBundle, context: Context): str
         // (code is evaluated in runtime scope of vanil later)
         before: [
           transformImportPaths({
-            rewrite: (importPath) => {
-              if (importPath.endsWith('.astro') && context.isProcessingComponent) {
-                return resolve(dirname(context.path!), importPath)
-              }
-              return resolveNodeImport(importPath, context)
-            },
+            rewrite: (importPath) => resolveNodeImport(importPath, context),
           }),
         ],
       },

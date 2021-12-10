@@ -1,4 +1,4 @@
-const prettier = require('prettier')
+import prettier from 'prettier'
 
 export const prettify = (code: string) => {
   try {
@@ -22,8 +22,6 @@ export const prettify = (code: string) => {
       vueIndentScriptAndStyle: false,
       printWidth: 120,
     })
-  } catch (e) {
-    console.error('Error while trying to prettify the code:', e)
-  }
+  } catch (e) {}
   return code
 }

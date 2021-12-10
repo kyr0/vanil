@@ -1,22 +1,20 @@
 ---
 import Header from "../components/Header.astro"
-
+import Footer from "../components/Footer.astro"
 import { props } from "vanil"
-
-const mainColor = '#eee'
-const brandPrimaryColor = '#f3e5ab'
-const brandSecondaryColor = '#101010'
-
+import { mainColor, brandPrimaryColor, brandSecondaryColor } from "../config/ci"
 ---
 <html>
-    <head>
+    <head> 
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <title>{ props.title || "VanilDocs" }</title>
 
-
         <link href="/bootstrap-custom.css" rel="stylesheet" />
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+                integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" 
+                crossorigin="anonymous"></script>
         
         <style lang="scss">    
             :root {
@@ -30,7 +28,7 @@ const brandSecondaryColor = '#101010'
             }
         </style>
 
-        <link href="./PageLayout.scss" rel="stylesheet"/>
+        <link href="./PageLayout.scss" rel="stylesheet" />
     </head>
     <body>
         <Header />
@@ -38,5 +36,7 @@ const brandSecondaryColor = '#101010'
         <div class="content">
             <slot />
         </div>
+
+        <Footer />
     </body>
 </html>

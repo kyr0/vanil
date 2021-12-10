@@ -13,7 +13,7 @@ export const renderSSGErrorReport = (relativePath: string, ssgError: ScriptExecu
     'scss',
     'import',
     context,
-  ).replace('__VANIL_LIVE_RELOAD_URL', `"${getLiveReloadUrl(context.config)}"`)
+  ).replace(/__VANIL_LIVE_RELOAD_URL/g, `"${getLiveReloadUrl(context.config)}"`)
 
   if (!ssgError.linesOfError) ssgError.linesOfError = []
 
@@ -25,11 +25,34 @@ export const renderSSGErrorReport = (relativePath: string, ssgError: ScriptExecu
             ${liveReloadRuntime}
         </script>
 
-        <script src="https://unpkg.com/panic-overlay"></script>
-
         <style>
+            .panic-overlay__modal h1 {
+                color: #f3e5ab !important;
+            }
+
+            .panic-overlay__error-type {
+                color: #fff !important;
+            }
+
+            .panic-overlay__error-message {
+                color: #999 !important;
+            }
+
+            .panic-overlay__line-hili {
+                background: transparent !important;
+                color: #f3e5ab !important;
+            }
+
+            .panic-overlay__close {
+                color: #fff !important;
+                opacity: 0.4 !important;
+            }
+
+             .panic-overlay__modal {
+                background-color: #000 !important;
+             }
              .panic-overlay__line-number {
-                display: none !important
+                display: none !important;
             }
         </style>
 
@@ -39,11 +62,11 @@ export const renderSSGErrorReport = (relativePath: string, ssgError: ScriptExecu
 
 \`
 
-${relativePath}:
+${relativePath} (or an included .astro component):
 ${ssgError.linesOfError.join('\n')}
 \`
 throw new ${ssgError.errorType}(\`${ssgError.errorMessage.trim()}\`)
-// This error happened in Node.js (SSG) - *not* in the browser!
+// this happened in Node.js while rendering server-side!
 //
 
 

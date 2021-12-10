@@ -4,8 +4,12 @@ body {
   font: 1rem/1.5 var(--bs-font-sans-serif);
 }
 
+.brand-primary-text-color {
+  color: var(--bs-primary);
+}
+
 a {
-  color: var(--bs-primary-color);
+  color: var(--bs-primary);
 }
 
 .content {

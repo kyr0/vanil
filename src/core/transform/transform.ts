@@ -5,10 +5,10 @@ import { transpileTemplate } from './transpile'
 import { materializeDOM } from './dom'
 import { persistVanilPage } from './persist'
 import { optimize } from '../optimize/optimize'
-import { run } from './vm'
+import { run, ScriptExecutionError } from './vm'
 import { renderSSGErrorReport } from '../error/report'
 import { Context } from '../../@types/context'
-import { toProjectRootRelativePath } from '../io/folders'
+import { isAstroPageTemplate, toProjectRootRelativePath } from '../io/folders'
 
 /** does only parse, transpile, run a single .astro template without post-processing */
 export const transformTemplate = (templatePath: string, context: Context) => {
@@ -16,9 +16,22 @@ export const transformTemplate = (templatePath: string, context: Context) => {
   return transpileTemplate(codeBundle, context)
 }
 
+const renderError = (context: Context, error: ScriptExecutionError) => {
+  const html = renderSSGErrorReport(toProjectRootRelativePath(context.path!, context.config), error, context)
+
+  if (!isAstroPageTemplate(context.path!, context.config)) {
+    // we're facing an error inside of a .astro component
+    // but we must save the compilation result back to the
+    // hosting .astro page template file (materialized)
+    context.path! = context.astroPageTemplatePath!
+  }
+  return optimize(html, context)
+}
+
 /** transforms a single .astro template file */
 export const transformSingle = async (context: Context) => {
   let html
+  let result
   try {
     // change to file directory so that
     // SSG imports are relative to the .astro
@@ -29,12 +42,13 @@ export const transformSingle = async (context: Context) => {
     const transformedTemplateCode = transformTemplate(context.path!, context)
     const timeTransformFinish = Date.now()
 
-    const result = await run(transformedTemplateCode, context)
+    result = await run(transformedTemplateCode, context)
 
     if (result.error) {
-      console.error('[E] SSG Node.js execution error', result.error.original)
-      return renderSSGErrorReport(toProjectRootRelativePath(context.path!, context.config), result.error, context)
+      console.error('ERROR: SSG Node.js execution error', result.error.original)
+      return renderError(context, result.error)
     }
+
     const timeExecutionFinish = Date.now()
 
     html = await materializeDOM(result, context)
@@ -52,22 +66,24 @@ export const transformSingle = async (context: Context) => {
       colors.dim('(render)'),
     )
   } catch (e) {
-    console.error(colors.red('ERROR: Transfrom, run or render failed!'), e)
-
-    html = renderSSGErrorReport(
-      toProjectRootRelativePath(context.path!, context.config),
-      {
-        errorType: (e as Error).name,
-        errorMessage: (e as Error).message.split('\n')[0],
-      },
-      context,
+    console.error(
+      colors.red('ERROR: Transfrom, run or render failed!'),
+      result && result.error ? result.error.original : e,
     )
+    return renderError(context, {
+      errorType: (e as Error).name,
+      errorMessage: (e as Error).message.split('\n')[0],
+    })
   }
   return optimize(html, context)
 }
 
-export const transformAndPersistSingle = async (context: Context) =>
-  persistVanilPage(context, await transformSingle(context))
+export const transformAndPersistSingle = async (context: Context) => {
+  // (re)set .astro page template path
+  context.astroPageTemplatePath = context.path
+
+  return persistVanilPage(context, await transformSingle(context))
+}
 
 /**
  * support for HTML comment syntax in TSX input:

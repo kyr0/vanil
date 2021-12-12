@@ -30,6 +30,10 @@ export const resolveNodeAbsolute = (context: Context, importPath: string) =>
 export const resolveNodeImport = (importPath: string, context: Context) => {
   const moduleResolved = resolveNodeAbsolute(context, importPath)
 
+  if (importPath.endsWith('DocPageLayout.astro')) {
+    console.log('resolveNodeImport', importPath, context.path)
+  }
+
   if (moduleResolved) {
     return resolve(dirname(context.path!), moduleResolved)
   }

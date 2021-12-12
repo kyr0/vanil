@@ -166,56 +166,60 @@ export const getRuntimeLibraryFeatureActivationMap = (code: string, mode: Mode):
 
 /** processes all require(...) statements and inflates, transpiles, bundles its code recursively */
 export const bundleRequires = (code: string, path: string = '.', context: Context) => {
-  const resultCode = processRequireFunctionCalls(code, (importPath: string) => {
-    if (importPath === 'vanil') {
-      return `Vanil`
-    }
-
-    const nodeResolvedPath = resolveNodeAbsolute(context, importPath)
-
-    // like http://... or //foo or /foo.ts
-    // (in terms of fetch from HTTP endpoint because the file doesn't exist on disk)
-    if (isRemoteImportTarget(importPath)) {
-      return `await import("${importPath}")`
-    } else {
-      // like /foo/bar.ts
-      if (isAbsoluteFileImportTarget(importPath)) {
-        importPath = materializePathSelectFile(importPath)
-      } else if (nodeResolvedPath) {
-        const relativeDistModuleImportPath = resolveNodeAbsolute(context, importPath).split('node_modules')[1]
-        const moduleBaseName = importPath.split('/')[0]
-
-        const absoluteImportPath = join(getDistFolder(context.config), 'node_modules', relativeDistModuleImportPath)
-
-        if (!existsSync(absoluteImportPath)) {
-          copyModuleToDistAndBundleForBrowser(context, moduleBaseName, absoluteImportPath)
-        }
-
-        return `eval(\`module={};(() => {\${await (await fetch("/node_modules${relativeDistModuleImportPath}.bundle.js")).text()}})();module.exports\`)`
-      } else if (isRelativeSrcTarget(importPath)) {
-        // like ../foo or ./foo
-        importPath = resolveImportForRuntimeInteractiveCode(importPath, path)
-
-        if (!existsSync(importPath)) {
-          // try resolving with file extension
-          importPath = resolve(path, `${importPath}.js`)
-        }
-      } else {
-        return `((() => { throw new Error("Error: '${importPath}' cannot be imported!")})())`
+  const resultCode = processRequireFunctionCalls(
+    code,
+    (importPath: string) => {
+      if (importPath === 'vanil') {
+        return `Vanil`
       }
-    }
 
-    if (importPath.startsWith('..')) {
-      importPath = resolve(process.cwd(), importPath)
-    }
+      const nodeResolvedPath = resolveNodeAbsolute(context, importPath)
 
-    // add dependencies for change detection
-    addFileDependency(importPath, context)
+      // like http://... or //foo or /foo.ts
+      // (in terms of fetch from HTTP endpoint because the file doesn't exist on disk)
+      if (isRemoteImportTarget(importPath)) {
+        return `await import("${importPath}")`
+      } else {
+        // like /foo/bar.ts
+        if (isAbsoluteFileImportTarget(importPath)) {
+          importPath = materializePathSelectFile(importPath)
+        } else if (nodeResolvedPath) {
+          const relativeDistModuleImportPath = resolveNodeAbsolute(context, importPath).split('node_modules')[1]
+          const moduleBaseName = importPath.split('/')[0]
 
-    // using loadAndTranspileCode we run this process recursively (ergo: general purpose bundle processing)
-    // returning the exports at the end of the iife allows ideomatic direct code injection
-    return wrapInIIFE(`${loadAndTranspileCode(importPath, 'js', 'tsx', 'import', context)}`)
-  })
+          const absoluteImportPath = join(getDistFolder(context.config), 'node_modules', relativeDistModuleImportPath)
+
+          if (!existsSync(absoluteImportPath)) {
+            copyModuleToDistAndBundleForBrowser(context, moduleBaseName, absoluteImportPath)
+          }
+
+          return `eval(\`module={};(() => {\${await (await fetch("/node_modules${relativeDistModuleImportPath}.bundle.js")).text()}})();module.exports\`)`
+        } else if (isRelativeSrcTarget(importPath)) {
+          // like ../foo or ./foo
+          importPath = resolveImportForRuntimeInteractiveCode(importPath, path)
+
+          if (!existsSync(importPath)) {
+            // try resolving with file extension
+            importPath = resolve(path, `${importPath}.js`)
+          }
+        } else {
+          return `((() => { throw new Error("Error: '${importPath}' cannot be imported!")})())`
+        }
+      }
+
+      if (importPath.startsWith('..')) {
+        importPath = resolve(process.cwd(), importPath)
+      }
+
+      // add dependencies for change detection
+      addFileDependency(importPath, context)
+
+      // using loadAndTranspileCode we run this process recursively (ergo: general purpose bundle processing)
+      // returning the exports at the end of the iife allows ideomatic direct code injection
+      return wrapInIIFE(`${loadAndTranspileCode(importPath, 'js', 'tsx', 'import', context)}`)
+    },
+    context,
+  )
 
   return (
     resultCode

@@ -20,9 +20,6 @@
     "dist": "../../docs",
     "devOptions": {
       "useOptimizer": true
-    },
-    "buildOptions": {
-      "pageUrlFormat": "file"
     }
   },
   "dependencies": {

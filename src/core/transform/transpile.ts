@@ -5,6 +5,7 @@ import {
   processScriptTags,
   processStyleTags,
   splitTopLevelImports,
+  RE_REQUIRE_STMT_FN,
 } from './parse'
 import ts from 'typescript'
 import { transformImportPaths } from './typescript/rewritepath'
@@ -91,12 +92,14 @@ export const transpileTemplate = (codeBundle: CodeBundle, context: Context): str
         // (code is evaluated in runtime scope of vanil later)
         before: [
           transformImportPaths({
-            rewrite: (importPath) => resolveNodeImport(importPath, context),
+            rewrite: (importPath: string) => resolveNodeImport(importPath, context),
           }),
         ],
       },
     })
     .outputText.replace(TS_IMPORT_POLYFILL_SCRIPT, '')
+
+  // TODO: issue: seems to not transpile all inlined code
 
   // make sure SSG code can import .astro component templates
   transpiledCode = inlineTranspileImportedVanilComponents(transpiledCode, context)
@@ -115,6 +118,10 @@ const transpileInlineVanilComponent = (importPath: string, context: Context) => 
     // make sure the .astro page template will HMR when this .astro
     // component dependency changes
     addFileDependency(importPath, context)
+
+    if (context.path?.endsWith('DocPageLayout.astro')) {
+      console.log('transpileInlineVanilComponent', importPath, context.path)
+    }
 
     // .astro template page path
     const _contextPath = context.path
@@ -172,34 +179,44 @@ export const inlineTranspileImportedVanilComponents = (transpiledCode: string, c
   // only do .astro component require("**/*.astro") code rewrites
   // when the code contains such requires
 
-  if (RE_CONTAINS_REQUIRE_STMT_FOR_ASTRO_COMPONENT.test(transpiledCode)) {
-    transpiledCode = processRequireFunctionCalls(transpiledCode, (importPath: string) => {
-      const astroComponentInlineCode = transpileInlineVanilComponent(importPath, context)
+  if (context.path?.endsWith('docs/index.astro')) {
+    const buildFile = `${context.path!}.build.js`
 
-      if (astroComponentInlineCode) {
-        return astroComponentInlineCode
-      }
-      addFileDependency(importPath, context)
-      return `require("${importPath}")`
-    })
-  } else {
-    // imports in .astro components
-    transpiledCode = processRequireFunctionCalls(transpiledCode, (importPath: string) => {
-      const astroComponentInlineCode = transpileInlineVanilComponent(importPath, context)
-
-      if (astroComponentInlineCode) {
-        return astroComponentInlineCode
-      }
-
-      if (isRelativePathImport(importPath)) {
-        // resolve relative to the .astro component, not relative to the importing .astro page template
-        importPath = resolve(dirname(context.path!), importPath)
-      }
-      addFileDependency(importPath, context)
-      return `require("${importPath}")`
-    })
+    console.log('in inlineTranspileImportedVanilComponents!!')
   }
-  return transpiledCode
+
+  const newCode = processRequireFunctionCalls(
+    transpiledCode,
+    (importPath: string) => {
+      const astroComponentInlineCode = transpileInlineVanilComponent(importPath, context)
+
+      if (context.path?.endsWith('docs/index.astro')) {
+        console.log('replace ', importPath, 'by', astroComponentInlineCode?.length)
+      }
+
+      addFileDependency(importPath, context)
+
+      if (astroComponentInlineCode) {
+        return astroComponentInlineCode
+      }
+      return `require("${importPath}")`
+    },
+    context,
+    '.astro',
+  )
+
+  if (context.path?.endsWith('docs/index.astro')) {
+    console.log(
+      'after inlineTranspileImportedVanilComponents!!',
+      transpiledCode,
+      context.path,
+      RE_CONTAINS_REQUIRE_STMT_FOR_ASTRO_COMPONENT.test(transpiledCode),
+    )
+  }
+
+  // RE_CONTAINS_REQUIRE_STMT_FOR_ASTRO_COMPONENT.test(transpiledCode)
+
+  return newCode
 }
 
 /** transpiles SSG code in general */
@@ -246,6 +263,10 @@ export const transpileRuntimeInteractiveScriptCode = (
   injectionIntent: InjectionIntent = 'import',
   context: Context,
 ): string => {
+  if (context.path?.endsWith('DocPageLayout.astro')) {
+    console.log('transpileRuntimeInteractiveScriptCode', context.path)
+  }
+
   let code = scriptCode
   let transpiledCode = getFromCache(scriptCode, context)
 

@@ -1,0 +1,23 @@
+---
+import { props, Debug } from "vanil"
+
+import PageLayout from "../../layouts/PageLayout.astro"
+
+import DocPageLayout from "../../layouts/DocPageLayout.astro"
+
+---
+<PageLayout>
+
+  <DocPageLayout title="Welcome" sectionHead="Some nice intro text">
+    <ul slot="toc">
+      <li>test toc</li>
+    </ul>
+    <ul slot="toc-page">
+      <li>test toc</li>
+    </ul>
+    <div>
+      Main content test
+    </div>
+  </DocPageLayout>
+
+</PageLayout>

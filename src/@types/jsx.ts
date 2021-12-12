@@ -672,6 +672,7 @@ declare global {
       onTransitionEndCapture?: TransitionEventHandler
     }
 
+    // TODO: add | string to any prop type
     export interface HTMLAttributesLowerCase {
       // Standard HTML Attributes
       accept?: string
@@ -780,8 +781,8 @@ declare global {
       size?: number
       sizes?: string
       slot?: string
-      span?: number
-      spellcheck?: boolean
+      span?: number | string
+      spellcheck?: boolean | string
       src?: string
       srcset?: string
       srcdoc?: string

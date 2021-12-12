@@ -1,24 +1,26 @@
 ---
 import PageLayout from "../../../layouts/PageLayout.astro"
 
-import { props } from "vanil"
+import { props, Debug } from "vanil"
 
 export const getStaticPaths = async() => {
 
     return [{
         params: {
-            section: 'getting-started',
-            page: 'welcome'
+            section: 'guides',
+            page: 'getting-started'
         },
         props: {
-            section: 'Getting Started',
-            page: 'Welcome'
+            section: 'guides',
+            page: 'getting-started'
         }
     }]
 }
 ---
 <PageLayout>
 
+    <Debug {{ props }} />
+    
     
 
 </PageLayout>

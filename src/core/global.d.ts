@@ -22,7 +22,7 @@ export declare global {
   ) => string
   var getScriptHoisted: (src: string, type: ResultLanguageType, lang: SourceLanguageType, context: Context) => string
   var getStaticPaths: () => Promise<Array<any>>
-  var fetch: (input: RequestInfo, init?: RequestInit | undefined) => Promise<Response>
+  var fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   var vanilFetchContent: (targetPath: string, context: Context) => Array<any>
   var vanilResolve: (targetPath: string, context: Context) => string
   var paginate: (data: Array<any>, paginationParams: PaginationParams) => Array<any>

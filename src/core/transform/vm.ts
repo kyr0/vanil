@@ -13,6 +13,8 @@ import { getPagesFolder } from '../io/folders'
 import { getPageUrl } from './routing'
 import { preprocessVanilComponentPropsAndSlots } from './runtime'
 import { SSGRuntime } from '../../@types/runtime'
+import { addFeatureFlags } from './context'
+import { detectRuntimeLibraryFeatures } from './bundle'
 
 // === END IMPORTS NEEDED FOR RUNTIME EVALUATION ===
 
@@ -78,16 +80,7 @@ export const run = async <D, S>(scriptCode: string, context: Context): Promise<E
       context: context, // passing the compilation context for cross-stage transforms
       React: {}, // provided for <fragment> <> support
 
-      importVanilComponent: (props: any) => {
-        // maps the Vanil.props and Vanil.slots data for later tsx() tree construction
-        preprocessVanilComponentPropsAndSlots(props, Vanil)
-
-        // for time of execution, switch context.path to the component path
-        //Vanil.props!.context.path = componentPath
-
-        // it's an .astro component, not an .astro page
-        //Vanil.isPage = false
-      },
+      importVanilComponent: (props: any) => preprocessVanilComponentPropsAndSlots(props, Vanil),
       // Vanil.fetchContent() and Vanil.resolve() with path-relative support
       Vanil,
       // general TSX/JSX processing function with hoisting support
@@ -95,11 +88,18 @@ export const run = async <D, S>(scriptCode: string, context: Context): Promise<E
         globalThis._tsx(type, attributes, context, Vanil, ...children),
     })
 
+    const dt = Date.now()
+
     data = await script.runInContext(runContext, {
       lineOffset: 0,
       displayErrors: true,
     })
-  } catch (e) {
+
+    // TODO: detect features everywhere
+    addFeatureFlags(detectRuntimeLibraryFeatures(data, context.mode), context)
+
+    console.log('vm elapsed', context.path, Date.now() - dt)
+  } catch (e: any) {
     const errorStackTraceSplits = (e as Error).stack?.split('\n')
     const linesOfError = [errorStackTraceSplits![1], errorStackTraceSplits![2]]
 

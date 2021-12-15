@@ -313,134 +313,53 @@ export const processRequireFunctionCalls = (
   context: Context,
   filterForFileEnding?: string,
 ) => {
-  if (filterForFileEnding === '.astro') {
-    const matchCount = code.match(RE_REQUIRE_STMT_FN)?.length
-    if (!matchCount) return code
-
-    if (context.path?.endsWith('docs/index.astro')) {
-      let match
-
-      while ((match = RE_REQUIRE_STMT_FN.exec(code))) {
-        // mark ( after "require"
-        const afterRequireIndex = match.index + match[0].length - 1
-        let endRequireIndex = -1
-        let blocks = 0
-
-        // seek last closing )
-        for (let i = afterRequireIndex; i < code.length; i++) {
-          const c = code[i].charCodeAt(0)
-
-          if (c == CHAR_PARANTHESES_OPEN) blocks++
-          if (c == CHAR_PARANTHESES_CLOSE) blocks--
-
-          // found it
-          if (blocks === 0) {
-            endRequireIndex = i
-            break
-          }
-        }
-
-        const requiredPath = code
-          .substring(
-            // excluding the opening (
-            afterRequireIndex + 1,
-            endRequireIndex,
-          )
-          .replace(RE_REQUIRE_ALLOWED_QUOTES, '')
-
-        if (filterForFileEnding && !requiredPath.endsWith(filterForFileEnding)) {
-          continue
-        }
-
-        const replacementCode = processFn(requiredPath)
-        const codeStatementToReplace = code.substring(match.index, endRequireIndex + 1)
-        code = code.replace(codeStatementToReplace, replacementCode)
-
-        console.log('replacementCode', codeStatementToReplace, replacementCode.length)
-        // end recursion; handle self-referencing imports
-      }
-
-      RE_REQUIRE_STMT_FN.lastIndex = 0 // reset
-
-      console.log('')
-      console.log('')
-      console.log('')
-      console.log('')
-      console.log('')
-      console.log('')
-      console.log('foo')
-      return code
-    }
-
-    // TODO: 1st materialize matchers:
-    //       - search for .astro requires in input code
-    //       - materialize matchers
-    //       - replace exactly the matches with processFn output
-    //
-  }
-
   const matchCount = code.match(RE_REQUIRE_STMT_FN)?.length
-
-  if (context.path?.endsWith('docs/index.astro')) {
-    console.log('processRequireFunctionCalls matchCount', matchCount)
-  }
   if (!matchCount) return code
 
-  // TODO: doesn't catch all require() statements
-  const processRequireFunctionCall = (code: string): string => {
-    let match
-    if ((match = RE_REQUIRE_STMT_FN.exec(code))) {
-      if (context.path?.endsWith('docs/index.astro')) {
-        console.log('processRequireFunctionCalls match', !match || !match[0] || !match.index)
-      }
+  let match
+  let count = 0
 
-      if (!match || !match[0] || !match.index) return code
+  while ((match = RE_REQUIRE_STMT_FN.exec(code))) {
+    if (count === matchCount) break
 
-      // mark ( after "require"
-      const afterRequireIndex = match.index + match[0].length - 1
-      let endRequireIndex = -1
-      let blocks = 0
+    // mark ( after "require"
+    const afterRequireIndex = match.index + match[0].length - 1
+    let endRequireIndex = -1
+    let blocks = 0
 
-      // seek last closing )
-      for (let i = afterRequireIndex; i < code.length; i++) {
-        const c = code[i].charCodeAt(0)
+    // seek last closing )
+    for (let i = afterRequireIndex; i < code.length; i++) {
+      const c = code[i].charCodeAt(0)
 
-        if (c == CHAR_PARANTHESES_OPEN) blocks++
-        if (c == CHAR_PARANTHESES_CLOSE) blocks--
+      if (c == CHAR_PARANTHESES_OPEN) blocks++
+      if (c == CHAR_PARANTHESES_CLOSE) blocks--
 
-        // found it
-        if (blocks === 0) {
-          endRequireIndex = i
-          break
-        }
-      }
-
-      const requiredPath = code
-        .substring(
-          // excluding the opening (
-          afterRequireIndex + 1,
-          endRequireIndex,
-        )
-        .replace(RE_REQUIRE_ALLOWED_QUOTES, '')
-
-      if (filterForFileEnding && !requiredPath.endsWith(filterForFileEnding)) {
-        return code
-      }
-
-      const replacementCode = processFn(requiredPath)
-
-      const codeStatementToReplace = code.substring(match.index, endRequireIndex + 1)
-      code = code.replace(codeStatementToReplace, replacementCode)
-
-      //console.log('replacementCode', codeStatementToReplace, replacementCode)
-      // end recursion; handle self-referencing imports
-      if (codeStatementToReplace !== replacementCode) {
-        return processRequireFunctionCall(code)
+      // found it
+      if (blocks === 0) {
+        endRequireIndex = i
+        break
       }
     }
-    return code
+
+    const requiredPath = code
+      .substring(
+        // excluding the opening (
+        afterRequireIndex + 1,
+        endRequireIndex,
+      )
+      .replace(RE_REQUIRE_ALLOWED_QUOTES, '')
+
+    if (filterForFileEnding && !requiredPath.endsWith(filterForFileEnding)) {
+      continue
+    }
+
+    const replacementCode = processFn(requiredPath)
+    const codeStatementToReplace = code.substring(match.index, endRequireIndex + 1)
+    code = code.replace(codeStatementToReplace, replacementCode)
+    count++
   }
-  return processRequireFunctionCall(code)
+  RE_REQUIRE_STMT_FN.lastIndex = 0 // reset
+  return code
 }
 
 // === parse getStaticPaths function declarations

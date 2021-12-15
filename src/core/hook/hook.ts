@@ -8,6 +8,7 @@ import { genManifestJson } from './core/genManifestJson'
 import { genRobotsTxt } from './core/genRobotsTxt'
 import { genServiceWorker } from './core/genServiceWorker'
 import { genSitemapXml } from './core/genSitemapXml'
+import { copyPanicOverlayToDist } from './core/copyPanicOverlayToDist'
 
 /** each hook is called with stage-specific props (e.g. page hooks receive page props) and the context */
 export type HookFn = (context: Context, props?: any) => Promise<void>
@@ -70,6 +71,7 @@ export const loadProjectHooks = (context: Context) => {
 /** registers core hooks to execute standard functionality */
 export const loadCoreHooks = (context: Context) => {
   registerHook(context, 'onStart', copyPublicToDist)
+  registerHook(context, 'onStart', copyPanicOverlayToDist)
 
   registerHook(context, 'onFinish', genManifestJson)
   registerHook(context, 'onFinish', genRobotsTxt)

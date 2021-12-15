@@ -14,6 +14,7 @@ import { PageParamsAndProps } from './routing'
 import { Application } from 'express'
 import { ElementRefs } from './runtime/render'
 import { Paths } from './context/paths'
+import { FeatureFlagActivationMap } from './context/featureflags'
 
 export interface Context {
   /** holds the project config read (default, read from package.json and maybe overridden by CLI flags) */
@@ -83,4 +84,7 @@ export interface Context {
 
   /** materialized paths of the configuration (cache) */
   paths?: Paths
+
+  /** incrementally aggregated feature flag map */
+  runtimeLibraryFeatureFlags?: FeatureFlagActivationMap
 }

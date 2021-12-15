@@ -20,6 +20,7 @@ const fileChangeDebounceMs = 25
  */
 export const dev = async (config: Config) => {
   // start preview HTTP server
+  console.log('config', config.devOptions)
   const serverConfig = await preview(config, false)
 
   // create the /livereload endpoint via ws://

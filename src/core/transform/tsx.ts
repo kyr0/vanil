@@ -92,14 +92,16 @@ export const hoistRelativeLocalImportStyle = (type: any, attributes: any, contex
 
 const stripFragments = (node: IVirtualNode) => {
   const stripFragment = (currentNode: IVirtualNode) => {
-    if (!currentNode.children) return currentNode
+    if (!currentNode || !currentNode.children) return currentNode
 
     let children: Array<IVirtualNode> = []
     for (let i = 0; i < currentNode.children.length; i++) {
-      if (currentNode.children[i].type === 'fragment') {
-        children = [...children, ...(stripFragment(currentNode.children[i]).children || [])]
+      let child = currentNode.children[i]
+
+      if (child.type === 'fragment') {
+        children = [...children, ...(stripFragment(child).children || [])]
       } else {
-        children.push(stripFragment(currentNode.children[i]))
+        children.push(stripFragment(child))
       }
     }
     currentNode.children = children
@@ -107,6 +109,8 @@ const stripFragments = (node: IVirtualNode) => {
   }
   return stripFragment(node)
 }
+
+export const SLOT_DEFAULT_NAME = 'default'
 
 /**
  * tsx(React-like fn call structure) transform function
@@ -140,9 +144,14 @@ globalThis._tsx = (type: any, attributes: any, context: Context, Vanil: Partial<
     }
   }
 
-  // support for <slot>
-  if (type === 'slot' && Vanil.slots && (Vanil.slots[attributes.name] || Vanil.slots!['default'])) {
-    return stripFragments(Vanil.slots[attributes.name] || Vanil.slots['default']).children
+  // <slot /> becomes <slot name="default" />
+  if (type === 'slot' && !attributes.name) {
+    attributes.name = SLOT_DEFAULT_NAME
+  }
+
+  // support for named <slot name="???">
+  if (type === 'slot' && Vanil.slots && Vanil.slots[attributes.name]) {
+    return stripFragments(Vanil.slots[attributes.name]).children
   }
 
   // React fragment where type is { }

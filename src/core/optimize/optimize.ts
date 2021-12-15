@@ -1,6 +1,7 @@
 import { Context } from '../../@types/context'
 import * as colors from 'kleur/colors'
 import { prettify } from './development/prettify'
+import { panicOverlayFilename } from '../hook/core/copyPanicOverlayToDist'
 const { minify } = require('html-minifier-terser')
 
 /** takes HTML, parses it, and optimizes holistically */
@@ -11,7 +12,8 @@ export const optimize = async (html: string, context: Context) => {
   // run optimizations
   if (context.mode === 'development') {
     // add panic-overlay
-    html = '<script src="https://unpkg.com/panic-overlay"></script>' + html
+    html = `<script role="panic-overlay-devonly" src="/js/${panicOverlayFilename}"></script>${html}`
+    html = `<link role="panic-overlay-devonly" rel="stylesheet" href="/js/${panicOverlayFilename}.css" />${html}`
 
     if (context.config.devOptions!.useOptimizer) {
       // format HTML nicely

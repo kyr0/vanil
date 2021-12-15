@@ -19,23 +19,24 @@ import {
 import { mayWrapInAsyncIIFE, wrapInIIFE } from './transform'
 import { loadAndTranspileCode, transpileRuntimeInteractiveScriptCode, transpileTSX } from './transpile'
 import { Mode } from '../../@types/context/Mode'
+import { FeatureFlagActivationMap } from '../../@types/context/featureflags'
 
 /** returns the feature flags as an array of names */
-export const featureFlagsArray = (featureFlags: FeatureFlags) =>
+export const featureFlagsArray = (featureFlags: FeatureFlagActivationMap) =>
   Object.keys(featureFlags).filter((moduleName) => featureFlags[moduleName])
 
 /** generates a distinct name for a interactive runtime library variant */
-export const getInteractiveRuntimeVariantName = (featureFlags: FeatureFlags) =>
+export const getInteractiveRuntimeVariantName = (featureFlags: FeatureFlagActivationMap) =>
   `${featureFlagsArray(featureFlags)
     .map((featureFlagName) => featureFlagName[0])
     .join('')}`
 
 /** verifies if the runtime lib needs to be injected by checking if at least one of the flags are active */
-export const requiresInteractiveRuntimeLibrary = (featureFlags: FeatureFlags) =>
+export const requiresInteractiveRuntimeLibrary = (featureFlags: FeatureFlagActivationMap) =>
   oneOf(featureFlags, (flags: any, flagName: string) => flags[flagName])
 
 /** loads all parts of the interactive runtime library, concats them  */
-export const bundleInteractiveRuntimeLibrary = (context: Context, featureFlags: FeatureFlags) => {
+export const bundleInteractiveRuntimeLibrary = (context: Context, featureFlags: FeatureFlagActivationMap) => {
   let runtimeCode = requiresInteractiveRuntimeLibrary(featureFlags)
     ? '\n' + readFileSyncUtf8(resolve(__dirname, '../runtime/init.ts')) + '\n' + `Vanil.mode = '${context.mode}'`
     : ''
@@ -115,13 +116,28 @@ export const bundleInteractiveRuntimeLibrary = (context: Context, featureFlags: 
   )
 }
 
-export interface FeatureFlags {
-  [featureName: string]: boolean
+export const extractAllScriptCodeFromVdom = (node: IVirtualNode) => {
+  let code = ''
+  const walk = (currentNode: IVirtualNode) => {
+    if (!currentNode) return
+    if (currentNode.type === 'script') {
+      code += currentNode.children[0]
+      return
+    } else if (currentNode.children) {
+      for (let i = 0; i < currentNode.children.length; i++) {
+        walk(currentNode.children[i])
+      }
+    }
+  }
+  walk(node)
+  return code
 }
 
 /** runtime library feature detector based on actual generated code */
-export const getRuntimeLibraryFeatureActivationMap = (code: string, mode: Mode): FeatureFlags => {
+export const detectRuntimeLibraryFeatures = (node: IVirtualNode, mode: Mode): FeatureFlagActivationMap => {
   const isInDevMode = mode === 'development'
+
+  const code = extractAllScriptCodeFromVdom(node)
 
   const baseFeatureFlagsMap = {
     events:
@@ -129,8 +145,6 @@ export const getRuntimeLibraryFeatureActivationMap = (code: string, mode: Mode):
       /Vanil\.e\(/.test(code), // generated event hook
     query:
       /\$[\s]*?\(/.test(code) || // all variants of $('#query')
-      /ref: \"/.test(code) || // generated result of ref="$refName" usage
-      /refs[\s]*?\./.test(code) || // all variants of refs.$refName usage
       /\{[\s\S]*?refs[\s\S]*?\}[\s]*?=[\s]*?Vanil/.test(code), // all variants of { $ } = Vanil usage
     tsx:
       /Vanil\.tsx\(/.test(code) || // generated result of <tsx> syntax usage (fn)
@@ -235,12 +249,12 @@ export const bundleRequires = (code: string, path: string = '.', context: Contex
 }
 
 /** stringifies the state to be accessible via Vanil.state  */
-export const bundleRuntimeState = (runtimeState: any, context: Context, runtimeLibraryFeatureFlags: FeatureFlags) => {
+export const bundleRuntimeState = (runtimeState: any, context: Context) => {
   if (
     !runtimeState &&
-    !runtimeLibraryFeatureFlags.query &&
+    !context.runtimeLibraryFeatureFlags!.query &&
     !Object.keys(context.refs!).length &&
-    !runtimeLibraryFeatureFlags.i18n
+    !context.runtimeLibraryFeatureFlags!.i18n
   )
     return ''
 
@@ -254,7 +268,7 @@ export const bundleRuntimeState = (runtimeState: any, context: Context, runtimeL
 
         // set language used at SSG time by default at runtime
         ${
-          runtimeLibraryFeatureFlags.i18n
+          context.runtimeLibraryFeatureFlags!.i18n
             ? `
         Vanil.language = "${globalThis.Vanil.language}"
         Vanil.translations = ${JSON.stringify(globalThis.Vanil.translations, null, 2)}
@@ -271,7 +285,8 @@ export const bundleRuntimeState = (runtimeState: any, context: Context, runtimeL
             // proxy refs to make sure we'll always return $-wrapped elements
             Vanil.refs = new Proxy(Vanil._refs, {
                 get: function(target, prop, receiver) {
-                    return Vanil.$(Reflect.get(...arguments)).el
+                  const el = Reflect.get(...arguments)
+                    return typeof el === 'string' ? document.querySelector(el) : el
                 }
             });`
             : ''
@@ -289,11 +304,10 @@ export const injectInteractiveRuntimeLibrary = (
   document: Document,
   headElement: Element,
   context: Context,
-  runtimeLibraryFeatureFlags: FeatureFlags,
   runtimeState: any,
 ) => {
   if (document && headElement) {
-    const runtimeStateCode = bundleRuntimeState(runtimeState, context, runtimeLibraryFeatureFlags)
+    const runtimeStateCode = bundleRuntimeState(runtimeState, context)
 
     if (runtimeStateCode) {
       // hoist; available for interactive runtime as Vanil.state
@@ -306,11 +320,13 @@ export const injectInteractiveRuntimeLibrary = (
     }
 
     const featureFlags = {
-      ...runtimeLibraryFeatureFlags,
+      ...context.runtimeLibraryFeatureFlags,
       // determine if runtimeState is given;
       // in this case, initialization code must be added
       runtimeState: !!runtimeStateCode,
     }
+
+    console.log('featureFlags', featureFlags)
 
     const runtimeVariantName = getInteractiveRuntimeVariantName(featureFlags)
     const distDirPath = getDistFolder(context.config)

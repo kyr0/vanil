@@ -7,5 +7,6 @@ export const mixButtonHandler = (evt: MouseEvent) => {
     mixIt: Date.now(),
   })
 
+  console.log('refs.mixBtn2', refs.mixBtn2)
   $(refs.mixBtn2).update('Just wow!')
 }

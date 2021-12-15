@@ -82,7 +82,6 @@ Here are a few ideas on how it feels to work with Vanil:
 
 ## Near-term roadmap (till beta release)
 
-- add https://github.com/evanw/node-source-map-support
 - build docs website with Vanil; publish to netlify
 - build homepage website with Vanil; publish to vercel
 - publish examples to github pages
@@ -91,6 +90,9 @@ Here are a few ideas on how it feels to work with Vanil:
 
 ## Mid-term roadmap
 
+- perf: CLI: run it all using transpiled code, not with ts-node
+- perf: re-implement and activate cache layer
+- feat: add https://github.com/evanw/node-source-map-support
 - perf: use context.paths.\* instead of getter functions
 - feat: npm vanil init hook
 - refactor: rewrite import split parser (support multi-line dynamic / sync imports)

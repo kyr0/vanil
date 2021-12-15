@@ -137,7 +137,7 @@ props.setState({
 
             // make it Vanil.tsx and import from "vanil" package
             // so that we don't pollute the global scope
-            import { mixButtonHandler } from "../components/interactive/mixButton"
+            import { mixButtonHandler } from "../components/interactive/mixButton"
             const { fetchKittens } = await import('../isomorphic/fetchKittens')
 
             console.log('fetchKittens isomorphic', fetchKittens)
@@ -149,7 +149,7 @@ props.setState({
             
             const lala = 12345
 
-            console.log('mixBtn', refs.mixBtn)
+            console.log('mixBtn', refs.mixBtn, $(refs.mixBtn).el)
  
             on('mixClick', mixButtonHandler) 
 
@@ -188,7 +188,7 @@ props.setState({
         </script>
    
         <!-- of course you can add scripts for interavtivity -->
-        <button ref="mixBtn" style={{ color: 'red' }} onclick="mixClick">Mix!</button>
+        <button ref="mixBtn" style={{ color: 'red' }} onclick="mixClick">Mix!</button>
         
         <style lang="css">
             @import "module.css";

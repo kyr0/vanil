@@ -2,22 +2,19 @@
 import { props, Debug } from "vanil"
 
 import PageLayout from "../../layouts/PageLayout.astro"
-
 import DocPageLayout from "../../layouts/DocPageLayout.astro"
 
 ---
 <PageLayout>
-
   <DocPageLayout title="Welcome" sectionHead="Some nice intro text">
-    <ul slot="toc">
+    <ul slot="doc.page.toc">
       <li>test toc</li>
     </ul>
-    <ul slot="toc-page">
-      <li>test toc</li>
-    </ul>
-    <div>
-      Main content test
+    <div slot="doc.page.content">
+      <h1>Welcome!</h1>
     </div>
+    <ul slot="doc.page.toc.page">
+      <li>test toc-page</li>
+    </ul>
   </DocPageLayout>
-
 </PageLayout>

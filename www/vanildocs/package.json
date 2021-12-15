@@ -19,7 +19,7 @@
   "vanil": {
     "dist": "../../docs",
     "devOptions": {
-      "useOptimizer": true
+      "useOptimizer": false
     }
   },
   "dependencies": {

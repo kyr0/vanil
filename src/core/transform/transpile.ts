@@ -5,18 +5,16 @@ import {
   processScriptTags,
   processStyleTags,
   splitTopLevelImports,
-  RE_REQUIRE_STMT_FN,
 } from './parse'
 import ts from 'typescript'
 import { transformImportPaths } from './typescript/rewritepath'
-import { isRelativePathImport, resolveNodeImport } from './resolve'
-import { bundleRequires } from './bundle'
+import { resolveNodeImport } from './resolve'
+import { bundleRequires, detectRuntimeLibraryFeatures } from './bundle'
 import { readFileSyncUtf8 } from '../io/file'
 import { mayDeclareExports, mayWrapInAsyncIIFE, transformTemplate, transformVanilImports } from './transform'
-import { addFileDependency } from './context'
+import { addFeatureFlags, addFileDependency } from './context'
 import { Context } from '../../@types/context'
 import { addToCache, getFromCache } from './cache'
-import { dirname, resolve } from 'path'
 const postcss = require('postcss')
 
 export type ResultLanguageType = 'js' | 'css'
@@ -24,7 +22,6 @@ export type SourceLanguageType = 'tsx' | 'scss'
 export type InjectionIntent = 'import' | 'hoist'
 
 const RE_TS_EXPORTS_COMMONJS_INIT = /exports\.[\s\S]*?void 0;\n/
-const RE_CONTAINS_REQUIRE_STMT_FOR_ASTRO_COMPONENT = /require[\S]*?\([\S]*?\.astro"/
 const RE_HAS_ASYNC_CODE = /await[\S]*/
 
 export const TS_IMPORT_POLYFILL_SCRIPT = `"use strict";
@@ -99,10 +96,16 @@ export const transpileTemplate = (codeBundle: CodeBundle, context: Context): str
     })
     .outputText.replace(TS_IMPORT_POLYFILL_SCRIPT, '')
 
-  // TODO: issue: seems to not transpile all inlined code
+  const dt = Date.now()
 
   // make sure SSG code can import .astro component templates
   transpiledCode = inlineTranspileImportedVanilComponents(transpiledCode, context)
+
+  if (transpiledCode.includes('import PageLayout')) {
+    console.log('transpiledCode', transpiledCode)
+  }
+
+  console.log('elapsed', context.path, Date.now() - dt)
 
   // top-level import statements come first
   // async immediately invoked function execution follows (a-iife)
@@ -114,110 +117,74 @@ export const transpileTemplate = (codeBundle: CodeBundle, context: Context): str
 }
 
 const transpileInlineVanilComponent = (importPath: string, context: Context) => {
-  if (importPath.endsWith('.astro')) {
-    // make sure the .astro page template will HMR when this .astro
-    // component dependency changes
-    addFileDependency(importPath, context)
+  // make sure the .astro page template will HMR when this .astro
+  // component dependency changes
+  addFileDependency(importPath, context)
 
-    if (context.path?.endsWith('DocPageLayout.astro')) {
-      console.log('transpileInlineVanilComponent', importPath, context.path)
-    }
+  // .astro template page path
+  const _contextPath = context.path
 
-    // .astro template page path
-    const _contextPath = context.path
+  // for component transpilation change path to component path
+  context.path = importPath
+  context.isProcessingComponent = true
 
-    // for component transpilation change path to component path
-    context.path = importPath
-    context.isProcessingComponent = true
+  // stash/reset style replacements as they shouldn't affect relative .astro components
+  const _styleReplacements = context.styleReplacements!
+  context.styleReplacements = []
 
-    // stash/reset style replacements as they shouldn't affect relative .astro components
-    const _styleReplacements = context.styleReplacements!
-    context.styleReplacements = []
+  const transformedComponentCode = transformTemplate(importPath, context)
 
-    const transformedComponentCode = transformTemplate(importPath, context)
+  // reply style replacements and merge with potential new ones
+  context.styleReplacements = [...context.styleReplacements, ..._styleReplacements]
 
-    // reply style replacements and merge with potential new ones
-    context.styleReplacements = [...context.styleReplacements, ..._styleReplacements]
+  // reset to .astro template page path
+  context.isProcessingComponent = false
+  context.path = _contextPath
 
-    // reset to .astro template page path
-    context.isProcessingComponent = false
-    context.path = _contextPath
+  // assigning the original local name here (too)
+  // as this is a multi-step, isolated transpile without shared
+  // name cache, locally declared names diverge
+  return `{ default: (fn = function() {
+    const _origVanilProps = { ...Vanil.props }
+    const _origIsPage = Vanil.isPage
+    const _contextPath = Vanil.props.context.path
 
-    // assigning the original local name here (too)
-    // as this is a multi-step, isolated transpile without shared
-    // name cache, locally declared names diverge
-    const componentCode = `{ default: (function() {
-          
-          const _origVanilProps = { ...Vanil.props }
-          const _origIsPage = Vanil.isPage
-          const _contextPath = Vanil.props.context.path
+    Vanil.props.context.path = '${importPath}'
+    Vanil.isPage = false
 
-          Vanil.props.context.path = '${importPath}'
-          Vanil.isPage = false
+    importVanilComponent(arguments[0])
 
-          importVanilComponent(arguments[0])
+    ${transformedComponentCode}\n
 
-          ${transformedComponentCode}\n
+    const vdom = exports.default.apply(this, arguments)
 
-          const vdom = exports.default.apply(this, arguments)
+    // restore Vanil.props to not leak/accumulate/override
+    // them in outer scope
+    Vanil.props.context.path = _contextPath
+    Vanil.props = _origVanilProps
+    Vanil.isPage = _origIsPage
 
-          // restore Vanil.props to not leak/accumulate/override
-          // them in outer scope
-          Vanil.props.context.path = _contextPath
-          Vanil.props = _origVanilProps
-          Vanil.isPage = _origIsPage
-
-          return vdom
-        })}`
-
-    return componentCode
-  }
+    return vdom
+  })}`
 }
 
 /** inlines code of require() calls towards .astro component template files */
-export const inlineTranspileImportedVanilComponents = (transpiledCode: string, context: Context) => {
-  // only do .astro component require("**/*.astro") code rewrites
-  // when the code contains such requires
-
-  if (context.path?.endsWith('docs/index.astro')) {
-    const buildFile = `${context.path!}.build.js`
-
-    console.log('in inlineTranspileImportedVanilComponents!!')
-  }
-
-  const newCode = processRequireFunctionCalls(
+export const inlineTranspileImportedVanilComponents = (transpiledCode: string, context: Context) =>
+  processRequireFunctionCalls(
     transpiledCode,
     (importPath: string) => {
-      const astroComponentInlineCode = transpileInlineVanilComponent(importPath, context)
+      const cachedCode = getFromCache(importPath, context)
+      if (cachedCode) return cachedCode
 
-      if (context.path?.endsWith('docs/index.astro')) {
-        console.log('replace ', importPath, 'by', astroComponentInlineCode?.length)
-      }
+      const astroComponentInlineCode = transpileInlineVanilComponent(importPath, context)
 
       addFileDependency(importPath, context)
 
-      if (astroComponentInlineCode) {
-        return astroComponentInlineCode
-      }
-      return `require("${importPath}")`
+      return addToCache(importPath, astroComponentInlineCode, context)
     },
     context,
     '.astro',
   )
-
-  if (context.path?.endsWith('docs/index.astro')) {
-    console.log(
-      'after inlineTranspileImportedVanilComponents!!',
-      transpiledCode,
-      context.path,
-      RE_CONTAINS_REQUIRE_STMT_FOR_ASTRO_COMPONENT.test(transpiledCode),
-    )
-  }
-
-  // RE_CONTAINS_REQUIRE_STMT_FOR_ASTRO_COMPONENT.test(transpiledCode)
-
-  return newCode
-}
 
 /** transpiles SSG code in general */
 export const transpileSSGCode = (scriptCode: string, context: Context) => {
@@ -243,9 +210,16 @@ export const transpileSSGCode = (scriptCode: string, context: Context) => {
     })
     .outputText.replace(TS_IMPORT_POLYFILL_SCRIPT, '')
 
+  const dt = Date.now()
+
   // make sure SSG code can import .astro component templates
   transpiledCode = inlineTranspileImportedVanilComponents(transpiledCode, context)
 
+  if (transpiledCode.includes('import PageLayout')) {
+    console.log('transpiledCode', transpiledCode)
+  }
+
+  console.log('elapsed', context.path, Date.now() - dt)
   // top-level import statements come first
   // async immediately invoked function execution follows (a-iife)
   // providing a local Vanil argument including all config properties
@@ -263,10 +237,6 @@ export const transpileRuntimeInteractiveScriptCode = (
   injectionIntent: InjectionIntent = 'import',
   context: Context,
 ): string => {
-  if (context.path?.endsWith('DocPageLayout.astro')) {
-    console.log('transpileRuntimeInteractiveScriptCode', context.path)
-  }
-
   let code = scriptCode
   let transpiledCode = getFromCache(scriptCode, context)
 
@@ -337,12 +307,12 @@ export const transpileStyleCode = (styleCode: string, attributes: any, context: 
 
 /** style code that has been marked for post-processing is replaced here */
 export const replaceStyleReplacements = (htmlCode: string, context: Context) => {
-  context.styleReplacements?.forEach((styleReplacement) => {
+  for (let i = 0; i < context.styleReplacements!.length; i++) {
     htmlCode = htmlCode.replace(
-      styleReplacement.original,
-      transpileStyleCode(styleReplacement.replacement, styleReplacement.attributes, context),
+      context.styleReplacements![i].original,
+      transpileStyleCode(context.styleReplacements![i].replacement, context.styleReplacements![i].attributes, context),
     )
-  })
+  }
   return htmlCode
 }
 

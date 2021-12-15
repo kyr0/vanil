@@ -42,12 +42,13 @@ export const getDefaultConfig = (): Config => ({
 })
 
 export const finalizeConfig = (config: Config) => {
+  const protocolAndHostname = `${config.devOptions?.useTls ? 'https' : 'http'}://${config.devOptions?.hostname}`
   if (!config.buildOptions!.site) {
-    config.buildOptions!.site = `${config.devOptions?.useTls ? 'https' : 'http'}://${config.devOptions?.hostname}`
+    config.buildOptions!.site = protocolAndHostname
   }
 
   if (config.devOptions!.port !== 80 && config.devOptions?.port !== 443) {
-    config.buildOptions!.site += `:${config.devOptions?.port}`
+    config.buildOptions!.site = `${protocolAndHostname}:${config.devOptions?.port}`
   }
 
   if (!config.devOptions?.tlsOptions) {

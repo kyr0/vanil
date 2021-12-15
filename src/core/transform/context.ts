@@ -4,6 +4,8 @@ import { getDefaultHookConfig } from '../config/hook'
 import { getDefaultLoaderMap } from '../config/loader'
 import { Context } from '../../@types/context'
 import { getDistFolder, getHooksFolder, getPagesFolder, getProjectRootFolder, getPublicFolder } from '../io/folders'
+import { FeatureFlagActivationMap } from '../../@types/context/featureflags'
+import { featureFlagsArray } from './bundle'
 
 /** fills in emptiness such as initializing optional properties */
 export const validateContext = (context: Context) => {
@@ -71,6 +73,11 @@ export const validateContext = (context: Context) => {
     hooks: getHooksFolder(context.config),
     pages: getPagesFolder(context.config),
   }
+
+  if (!context.runtimeLibraryFeatureFlags) {
+    context.runtimeLibraryFeatureFlags = {}
+  }
+
   return context
 }
 
@@ -107,4 +114,13 @@ export const addMaterializedHtmlFilePath = (materializedHtmlFilePath: string, co
     // that dyanmic routing .astro template page
     context.materializedHtmlFilePaths![context.path!].push(materializedHtmlFilePath)
   }
+}
+
+/** accumulate runtime feature flags */
+export const addFeatureFlags = (featureFlags: FeatureFlagActivationMap, context: Context) => {
+  featureFlagsArray(featureFlags).forEach((flag) => {
+    if (featureFlags[flag]) {
+      context.runtimeLibraryFeatureFlags![flag] = true
+    }
+  })
 }

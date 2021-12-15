@@ -12,7 +12,7 @@ const connect = () => {
 
         console.log('HMR location.pathname', location.pathname, 'vs', path)
 
-        if (location.pathname === '/' && (eventData.path === '/index.html' || eventData.path === '/index')) {
+        if (location.pathname.endsWith('/') && (eventData.path === '/index.html' || eventData.path === '/index')) {
           pathMatch = true
         }
 

@@ -1,6 +1,6 @@
 import { parseHTML } from 'linkedom'
 import { getAbstractDOM } from '../runtime/vdom'
-import { getRuntimeLibraryFeatureActivationMap, injectInteractiveRuntimeLibrary } from './bundle'
+import { detectRuntimeLibraryFeatures, injectInteractiveRuntimeLibrary } from './bundle'
 import { Context } from '../../@types/context'
 import { replaceStyleReplacements, uncapeCurlyBracketsAndBackticks } from './transpile'
 import { ExecutionResult } from './vm'
@@ -43,6 +43,7 @@ export const materializeDOM = async (executionResult: ExecutionResult<VDOMNode, 
   const virtualDOM = executionResult.data
   const { document } = parseHTML('')
 
+  const dt0 = Date.now()
   // create synthetic <html> top-level element
   const htmlElement = document.createElement('html')
   document.appendChild(htmlElement)
@@ -67,24 +68,21 @@ export const materializeDOM = async (executionResult: ExecutionResult<VDOMNode, 
   // which is to be replaced by the actualTopLevelElement
   document.querySelector('html')?.replaceWith(actualTopLevelElement as Node)
 
+  const dt1 = Date.now()
+
   // top-level element is an <html> element,
   // means we're dealing with a page, not a component
   if (actualTopLevelElement?.localName === 'html') {
-    // TODO: perf: target: extreme performance
-    // TODO: instead of hoisting, generate variants of .js runtime bundles,
-    //       store in ./dist, src ref them and also add to serviceWorker.js
-    //       onFinish
-
-    const runtimeLibraryFeatureFlags = getRuntimeLibraryFeatureActivationMap(JSON.stringify(virtualDOM), context.mode)
+    // TODO: perf: don't do this here; accumulate flags incrementally after each transpile
+    //const runtimeLibraryFeatureFlags = detectRuntimeLibraryFeatures(html, context.mode)
 
     // hoise top-level interactive runtime in pages
-    await injectInteractiveRuntimeLibrary(
-      document,
-      document.head,
-      context,
-      runtimeLibraryFeatureFlags,
-      executionResult.state,
-    )
+    await injectInteractiveRuntimeLibrary(document, document.head, context, executionResult.state)
   }
-  return replaceStyleReplacements(uncapeCurlyBracketsAndBackticks(document.toString()), context)
+
+  console.log('elapsed injectRuntime', Date.now() - dt1)
+
+  const newCode = replaceStyleReplacements(uncapeCurlyBracketsAndBackticks(document.toString()), context)
+
+  return newCode
 }

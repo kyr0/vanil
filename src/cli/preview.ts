@@ -85,7 +85,6 @@ export const preview = async (config: Config, autoListen = true) => {
 
     try {
       tlsOptions.cert = readFileSyncUtf8(resolve(projectRootFolder, tlsOptions.cert as string))
-
       tlsOptions.key = readFileSyncUtf8(resolve(projectRootFolder, tlsOptions.key as string))
     } catch (err) {
       console.error(colors.red('Error reading TLS certificate files:'))

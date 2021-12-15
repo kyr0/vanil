@@ -1,5 +1,6 @@
 ---
 import PageLayout from "../../../layouts/PageLayout.astro"
+import DocPageLayout from "../../../layouts/DocPageLayout.astro"
 
 import { props, Debug } from "vanil"
 
@@ -12,15 +13,23 @@ export const getStaticPaths = async() => {
         },
         props: {
             section: 'guides',
+            title: 'Getting Started',
             page: 'getting-started'
         }
     }]
 }
 ---
 <PageLayout>
-
-    <Debug {{ props }} />
-    
-    
-
+  <DocPageLayout title={props.title} sectionHead="Some nice intro text">
+    <ul slot="doc.page.toc">
+      <li>test toc</li>
+    </ul>
+    <div slot="doc.page.content">
+      <h1>{props.title}</h1>
+      Main content test123
+    </div>
+    <ul slot="doc.page.toc.page">
+      <li>test toc-page</li>
+    </ul>
+  </DocPageLayout>
 </PageLayout>

@@ -139,15 +139,15 @@ const printConfig = (config: Config) => {
 }
 
 /** merge CLI flags & config options (CLI flags take priority) */
-const mergeCLIFlags = (config: Config | undefined, flags: CLIState['options']) => {
-  if (typeof flags.dist === 'string') config!.dist = flags.dist
+const mergeCLIFlags = (config: Config, flags: CLIState['options']) => {
+  if (typeof flags.dist === 'string') config.dist = flags.dist
 
-  if (typeof flags.sitemap === 'boolean') config!.buildOptions!.sitemap = flags.sitemap
-  if (typeof flags.site === 'string') config!.buildOptions!.site = flags.site
+  if (typeof flags.sitemap === 'boolean') config.buildOptions!.sitemap = flags.sitemap
+  if (typeof flags.site === 'string') config.buildOptions!.site = flags.site
 
-  if (typeof flags.port === 'number') config!.devOptions!.port = flags.port
-  if (typeof flags.hostname === 'string') config!.devOptions!.hostname = flags.hostname
-  if (typeof flags.useTls === 'boolean') config!.devOptions!.useTls = flags.useTls
+  if (typeof flags.port === 'number') config.devOptions!.port = flags.port
+  if (typeof flags.hostname === 'string') config.devOptions!.hostname = flags.hostname
+  if (typeof flags.useTls === 'boolean') config.devOptions!.useTls = flags.useTls
 }
 
 /** The primary CLI action */
@@ -231,6 +231,14 @@ export const cli = async (args: string[]) => {
     colors.gray('...'),
   )
 
+  const runDev = async (config: Config) => {
+    try {
+      await dev(config)
+    } catch (err: any) {
+      throwAndExit(err)
+    }
+  }
+
   switch (state.cmd) {
     case 'help': {
       printHelp()
@@ -245,11 +253,19 @@ export const cli = async (args: string[]) => {
       process.exit(0)
     }
     case 'dev': {
-      try {
-        await dev(config)
-      } catch (err) {
-        throwAndExit(err)
-      }
+      process.on('uncaughtException', (err: any) => {
+        if (err.code === 'EADDRINUSE') {
+          // increment port number
+          console.log('DevServer: Auto-incrementing port number...')
+          config.devOptions!.port! += 1
+          finalizeConfig(config)
+
+          runDev(config)
+        } else {
+          throwAndExit(err)
+        }
+      })
+      runDev(config)
       return
     }
     case 'build': {

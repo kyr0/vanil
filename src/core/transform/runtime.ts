@@ -31,6 +31,7 @@ import '../runtime/components/Markdown'
 
 import { SSGRuntime } from '../../@types/runtime'
 import { dirname as nativeDirname, resolve as nativeResolve } from 'path'
+import { SLOT_DEFAULT_NAME } from './tsx'
 
 /** Vanil.fetchContent() implementation */
 export const astroFetchContent = (globalThis.vanilFetchContent = (targetPath: string, context: Context) => {
@@ -108,8 +109,6 @@ globalThis.getScriptHoisted = getScriptHoisted
  */
 globalThis.paginate = paginate
 
-const SLOT_DEFAULT_NAME = 'default'
-
 /** preprocesses props that are passed down to an .astro component on import like
  * import MyVanilComponent from "../components/my.astro" */
 export const preprocessVanilComponentPropsAndSlots = (props: any, Vanil: Partial<SSGRuntime>) => {
@@ -125,34 +124,31 @@ export const preprocessVanilComponentPropsAndSlots = (props: any, Vanil: Partial
 
       if (Array.isArray(children)) {
         children.forEach((child) => {
+          // defined slot name
           if (child.attributes && child.attributes.slot) {
             Vanil.slots![child.attributes.slot] = {
               type: 'fragment',
               children: [child],
             }
           } else {
+            let prevChildren = []
+
             if (Vanil.slots![SLOT_DEFAULT_NAME]) {
-              Vanil.slots![SLOT_DEFAULT_NAME] = {
-                type: 'fragment',
-                children: [
-                  ...(Array.isArray(Vanil.slots![SLOT_DEFAULT_NAME])
-                    ? (Vanil.slots![SLOT_DEFAULT_NAME] as IVirtualNode).children
-                    : // handling the else case when only a single child
-                      // has been assigned before
-                      [Vanil.slots![SLOT_DEFAULT_NAME]]),
-                  child,
-                ],
-              }
-            } else {
-              Vanil.slots![SLOT_DEFAULT_NAME] = {
-                type: 'fragment',
-                children: [child],
-              }
+              prevChildren = (Vanil.slots![SLOT_DEFAULT_NAME] as any).children
+                ? (Vanil.slots![SLOT_DEFAULT_NAME] as IVirtualNode).children
+                : // handling the else case when only a single child
+                  // has been assigned before
+                  [Vanil.slots![SLOT_DEFAULT_NAME]]
+            }
+
+            Vanil.slots![SLOT_DEFAULT_NAME] = {
+              type: 'fragment',
+              children: [...prevChildren, child],
             }
           }
         })
       }
     }
-    Vanil.props![propsKeys[i]] = props[propsKeys[i]]
   }
+  return props
 }

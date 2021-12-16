@@ -10,17 +10,18 @@ export const getFromCache = (untranspiledCode: string, context: Context): string
   if (!context.codeCache![context.path!]) context.codeCache![context.path!] = {}
 
   // TODO: cache disabled until re-implementation
-  return undefined
-  //return context.codeCache![context.path!][hashCode(untranspiledCode)]
+  //return undefined
+  return context.codeCache![context.path!][hashCode(untranspiledCode)]
 }
 
 /** for an untranspiled piece of code, store the transpiled one */
-export const addToCache = (untranspiledCode: string, transpiledCode: string, context: Context) => {
+export const addToCache = (untranspiledCode: string, transpiledCode: string, context: Context, force = false) => {
   if (!context.codeCache![context.path!]) context.codeCache![context.path!] = {}
 
   // TODO: cache disabled until re-implementation
-  //context.codeCache![context.path!][hashCode(untranspiledCode)] = transpiledCode
-
+  if (force) {
+    context.codeCache![context.path!][hashCode(untranspiledCode)] = transpiledCode
+  }
   return transpiledCode
 }
 

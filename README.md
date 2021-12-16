@@ -92,7 +92,6 @@ Here are a few ideas on how it feels to work with Vanil:
 
 - perf: CLI: run it all using transpiled code, not with ts-node
 - perf: re-implement and activate cache layer
-- feat: add https://github.com/evanw/node-source-map-support
 - perf: use context.paths.\* instead of getter functions
 - feat: npm vanil init hook
 - refactor: rewrite import split parser (support multi-line dynamic / sync imports)

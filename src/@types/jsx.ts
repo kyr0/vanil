@@ -679,15 +679,16 @@ declare global {
       acceptcharset?: string
       accesskey?: string
       action?: string
-      allowfullscreen?: boolean
-      allowtransparency?: boolean
+      allowfullscreen?: boolean | string
+      allowtransparency?: boolean | string
+      allow?: string
       alt?: string
-      async?: boolean
+      async?: boolean | string
       autocomplete?: string
       autocorrect?: string
       autofocus?: boolean | string
-      autoplay?: boolean
-      capture?: boolean
+      autoplay?: boolean | string
+      capture?: boolean | string
       cellpadding?: number | string
       cellspacing?: number | string
       charset?: string
@@ -695,37 +696,37 @@ declare global {
       checked?: boolean | string
       class?: string | Array<string>
       classname?: string | Array<string>
-      cols?: number
+      cols?: number | string
       children?: any
-      colspan?: number
+      colspan?: number | string
       content?: string
-      contenteditable?: boolean
+      contenteditable?: boolean | string
       contextmenu?: string
-      controls?: boolean
+      controls?: boolean | string
       controlslist?: string
       coords?: string
       crossorigin?: string
       data?: string
       datetime?: string
-      default?: boolean
-      defer?: boolean
+      default?: boolean | string
+      defer?: boolean | string
       dir?: string
-      disabled?: boolean
+      disabled?: boolean | string
       download?: any
-      draggable?: boolean
+      draggable?: boolean | string
       enctype?: string
       form?: string
       formaction?: string
       formenctype?: string
       formmethod?: string
       novalidate?: boolean | string
-      formnovalidate?: boolean
+      formnovalidate?: boolean | string
       formtarget?: string
       frameborder?: number | string
       headers?: string
       height?: number | string
-      hidden?: boolean
-      high?: number
+      hidden?: boolean | string
+      high?: number | string
       href?: string
       hreflang?: string
       for?: string
@@ -742,43 +743,43 @@ declare global {
       label?: string
       lang?: string
       list?: string
-      loop?: boolean
-      low?: number
+      loop?: boolean | string
+      low?: number | string
       manifest?: string
-      marginheight?: number
-      marginwidth?: number
+      marginheight?: number | string
+      marginwidth?: number | string
       max?: number | string
       maxlength?: number
       media?: string
       mediagroup?: string
       method?: string
       min?: number | string
-      minlength?: number
-      multiple?: boolean
-      muted?: boolean
+      minlength?: number | string
+      multiple?: boolean | string
+      muted?: boolean | string
       name?: string
-      open?: boolean
-      optimum?: number
+      open?: boolean | string
+      optimum?: number | string
       pattern?: string
       placeholder?: string
-      playsinline?: boolean
+      playsinline?: boolean | string
       poster?: string
       preload?: string
       radiogroup?: string
-      readonly?: boolean
+      readonly?: boolean | string
       rel?: string
       required?: boolean | string
       role?: string
-      rows?: number
-      rowspan?: number
+      rows?: number | string
+      rowspan?: number | string
       sandbox?: string
       scope?: string
-      scoped?: boolean
+      scoped?: boolean | string
       scrolling?: string
-      seamless?: boolean
-      selected?: boolean
+      seamless?: boolean | string
+      selected?: boolean | string
       shape?: string
-      size?: number
+      size?: number | string
       sizes?: string
       slot?: string
       span?: number | string
@@ -787,7 +788,7 @@ declare global {
       srcset?: string
       srcdoc?: string
       srclang?: string
-      start?: number
+      start?: number | string
       step?: number | string
       style?: string | Partial<CSSProperties>
       summary?: string
@@ -813,7 +814,7 @@ declare global {
 
       // Microdata Attributes
       itemprop?: string
-      itemscope?: boolean
+      itemscope?: boolean | string
       itemtype?: string
       itemid?: string
       itemref?: string
@@ -834,16 +835,16 @@ declare global {
       acceptCharset?: string
       accessKey?: string
       action?: string
-      allowFullScreen?: boolean
-      allowTransparency?: boolean
+      allowFullScreen?: boolean | string
+      allowTransparency?: boolean | string
       alt?: string
-      async?: boolean
+      async?: boolean | string
       autoComplete?: string
       autoCorrect?: string
       autofocus?: boolean | string
-      autoFocus?: boolean
-      autoPlay?: boolean
-      capture?: boolean
+      autoFocus?: boolean | string
+      autoPlay?: boolean | string
+      capture?: boolean | string
       cellPadding?: number | string
       cellSpacing?: number | string
       charSet?: string
@@ -851,36 +852,36 @@ declare global {
       checked?: boolean | string
       class?: string | Array<string>
       className?: string | Array<string>
-      cols?: number
+      cols?: number | string
       children?: any
-      colSpan?: number
+      colSpan?: number | string
       content?: string
-      contentEditable?: boolean
+      contentEditable?: boolean | string
       contextMenu?: string
-      controls?: boolean
+      controls?: boolean | string
       controlsList?: string
       coords?: string
       crossOrigin?: string
       data?: string
       dateTime?: string
-      default?: boolean
-      defer?: boolean
+      default?: boolean | string
+      defer?: boolean | string
       dir?: string
-      disabled?: boolean
+      disabled?: boolean | string
       download?: any
-      draggable?: boolean
+      draggable?: boolean | string
       encType?: string
       form?: string
       formAction?: string
       formEncType?: string
       formMethod?: string
-      formNoValidate?: boolean
+      formNoValidate?: boolean | string
       formTarget?: string
       frameBorder?: number | string
       headers?: string
       height?: number | string
-      hidden?: boolean
-      high?: number
+      hidden?: boolean | string
+      high?: number | string
       href?: string
       hrefLang?: string
       for?: string
@@ -897,52 +898,52 @@ declare global {
       label?: string
       lang?: string
       list?: string
-      loop?: boolean
-      low?: number
+      loop?: boolean | string
+      low?: number | string
       manifest?: string
-      marginHeight?: number
-      marginWidth?: number
+      marginHeight?: number | string
+      marginWidth?: number | string
       max?: number | string
-      maxLength?: number
+      maxLength?: number | string
       media?: string
       mediaGroup?: string
       method?: string
       min?: number | string
-      minLength?: number
-      multiple?: boolean
-      muted?: boolean
+      minLength?: number | string
+      multiple?: boolean | string
+      muted?: boolean | string
       name?: string
-      open?: boolean
-      optimum?: number
+      open?: boolean | string
+      optimum?: number | string
       pattern?: string
       placeholder?: string
-      playsInline?: boolean
+      playsInline?: boolean | string
       poster?: string
       preload?: string
       radioGroup?: string
-      readOnly?: boolean
+      readOnly?: boolean | string
       rel?: string
       required?: boolean | string
       role?: string
-      rows?: number
-      rowSpan?: number
+      rows?: number | string
+      rowSpan?: number | string
       sandbox?: string
       scope?: string
-      scoped?: boolean
+      scoped?: boolean | string
       scrolling?: string
-      seamless?: boolean
-      selected?: boolean
+      seamless?: boolean | string
+      selected?: boolean | string
       shape?: string
-      size?: number
+      size?: number | string
       sizes?: string
       slot?: string
-      span?: number
-      spellcheck?: boolean
+      span?: number | string
+      spellcheck?: boolean | string
       src?: string
       srcDoc?: string
       srcLang?: string
       srcSet?: string
-      start?: number
+      start?: number | string
       step?: number | string
       style?: string | Partial<CSSProperties>
       summary?: string

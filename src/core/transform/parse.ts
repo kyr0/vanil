@@ -310,16 +310,23 @@ const RE_REQUIRE_ALLOWED_QUOTES = /[\"']/g
 export const processRequireFunctionCalls = (
   code: string,
   processFn: (importPath: string) => string,
-  context: Context,
   filterForFileEnding?: string,
 ) => {
+  // local re-declaration of RegExp because we're facing
+  // .exec object instance mutating .lastIndex operations
+  // which need to execute in local context to prevent
+  // clashes in quasi-parallel execution (recursion, async)
+  const RE = /require(\s+)?\(/g
   const matchCount = code.match(RE_REQUIRE_STMT_FN)?.length
+
   if (!matchCount) return code
 
   let match
   let count = 0
 
-  while ((match = RE_REQUIRE_STMT_FN.exec(code))) {
+  const matches: Array<any> = []
+
+  while ((match = RE.exec(code))) {
     if (count === matchCount) break
 
     // mark ( after "require"
@@ -352,13 +359,18 @@ export const processRequireFunctionCalls = (
     if (filterForFileEnding && !requiredPath.endsWith(filterForFileEnding)) {
       continue
     }
-
-    const replacementCode = processFn(requiredPath)
     const codeStatementToReplace = code.substring(match.index, endRequireIndex + 1)
-    code = code.replace(codeStatementToReplace, replacementCode)
+
+    matches.push({
+      codeStatementToReplace,
+      requiredPath,
+    })
     count++
   }
-  RE_REQUIRE_STMT_FN.lastIndex = 0 // reset
+
+  for (let i = 0; i < matches.length; i++) {
+    code = code.replace(matches[i].codeStatementToReplace, processFn(matches[i].requiredPath))
+  }
   return code
 }
 

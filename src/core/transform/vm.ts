@@ -9,6 +9,7 @@ import './tsx'
 
 // SSG runtime
 import './runtime'
+import fetch from 'cross-fetch'
 import { getPagesFolder } from '../io/folders'
 import { getPageUrl } from './routing'
 import { preprocessVanilComponentPropsAndSlots } from './runtime'
@@ -40,6 +41,7 @@ export const run = async <D, S>(scriptCode: string, context: Context): Promise<E
     mode: context.mode,
 
     // export methods publicly available
+    fetch,
     fetchContent: (path: string) => globalThis.vanilFetchContent(path, context),
     resolve: (path: string) => globalThis.resolvePathRelative(path, context.path!),
 
@@ -88,17 +90,17 @@ export const run = async <D, S>(scriptCode: string, context: Context): Promise<E
         globalThis._tsx(type, attributes, context, Vanil, ...children),
     })
 
-    const dt = Date.now()
+    // const dt = Date.now()
 
     data = await script.runInContext(runContext, {
       lineOffset: 0,
       displayErrors: true,
     })
 
-    // TODO: detect features everywhere
+    // accumulate detected interactive runtime feature use
     addFeatureFlags(detectRuntimeLibraryFeatures(data, context.mode), context)
 
-    console.log('vm elapsed', context.path, Date.now() - dt)
+    // console.log('vm elapsed', context.path, Date.now() - dt)
   } catch (e: any) {
     const errorStackTraceSplits = (e as Error).stack?.split('\n')
     const linesOfError = [errorStackTraceSplits![1], errorStackTraceSplits![2]]

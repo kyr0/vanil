@@ -68,7 +68,7 @@ export const materializeDOM = async (executionResult: ExecutionResult<VDOMNode, 
   // which is to be replaced by the actualTopLevelElement
   document.querySelector('html')?.replaceWith(actualTopLevelElement as Node)
 
-  const dt1 = Date.now()
+  // const dt1 = Date.now()
 
   // top-level element is an <html> element,
   // means we're dealing with a page, not a component
@@ -80,7 +80,7 @@ export const materializeDOM = async (executionResult: ExecutionResult<VDOMNode, 
     await injectInteractiveRuntimeLibrary(document, document.head, context, executionResult.state)
   }
 
-  console.log('elapsed injectRuntime', Date.now() - dt1)
+  // console.log('elapsed injectRuntime', Date.now() - dt1)
 
   const newCode = replaceStyleReplacements(uncapeCurlyBracketsAndBackticks(document.toString()), context)
 

@@ -1,0 +1,29 @@
+---
+import { props, Debug } from "vanil"
+
+import PageLayout from "../layouts/PageLayout.astro"
+import DocPageLayout from "../layouts/DocPageLayout.astro"
+
+import { setNavSectionActive } from "../function/setNavSectionActive"
+
+setNavSectionActive('snippets')
+---
+<PageLayout>
+  <DocPageLayout title="Snippets" sectionHead="Some nice intro text">
+    <ul slot="doc.page.toc">
+      <li>test toc</li>
+    </ul>
+    <div slot="doc.page.content">
+      <h1>Snippets!</h1>
+
+        <a href="
+https://codesandbox.io/s/how-to-use-the-debug-component-2oszj?file=/src/pages/index.astro">
+    How to use the Debug component
+</a>
+    </div>
+    <ul slot="doc.page.toc.page">
+      <li>test toc-page</li>
+    </ul>
+  </DocPageLayout>
+</PageLayout>
+

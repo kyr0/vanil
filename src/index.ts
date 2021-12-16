@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 'use strict'
+
 const child_process = require('child_process')
 const path = require('path')
 const yargs = require('yargs-parser')
-
 const flags = yargs(process.argv)
 const cmd = flags._[2]
 const vanilRootDir = path.resolve(__dirname, '../../')

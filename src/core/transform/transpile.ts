@@ -8,13 +8,14 @@ import {
 } from './parse'
 import ts from 'typescript'
 import { transformImportPaths } from './typescript/rewritepath'
-import { resolveNodeImport } from './resolve'
-import { bundleRequires, detectRuntimeLibraryFeatures } from './bundle'
+import { isAbsoluteFileImportTarget, materializePathSelectFile, resolveNodeImport } from './resolve'
+import { bundleRequires } from './bundle'
 import { readFileSyncUtf8 } from '../io/file'
 import { mayDeclareExports, mayWrapInAsyncIIFE, transformTemplate, transformVanilImports } from './transform'
-import { addFeatureFlags, addFileDependency } from './context'
+import { addFileDependency } from './context'
 import { Context } from '../../@types/context'
 import { addToCache, getFromCache } from './cache'
+import { dirname } from 'path'
 const postcss = require('postcss')
 
 export type ResultLanguageType = 'js' | 'css'
@@ -44,7 +45,7 @@ export const transpileTemplate = (codeBundle: CodeBundle, context: Context): str
   // e.g. .astro components should be sync
   const hasAsyncImpl = !!RE_HAS_ASYNC_CODE.test(importsAndCode.codeStatements)
 
-  const scriptCode = `\n
+  let scriptCode = `\n
     // merge runtime and context-provided parts to a uniform global object
     // where direct use of Vanil and access to globalThis.Vanil is both valid
     globalThis.Vanil = Vanil = { ...(globalThis.Vanil || {}), ...(Vanil || {}), tsx }
@@ -96,16 +97,14 @@ export const transpileTemplate = (codeBundle: CodeBundle, context: Context): str
     })
     .outputText.replace(TS_IMPORT_POLYFILL_SCRIPT, '')
 
-  const dt = Date.now()
-
   // make sure SSG code can import .astro component templates
   transpiledCode = inlineTranspileImportedVanilComponents(transpiledCode, context)
 
-  if (transpiledCode.includes('import PageLayout')) {
-    console.log('transpiledCode', transpiledCode)
-  }
+  // const dt = Date.now()
 
-  console.log('elapsed', context.path, Date.now() - dt)
+  transpiledCode = inlineTranspileAbsoluteRequires(transpiledCode, context)
+
+  // console.log('elapsed', Date.now() - dt)
 
   // top-level import statements come first
   // async immediately invoked function execution follows (a-iife)
@@ -113,7 +112,7 @@ export const transpileTemplate = (codeBundle: CodeBundle, context: Context): str
   // and the path to the source template
   // a-iife starts with the rest of the code (imports stipped and reordered on top),
   // followed by returning the htmlCode which is assumed to be JSX/TSX
-  return addToCache(scriptCode, transpiledCode, context)
+  return addToCache(scriptCode, transpiledCode, context /** TODO: broken */)
 }
 
 const transpileInlineVanilComponent = (importPath: string, context: Context) => {
@@ -180,14 +179,50 @@ export const inlineTranspileImportedVanilComponents = (transpiledCode: string, c
 
       addFileDependency(importPath, context)
 
-      return addToCache(importPath, astroComponentInlineCode, context)
+      return addToCache(importPath, astroComponentInlineCode, context, false /** TODO: borken */)
     },
-    context,
     '.astro',
   )
 
+export const inlineTranspileAbsoluteRequires = (transpiledCode: string, context: Context) => {
+  const code = processRequireFunctionCalls(transpiledCode, (importPath: string) => {
+    const relativeContextPath = dirname(importPath)
+
+    if (!isAbsoluteFileImportTarget(importPath)) {
+      return `require('${importPath}')`
+    }
+
+    const cachedCode = getFromCache(importPath, context)
+    if (cachedCode) return cachedCode
+
+    const transpiledRequireCode = transpileSSGCode(
+      readFileSyncUtf8(materializePathSelectFile(importPath)),
+      context,
+      relativeContextPath,
+    )
+
+    const retCode = `
+        (() => { 
+          exports = {}
+          const __dirname = '${relativeContextPath}'; 
+          const __filename = "${importPath}"; 
+          const _contextPath = Vanil.props.context.path
+          Vanil.props.context.path = '${importPath}'
+
+          ${transpiledRequireCode}; 
+          
+          Vanil.props.context.path = _contextPath
+          
+          return exports 
+        })();
+      `
+    return addToCache(importPath, retCode, context /** TODO: broken, needs invalidation */)
+  })
+  return code
+}
+
 /** transpiles SSG code in general */
-export const transpileSSGCode = (scriptCode: string, context: Context) => {
+export const transpileSSGCode = (scriptCode: string, context: Context, relImportPath?: string) => {
   const cachedCode = getFromCache(scriptCode, context)
   if (cachedCode) return cachedCode
 
@@ -203,30 +238,26 @@ export const transpileSSGCode = (scriptCode: string, context: Context) => {
         // (code is evaluated in runtime scope of vanil later)
         before: [
           transformImportPaths({
-            rewrite: (importPath: string) => resolveNodeImport(importPath, context),
+            rewrite: (importPath: string) => resolveNodeImport(importPath, context, relImportPath),
           }),
         ],
       },
     })
     .outputText.replace(TS_IMPORT_POLYFILL_SCRIPT, '')
 
-  const dt = Date.now()
+  // TODO: make sure SSG code can import .astro component templates
+  //transpiledCode = inlineTranspileImportedVanilComponents(transpiledCode, context)
 
-  // make sure SSG code can import .astro component templates
-  transpiledCode = inlineTranspileImportedVanilComponents(transpiledCode, context)
+  // TODO: necessary call? shouldn't transpileTemplate be catch-all in the end?
+  //transpiledCode = inlineTranspileAbsoluteRequires(transpiledCode, context)
 
-  if (transpiledCode.includes('import PageLayout')) {
-    console.log('transpiledCode', transpiledCode)
-  }
-
-  console.log('elapsed', context.path, Date.now() - dt)
   // top-level import statements come first
   // async immediately invoked function execution follows (a-iife)
   // providing a local Vanil argument including all config properties
   // and the path to the source template
   // a-iife starts with the rest of the code (imports stipped and reordered on top),
   // followed by returning the htmlCode which is assumed to be JSX/TSX
-  return addToCache(scriptCode, transpiledCode, context)
+  return addToCache(scriptCode, transpiledCode, context /** TODO: borken, needs invalidation */)
 }
 
 /** transpiles and wraps runtime code; cares for re-ordering imports */
@@ -281,7 +312,7 @@ export const transpileTSX = (code: string, context: Context, injectionIntent: In
   if (injectionIntent === 'import') {
     return mayDeclareExports(transpiledCode)
   }
-  return addToCache(code, transpiledCode, context)
+  return addToCache(code, transpiledCode, context /** TODO: broken: need invalidation */)
 }
 
 /** transpiles style code using PostCSS; this is called from different stages */
@@ -297,12 +328,10 @@ export const transpileStyleCode = (styleCode: string, attributes: any, context: 
     context.path = attributes.rel
   }
 
-  const transpiledCss = postcss(context.postCssPlugins).process(styleCode).css
-
   if (attributes.rel) {
     context.path = _contextPath
   }
-  return addToCache(styleCode, transpiledCss, context)
+  return addToCache(styleCode, postcss(context.postCssPlugins).process(styleCode).css, context, true)
 }
 
 /** style code that has been marked for post-processing is replaced here */
@@ -357,10 +386,7 @@ const wrapInJSXCurlyBracketsString = (code: string) => `{\`${code}\`}`
 
 // 1. escape { and ` characters globally (1st step numbing)
 // 2. wrap in {``} to really numb the code while in SSG evaluation regarding TSX transforms
-const numbCodeForSSGEvaluation = (code: string) => {
-  code = escapeCurlyBracketsAndBackticks(code)
-  return wrapInJSXCurlyBracketsString(code)
-}
+const numbCodeForSSGEvaluation = (code: string) => wrapInJSXCurlyBracketsString(escapeCurlyBracketsAndBackticks(code))
 
 /**
  * escapes and transpiles inline script code before it is passed to the

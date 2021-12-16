@@ -1,5 +1,6 @@
 // create shallow object
 Vanil = Astro = {
+  fetch,
   props: {},
 } as any
 

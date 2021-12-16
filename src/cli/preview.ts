@@ -24,10 +24,9 @@ export const preview = async (config: Config, autoListen = true) => {
   })
 
   app.use('/*', (req, res, next) => {
-    //console.log('req head', req.headers)
-    console.log(
-      `${req.method} ${res.statusCode < 400 ? colors.green(res.statusCode) : colors.red(res.statusCode)} ${req.path}`,
-    )
+    if (res.statusCode >= 400) {
+      console.log(`${req.method} ${colors.red(res.statusCode)} ${req.path}`)
+    }
     next()
   })
 

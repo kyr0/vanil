@@ -3,6 +3,10 @@ import { Markdown, fetchContent } from "vanil"
 import PageLayout from "../layouts/PageLayout.astro"
 import { getCurrentVersion } from "../utils/getCurrentVersion"
 
+import { setNavSectionActive } from "../function/setNavSectionActive"
+
+setNavSectionActive('home')
+
 const vanilLogo = fetchContent("../../public/assets/vanil-logo.svg")[0]
 
 // direct VDOM access/mutation

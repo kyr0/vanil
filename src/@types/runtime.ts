@@ -16,6 +16,8 @@ import { ScriptFn } from './runtime/components/Script'
 import { TransFn } from './runtime/components/Trans'
 import { MarkdownFn } from './runtime/components/Markdown'
 
+// all vdom types such as IVirtualNode
+export * from './runtime/vdom'
 export interface SSGRuntime extends StoreApi, i18nApi {
   mode: 'development' | 'production'
 
@@ -30,6 +32,7 @@ export interface SSGRuntime extends StoreApi, i18nApi {
     state: any
     [propName: string]: any
   }
+  fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   resolve: (filePath: string) => string
   fetchContent: (fileGlob: string) => Array<any>
   isPage: boolean

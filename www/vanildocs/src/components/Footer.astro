@@ -1,25 +1,21 @@
 ---
-import { fetchContent } from "vanil"
 import { getCurrentVersion } from "../utils/getCurrentVersion"
 
-const vanilLogo = fetchContent('../../public/assets/vanil-logo.svg')[0]
-
-vanilLogo.attributes.class = 'vanilLogo'
-vanilLogo.attributes.width = '35px'
-vanilLogo.attributes.height = '35px'
+import { VanilLogo } from "./icon/VanilLogo"
 ---
 <footer class="bd-footer py-5 mt-5 bg">
   <div class="container py-5">
     <div class="row">
       <div class="col-lg-4 mb-3">
         <a class="d-inline-flex align-items-center mb-2 link-dark text-decoration-none" href="/" aria-label="Bootstrap">
-          { vanilLogo }
-          <span class="fs-5 ms-2 brand-primary-text-color">VANIL</span>
+          <VanilLogo />
+          <span class="fs-5 ms-2 text-white">VANIL</span>
         </a>
         <ul class="list-unstyled small text-muted">
-          <li class="mb-2">Designed and built with unbreakable motivation by <a href="https://arons.site" target="_blank" rel="noopener">Aron Homberg</a> and <a target="_blank" rel="noopener" href="https://github.com/kyr0/vanil/graphs/contributors">the VANIL contributors</a>.</li>
+          <li class="mb-2">Built with unbreakable motivation by<br /><a href="https://arons.site" target="_blank" rel="noopener">Aron Homberg</a> and the <a target="_blank" rel="noopener" href="https://github.com/kyr0/vanil/graphs/contributors">VANIL contributors</a>.</li>
           <li class="mb-2">Code licensed <a href="https://github.com/kyr0/vanil/blob/main/LICENSE" target="_blank" rel="license noopener">MIT</a>, docs <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="license noopener">CC BY 3.0</a>.</li>
-          <li class="mb-2">Currently <a href="https://www.npmjs.com/package/vanil" target="_blank" rel="noopener">v{getCurrentVersion()}</a></li>
+          <li class="mb-2">Currently <a href="https://www.npmjs.com/package/vanil" target="_blank" rel="noopener">v{getCurrentVersion()}</a>.</li>
+          <li class="mb-2"><a style={{ textDecoration: 'none' }} href="https://paypal.me/aronhomberg" target="_blank" rel="noopener">❤️ Love it? Sponsor me :)</a></li>
         </ul>
       </div>
       <div class="col-6 col-lg-2 offset-lg-2 mb-3">
@@ -45,11 +41,11 @@ vanilLogo.attributes.height = '35px'
       <div class="col-6 col-lg-2 mb-3">
         <h5>Community</h5>
         <ul class="list-unstyled">
-          <li class="mb-2"><a href="https://github.com/kyr0/vanil/issues">Issues</a></li>
-          <li class="mb-2"><a href="https://github.com/kyr0/vanil/discussions">Discussions</a></li>
-          <li class="mb-2"><a href="https://github.com/sponsors/kyr0/button">Sponsor</a></li>
-          <li class="mb-2"><a href="https://gitter.im/vanil-build/community">Gitter</a></li>
-          <li class="mb-2"><a href="https://stackoverflow.com/questions/tagged/vanil">Stack Overflow</a></li>
+          <li class="mb-2"><a target="_blank" rel="noopener" href="https://github.com/kyr0/vanil/issues">Issues</a></li>
+          <li class="mb-2"><a target="_blank" rel="noopener" href="https://github.com/kyr0/vanil/discussions">Discussions</a></li>
+          <li class="mb-2"><a target="_blank" rel="noopener" href="https://paypal.me/aronhomberg">Sponsor</a></li>
+          <li class="mb-2"><a target="_blank" rel="noopener" href="https://gitter.im/vanil-build/community">Gitter Chat</a></li>
+          <li class="mb-2"><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/tagged/vanil">Stack Overflow</a></li>
         </ul>
       </div>
     </div>

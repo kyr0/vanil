@@ -2,13 +2,17 @@ import { resolve, dirname } from 'path'
 import fg from 'fast-glob'
 import { addFileDependency } from './context'
 import { Context } from '../../@types/context'
+import { existsSync, lstatSync } from 'fs'
 const nodeResolve = require('node-resolve')
 
 /**
  * import(path), import ... from path, Vanil.fetchContent(path)
  * relative import resolve logic (e.g. ../components or )
  */
-export const resolvePathRelative = (targetPath: string, path: string) => resolve(dirname(path), targetPath)
+export const resolvePathRelative = (targetPath: string, path: string) => {
+  const isDir = existsSync(path) && lstatSync(path).isDirectory()
+  return resolve(isDir ? path : dirname(path), targetPath)
+}
 
 /** decides if a path is a relative import (relative to a path) */
 export const isRelativePathImport = (path: string) => path.startsWith('../') || path.startsWith('./')
@@ -23,23 +27,30 @@ export const resolveImportForRuntimeInteractiveCode = (importPath: string, path:
 }
 
 /** uses the node resolve algorithm to discover and rewrite paths to absolute paths */
-export const resolveNodeAbsolute = (context: Context, importPath: string) =>
-  nodeResolve.resolve(context.path!, importPath, dirname(context.path!))
+export const resolveNodeAbsolute = (importPath: string, relImportPath: string) =>
+  nodeResolve.resolve(relImportPath, importPath, dirname(relImportPath))
 
 /** resolves a Node.js module imports (for SSG Node.js top level code) */
-export const resolveNodeImport = (importPath: string, context: Context) => {
-  const moduleResolved = resolveNodeAbsolute(context, importPath)
+export const resolveNodeImport = (importPath: string, context: Context, relImportPath?: string) => {
+  const moduleResolved = resolveNodeAbsolute(importPath, relImportPath ? relImportPath : context.path!)
 
   if (moduleResolved) {
-    return resolve(dirname(context.path!), moduleResolved)
+    return resolve(relImportPath ? relImportPath : dirname(context.path!), moduleResolved)
   }
 
   // we can't support "localFile.*" cases, because these
   // cannot be separated from Node.js node_module imports
-  const resolvedImportPath = context.isProcessingComponent
-    ? // use .astro component-relative import path resolving
-      resolveImportForRuntimeInteractiveCode(importPath, context.path)
-    : resolveImportForRuntimeInteractiveCode(importPath)
+  let resolvedImportPath = resolveImportForRuntimeInteractiveCode(importPath)
+
+  // use .astro component-relative import path resolving
+  if (context.isProcessingComponent) {
+    resolvedImportPath = resolveImportForRuntimeInteractiveCode(importPath, context.path)
+  }
+
+  // import of a relative/absolute module, maybe inside of .astro component
+  if (relImportPath) {
+    resolvedImportPath = resolveImportForRuntimeInteractiveCode(importPath, relImportPath)
+  }
 
   // register in dependency linked list
   addFileDependency(resolvedImportPath, context)

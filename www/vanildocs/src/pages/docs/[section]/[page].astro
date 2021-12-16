@@ -4,6 +4,10 @@ import DocPageLayout from "../../../layouts/DocPageLayout.astro"
 
 import { props, Debug } from "vanil"
 
+import { setNavSectionActive } from "../../../function/setNavSectionActive"
+
+setNavSectionActive('docs')
+
 export const getStaticPaths = async() => {
 
     return [{

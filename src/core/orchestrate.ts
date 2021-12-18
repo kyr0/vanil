@@ -1,27 +1,31 @@
 import { getPagesFolder, isDynamicRoutingPath, toProjectRootRelativePath } from './io/folders'
 import { addMaterializedHtmlFilePath, validateContext } from './transform/context'
 import { Context } from '../@types/context'
-import { transformAndPersistSingle } from './transform/transform'
+import { renderError, transformAndPersistSingle } from './transform/transform'
 import fg from 'fast-glob'
 import * as colors from 'kleur/colors'
 import { registerHooks, runHooks } from './hook/hook'
-import { materializeDynamicRoutingPaths } from './transform/routing'
+import { MaterializedPage, materializeDynamicRoutingPaths } from './transform/routing'
+import { persistVanilPage } from './transform/persist'
+import { resolve } from 'path'
 
-export const setupContext = async (context: Context) => {
+export const setupContext = async (context: Context, doRegisterHooks = false) => {
   validateContext(context)
-  registerHooks(context)
+  if (doRegisterHooks) {
+    await registerHooks(context)
+  }
   await runHooks('onContext', context)
   return context
 }
 
 /** organizes the flow of transformation for a full *.astro transform request including hooks */
 export const orchestrateTransformAll = async (context: Context): Promise<Context> => {
-  await setupContext(context)
+  await setupContext(context, true)
 
   await runHooks('onDevServerStart', context)
   await runHooks('onStart', context)
 
-  const astroFiles = await fg(`${getPagesFolder(context.config)}/**/*.astro`)
+  const astroFiles = fg.sync(`${getPagesFolder(context.config)}/**/*.astro`)
 
   console.log(
     colors.white('Render all .astro templates...'),
@@ -59,7 +63,19 @@ export const orchestrateTransformSingle = async (context: Context): Promise<Cont
   // makes sure, initial recognition of dynamic paths is happening, including processing
   // then recursively transform each permutation
   if (isDynamicRoutingPath(context.path!) && !context.materializedPath) {
-    const materializedPages = await materializeDynamicRoutingPaths(context)
+    let materializedPages: Array<MaterializedPage> = []
+
+    try {
+      materializedPages = await materializeDynamicRoutingPaths(context)
+    } catch (e) {
+      console.error('ERROR: SSG Node.js execution error', (e as any).original)
+
+      // persist custom 404 page with error message
+      context.materializedPath = resolve(getPagesFolder(context.config), '404.astro')
+      persistVanilPage(context, await renderError(context, e as any))
+
+      throw new Error('Failed to get static paths for rendering (see above)')
+    }
 
     for (let i = 0; i < materializedPages.length; i++) {
       const dynamicPageContext = await orchestrateTransformSingle({

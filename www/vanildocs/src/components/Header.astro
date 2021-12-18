@@ -1,18 +1,9 @@
 ---
-import { fetchContent, props } from "vanil"
-import { setCubicVdomNodeSize } from "../function/setCubicVdomNodeSize"
 import { VanilLogo } from "./icon/VanilLogo"
-
-const { navSectionActive } = props
-const iconSizePx = 30
-
-const navbarToggle = fetchContent('../../public/assets/icons/navbar-toggle.svg')[0]
-
-const githubLogo = fetchContent('../../public/assets/github-logo.svg')[0]
-setCubicVdomNodeSize(iconSizePx, githubLogo)
-
-const gitterLogo = fetchContent('../../public/assets/gitter-logo.svg')[0]
-setCubicVdomNodeSize(iconSizePx, gitterLogo)
+import { GitterLogo } from "./icon/GitterLogo"
+import { GithubLogo } from "./icon/GithubLogo"
+import { NavbarToggle } from "./icon/NavbarToggle"
+import { NavLink } from "./header/NavLink"
 ---
 <header class="navbar navbar-expand-md navbar-dark bd-navbar">
 
@@ -22,30 +13,22 @@ setCubicVdomNodeSize(iconSizePx, gitterLogo)
     </a>
       
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false" aria-label="Toggle navigation">
-        { navbarToggle }
+      <NavbarToggle />
     </button>
 
     <div class="collapse navbar-collapse" id="bdNavbar">
       <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav pt-2 py-md-0">
         <li class="nav-item col-6 col-md-auto">
-          <a class={`nav-link p-2 ${navSectionActive === 'home' ? 'active' : ''}`} href="/">
-            Home
-          </a>
+          <NavLink section="home" title="Home" href="/" />
         </li>
         <li class="nav-item col-6 col-md-auto">
-          <a class={`nav-link p-2 ${navSectionActive === 'docs' ? 'active' : ''}`} aria-current="true" href="/docs">
-            Docs
-          </a>
+          <NavLink section="docs" title="Docs" href="/docs" />
         </li>
         <li class="nav-item col-6 col-md-auto">
-          <a class="nav-link p-2" href="/blog" target="_blank" rel="noopener">
-            Blog
-          </a>
+          <NavLink section="blog" title="Blog" href="/blog" />
         </li>
         <li class="nav-item col-6 col-md-auto">
-          <a class={`nav-link p-2 ${navSectionActive === 'snippets' ? 'active' : ''}`} href="/snippets">
-            Snippets
-          </a>
+          <NavLink section="snippets" title="Snippets" href="/snippets" />
         </li>
         <li class="nav-item col-6 col-md-auto">
           <a class="nav-link p-2" target="_blank" rel="noopener" href="https://github.com/kyr0/vanil/tree/main/examples">
@@ -59,12 +42,12 @@ setCubicVdomNodeSize(iconSizePx, gitterLogo)
       <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
         <li class="nav-item col-6 col-md-auto">
           <a class="nav-link p-2" href="https://gitter.im/vanil-build/community" target="_blank" rel="noopener">
-            { gitterLogo }
+            <GitterLogo />
           </a>
         </li>
         <li class="nav-item col-6 col-md-auto">
           <a class="nav-link p-2" href="https://github.com/kyr0/vanil" target="_blank" rel="noopener">
-            { githubLogo }
+            <GithubLogo />
           </a>
         </li>
       </ul>

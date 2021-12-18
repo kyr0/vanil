@@ -9,10 +9,10 @@ const nodeResolve = require('node-resolve')
  * import(path), import ... from path, Vanil.fetchContent(path)
  * relative import resolve logic (e.g. ../components or )
  */
-export const resolvePathRelative = (targetPath: string, path: string) => {
-  const isDir = existsSync(path) && lstatSync(path).isDirectory()
-  return resolve(isDir ? path : dirname(path), targetPath)
-}
+export const resolvePathRelative = (targetPath: string, path: string) =>
+  resolve(isDir(path) ? path : dirname(path), targetPath)
+
+export const isDir = (path: string) => existsSync(path) && lstatSync(path).isDirectory()
 
 /** decides if a path is a relative import (relative to a path) */
 export const isRelativePathImport = (path: string) => path.startsWith('../') || path.startsWith('./')
@@ -27,12 +27,23 @@ export const resolveImportForRuntimeInteractiveCode = (importPath: string, path:
 }
 
 /** uses the node resolve algorithm to discover and rewrite paths to absolute paths */
-export const resolveNodeAbsolute = (importPath: string, relImportPath: string) =>
-  nodeResolve.resolve(relImportPath, importPath, dirname(relImportPath))
+export const resolveNodeAbsolute = (importPath: string, relImportPath: string) => {
+  const resolvedPath = nodeResolve.resolve(
+    relImportPath,
+    importPath,
+    isDir(relImportPath) ? relImportPath : dirname(relImportPath),
+  )
+
+  if (resolvedPath) {
+    return resolvedPath
+  }
+  return resolvedPath
+}
 
 /** resolves a Node.js module imports (for SSG Node.js top level code) */
 export const resolveNodeImport = (importPath: string, context: Context, relImportPath?: string) => {
-  const moduleResolved = resolveNodeAbsolute(importPath, relImportPath ? relImportPath : context.path!)
+  const path = relImportPath ? relImportPath : context.path!
+  const moduleResolved = resolveNodeAbsolute(importPath, isDir(path) ? path : dirname(path))
 
   if (moduleResolved) {
     return resolve(relImportPath ? relImportPath : dirname(context.path!), moduleResolved)

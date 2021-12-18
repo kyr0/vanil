@@ -1,11 +1,12 @@
-import { basename } from 'path'
+import { basename, dirname } from 'path'
 import { chunk } from '../io/array'
 import { getPagesFolder, isDynamicRoutingPath, toProjectRootRelativePath } from '../io/folders'
 import { Context } from '../../@types/context'
-import { parseTemplate, processGSPFunctionDeclaration } from './parse'
+import { parseImportStatements, parseTemplate, processGSPFunctionDeclaration } from './parse'
 import { transpileSSGCode, TS_IMPORT_POLYFILL_SCRIPT } from './transpile'
 import { ExecutionResult, run } from './vm'
 import { DynamicRoutingParameterMap, PaginationParams, PageParamsAndProps } from '../../@types/routing'
+import { renderError } from './transform'
 
 export const RE_PARAM_WRAPPERS = /[\[\]]/g
 
@@ -96,9 +97,18 @@ export const materializeDynamicRoutingPaths = async (context: Context) => {
 
   // transform into an iife; yielding the result
   // TODO: mid-term goal: inject rss() as well
-  isolatedGetStaticPathsFnCode = `export default (() => (${isolatedGetStaticPathsFnCode})({ 
+  isolatedGetStaticPathsFnCode = `
+
+    ${parseImportStatements(codeBundle.typeScriptCode)
+      .filter((importStmt) => !importStmt.includes('.astro'))
+      .join('\n')}
+  
+    export default (() => (${isolatedGetStaticPathsFnCode})({ 
         paginate: globalThis.paginate 
     })})`
+
+  const currentCwd = process.cwd()
+  process.chdir(dirname(context.path!))
 
   const transpiledCode = (await transpileSSGCode(isolatedGetStaticPathsFnCode as string, context)).replace(
     TS_IMPORT_POLYFILL_SCRIPT,
@@ -106,7 +116,13 @@ export const materializeDynamicRoutingPaths = async (context: Context) => {
   )
 
   const result: ExecutionResult<Array<PageParamsAndProps>> = await run(transpiledCode, context)
+
+  process.chdir(currentCwd)
   const materializedPages: Array<MaterializedPage> = []
+
+  if (result.error) {
+    throw result.error
+  }
 
   try {
     result.data?.forEach((pageParamsAndProps, index) => {

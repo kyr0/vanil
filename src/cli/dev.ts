@@ -164,7 +164,6 @@ export const notifyChange = (devWebSocketServer: WebSocket.Server, context: Cont
     const materializedHtmlFilePaths = context.materializedHtmlFilePaths![context.path!]
 
     if (!materializedHtmlFilePaths) return
-
     ws.send(
       JSON.stringify({
         operation: 'transform',

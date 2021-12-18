@@ -16,7 +16,7 @@ export const transformTemplate = (templatePath: string, context: Context) => {
   return transpileTemplate(codeBundle, context)
 }
 
-const renderError = (context: Context, error: ScriptExecutionError) => {
+export const renderError = (context: Context, error: ScriptExecutionError) => {
   const html = renderSSGErrorReport(toProjectRootRelativePath(context.path!, context.config), error, context)
 
   if (!isAstroPageTemplate(context.path!, context.config)) {

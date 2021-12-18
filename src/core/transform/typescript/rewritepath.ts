@@ -33,6 +33,13 @@ const rewritePath = (
   return importPath
 }
 
+const isRequire = (node: ts.Node): node is ts.CallExpression =>
+  ts.isCallExpression(node) &&
+  ts.isIdentifier(node.expression) &&
+  node.expression.text === 'require' &&
+  ts.isStringLiteral(node.arguments[0]) &&
+  node.arguments.length === 1
+
 const isDynamicImport = (node: ts.Node): node is ts.CallExpression =>
   ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword
 
@@ -47,7 +54,7 @@ const importExportVisitor = (
     if ((ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) && node.moduleSpecifier) {
       const importPathWithQuotes = node.moduleSpecifier.getText(sf)
       importPath = importPathWithQuotes.substr(1, importPathWithQuotes.length - 2)
-    } else if (isDynamicImport(node)) {
+    } else if (isDynamicImport(node) || isRequire(node)) {
       const importPathWithQuotes = node.arguments[0].getText(sf)
       importPath = importPathWithQuotes.substr(1, importPathWithQuotes.length - 2)
     } else if (
@@ -59,7 +66,13 @@ const importExportVisitor = (
     }
 
     if (importPath) {
-      const rewrittenPath = rewritePath(importPath, sf, opts, regexps, (node.parent as any).locals.keys().next().value)
+      const rewrittenPath = rewritePath(
+        importPath,
+        sf,
+        opts,
+        regexps,
+        (node.parent as any).locals ? (node.parent as any).locals.keys().next().value : null,
+      )
 
       // Only rewrite relative path
       if (rewrittenPath !== importPath) {
@@ -82,7 +95,7 @@ const importExportVisitor = (
             node.exportClause,
             ctx.factory.createStringLiteral(rewrittenPath),
           )
-        } else if (isDynamicImport(node)) {
+        } else if (isDynamicImport(node) || isRequire(node)) {
           return ctx.factory.updateCallExpression(
             node,
             node.expression,

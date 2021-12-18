@@ -1,4 +1,4 @@
-import { basename } from 'path'
+import { basename, dirname } from 'path'
 import { getDefaultHookConfig } from '../config/hook'
 import { getHooksFolder, toProjectRootRelativePath } from '../io/folders'
 import { Context } from '../../@types/context'
@@ -9,6 +9,9 @@ import { genRobotsTxt } from './core/genRobotsTxt'
 import { genServiceWorker } from './core/genServiceWorker'
 import { genSitemapXml } from './core/genSitemapXml'
 import { copyPanicOverlayToDist } from './core/copyPanicOverlayToDist'
+import { readFileSyncUtf8 } from '../io/file'
+import { transpileSSGCode } from '../transform/transpile'
+import { run } from '../transform/vm'
 
 /** each hook is called with stage-specific props (e.g. page hooks receive page props) and the context */
 export type HookFn = (context: Context, props?: any) => Promise<void>
@@ -40,7 +43,7 @@ export const registerHook = (context: Context, stage: HookStage, fn: HookFn) => 
 }
 
 /** globs hooks in a projects hooks folder, requires them and registers valid hook functions  */
-export const loadProjectHooks = (context: Context) => {
+export const loadProjectHooks = async (context: Context) => {
   const hookFiles = fg.sync(`${getHooksFolder(context.config)}/*.{ts,jsm,js}`)
 
   if (hookFiles.length) {
@@ -50,43 +53,53 @@ export const loadProjectHooks = (context: Context) => {
     )
   }
 
-  hookFiles.forEach((hookFile) => {
+  for (let i = 0; i < hookFiles.length; i++) {
+    const hookFile = hookFiles[i]
+
     if (isHookFile(hookFile)) {
-      const hookFnDefinitions = require(hookFile)
-      const hookStageNames = Object.keys(hookFnDefinitions)
+      const hookFileDir = dirname(hookFile)
+      const hookScript = transpileSSGCode(readFileSyncUtf8(hookFile), context, hookFileDir)
+      const currentCwd = process.cwd()
+
+      context.path = hookFileDir
+      process.chdir(hookFileDir)
+      const exportedSymbols = await run(hookScript, context)
+      process.chdir(currentCwd)
+
+      const hookStageNames = Object.keys(exportedSymbols.data as any)
 
       if (hookStageNames.length > 0) {
         hookStageNames.forEach((hookStageName) => {
           if (isHookName(hookStageName)) {
             console.log(`Custom hook "${hookStageName}" registered.`)
 
-            registerHook(context, hookStageName as HookStage, hookFnDefinitions[hookStageName])
+            registerHook(context, hookStageName as HookStage, (exportedSymbols.data as any)[hookStageName])
           }
         })
       }
     }
-  })
+  }
 }
 
 /** registers core hooks to execute standard functionality */
-export const loadCoreHooks = (context: Context) => {
-  registerHook(context, 'onStart', copyPublicToDist)
-  registerHook(context, 'onStart', copyPanicOverlayToDist)
+export const loadCoreHooks = async (context: Context) => {
+  await registerHook(context, 'onStart', copyPublicToDist)
+  await registerHook(context, 'onStart', copyPanicOverlayToDist)
 
-  registerHook(context, 'onFinish', genManifestJson)
-  registerHook(context, 'onFinish', genRobotsTxt)
-  registerHook(context, 'onFinish', genServiceWorker)
-  registerHook(context, 'onFinish', genSitemapXml)
+  await registerHook(context, 'onFinish', genManifestJson)
+  await registerHook(context, 'onFinish', genRobotsTxt)
+  await registerHook(context, 'onFinish', genServiceWorker)
+  await registerHook(context, 'onFinish', genSitemapXml)
 }
 
 /** imports the hooks that may be found in a project */
-export const registerHooks = (context: Context) => {
+export const registerHooks = async (context: Context) => {
   // skip hook registration in case it already happened
   if (!context.hooks!.initialized || isHookFile(context.path!)) {
     context.hooks = getDefaultHookConfig(context)
 
-    loadCoreHooks(context)
-    loadProjectHooks(context)
+    await loadCoreHooks(context)
+    await loadProjectHooks(context)
 
     context.hooks!.initialized = true
   }

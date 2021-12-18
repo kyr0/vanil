@@ -1,18 +1,16 @@
-import { writeFileSync } from 'fs'
-import { resolve } from 'path'
-import { Context } from 'vanil'
-import { render } from 'sass'
+import { Context, fetchContent, set } from 'vanil'
+import { STORE_KEY_TOC, STORE_KEY_LANGUAGES } from '../config/constants'
+import { getLanguagesSupported } from '../function/getLanguagesSupported'
+import { loadContent } from './onStart/loadContent'
+import { renderBootstrapTheme } from './onStart/renderBootstrapTheme'
 
 export const onStart = async (context: Context) => {
-  console.log('Building custom Bootstrap SCSS...')
+  // render custom bootstrap theme
+  renderBootstrapTheme(context)
 
-  render({ file: resolve(__dirname, '../custom.scss') }, (err: Error, result: any) => {
-    if (err) {
-      console.error('Sass comile error', err)
-      return
-    }
-    writeFileSync(resolve(context.paths.dist, 'bootstrap-custom.css'), result.css.toString('utf-8'), {
-      encoding: 'utf-8',
-    })
-  })
+  // set context property "toc" (table of contents)
+  set(STORE_KEY_TOC, loadContent(fetchContent('resolve:../../content/**')))
+
+  // set context property "languages" dynamically based on content available
+  set(STORE_KEY_LANGUAGES, getLanguagesSupported(fetchContent('resolve:../../content/**')))
 }

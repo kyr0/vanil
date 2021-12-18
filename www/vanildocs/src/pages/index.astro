@@ -1,56 +1,23 @@
 ---
-import { Markdown, fetchContent } from "vanil"
-import PageLayout from "../layouts/PageLayout.astro"
-import { getCurrentVersion } from "../utils/getCurrentVersion"
-
-import { setNavSectionActive } from "../function/setNavSectionActive"
-
-setNavSectionActive('home')
-
-const vanilLogo = fetchContent("../../public/assets/vanil-logo.svg")[0]
-
-// direct VDOM access/mutation
-vanilLogo.attributes.width = 180
-vanilLogo.attributes.height = 180
-vanilLogo.attributes.class = 'vanilLogo animated margin-auto'
-
 ---
-<PageLayout title="VanilDocs">
-    <main>
-      <div class="bd-masthead mb-3" id="content">
-        <div class="container px-4 px-md-3">
-          <div class="row align-items-lg-center">
-            <div class="col-8 mx-auto col-md-4 order-md-2 col-lg-5 d-flex justify-content-center">
-              { vanilLogo }    
-            </div>
-            <div class="col-md-8 order-md-1 col-lg-7 text-center text-md-start">
+<html>
+  <head>
+      <script>
+          import { render } from "vanil"
 
-                <Markdown src="../../content/index.md" />
+          // browser language detection (we only want lang)
+          // see https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language
+          const lang = (navigator.language || navigator.userLanguage).split('-')[0]
 
-                <div class="d-flex flex-column flex-md-row">
-                  <a href="/docs/guides/getting-started" class="btn btn-lg btn-outline-primary mb-3">
-                    Try it out
-                  </a>
-                  <a href="/docs/guides/concepts" class="btn btn-lg btn-bd-primary mb-3 me-md-3">
-                    Read more...
-                  </a>
-                </div>
-
-                <p class="text-muted mb-0">
-                  Currently <strong>v{getCurrentVersion()}</strong>
-                  <span class="px-1">·</span>
-                  <a href="https://www.npmjs.com/package/vanil" class="link-secondary">All releases</a>
-                </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <style lang="scss">
- 
-        /* CSS4 is fully supported */
-        @import "./index.scss";
-
-    </style>
-</PageLayout>
+          // use web standard redirect via <meta> refresh
+          render(<meta http-equiv="refresh" content={`0; url=/${lang}`} />, document.head)
+      </script>
+  </head>
+  <body>
+      <noscript>
+          Please chose a language:
+          <a href="/de">German</a>
+          <a href="/en">English</a>
+      </noscript>
+  </body>
+</html>

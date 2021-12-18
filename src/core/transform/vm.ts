@@ -37,7 +37,7 @@ export const run = async <D, S>(scriptCode: string, context: Context): Promise<E
   let state: any
 
   // Vanil execution context
-  const Vanil: Partial<SSGRuntime> = {
+  const VanilLocal: Partial<SSGRuntime> = {
     mode: context.mode,
 
     // export methods publicly available
@@ -71,7 +71,7 @@ export const run = async <D, S>(scriptCode: string, context: Context): Promise<E
 
   let data: any
   try {
-    const script = new vm.Script(`${scriptCode};exports.default({})`)
+    const script = new vm.Script(`${scriptCode};exports.default ? exports.default({}) : exports`)
 
     const runContext = new vm.createContext({
       globalThis: globalThis, // pass globals by reference
@@ -82,12 +82,15 @@ export const run = async <D, S>(scriptCode: string, context: Context): Promise<E
       context: context, // passing the compilation context for cross-stage transforms
       React: {}, // provided for <fragment> <> support
 
-      importVanilComponent: (props: any) => preprocessVanilComponentPropsAndSlots(props, Vanil),
+      importVanilComponent: (props: any) => preprocessVanilComponentPropsAndSlots(props, VanilLocal),
       // Vanil.fetchContent() and Vanil.resolve() with path-relative support
-      Vanil,
+      Vanil: {
+        ...Vanil,
+        ...VanilLocal,
+      },
       // general TSX/JSX processing function with hoisting support
       tsx: (type: any, attributes: any, ...children: Array<any>) =>
-        globalThis._tsx(type, attributes, context, Vanil, ...children),
+        globalThis._tsx(type, attributes, context, VanilLocal, ...children),
     })
 
     // const dt = Date.now()

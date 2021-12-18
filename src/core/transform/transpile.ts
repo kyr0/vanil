@@ -121,7 +121,7 @@ const transpileInlineVanilComponent = (importPath: string, context: Context) => 
   addFileDependency(importPath, context)
 
   // .astro template page path
-  const _contextPath = context.path
+  let _contextPath = context.path
 
   // for component transpilation change path to component path
   context.path = importPath
@@ -146,7 +146,7 @@ const transpileInlineVanilComponent = (importPath: string, context: Context) => 
   return `{ default: (fn = function() {
     const _origVanilProps = { ...Vanil.props }
     const _origIsPage = Vanil.isPage
-    const _contextPath = Vanil.props.context.path
+    let _contextPath = Vanil.props.context.path
 
     Vanil.props.context.path = '${importPath}'
     Vanil.isPage = false
@@ -204,9 +204,9 @@ export const inlineTranspileAbsoluteRequires = (transpiledCode: string, context:
     const retCode = `
         (() => { 
           exports = {}
-          const __dirname = '${relativeContextPath}'; 
-          const __filename = "${importPath}"; 
-          const _contextPath = Vanil.props.context.path
+          let __dirname = '${relativeContextPath}'; 
+          let __filename = "${importPath}"; 
+          let _contextPath = Vanil.props.context.path
           Vanil.props.context.path = '${importPath}'
 
           ${transpiledRequireCode}; 
@@ -229,6 +229,12 @@ export const transpileSSGCode = (scriptCode: string, context: Context, relImport
   // pre-process vanil imports
   scriptCode = transformVanilImports(scriptCode)
 
+  scriptCode = `
+    __dirname = '${relImportPath ? relImportPath : context.path}'; 
+    __filename = "${context.path}"; 
+    ${scriptCode}
+  `
+
   let transpiledCode = ts
     .transpileModule(scriptCode, {
       ...context.transpileOptions,
@@ -249,7 +255,7 @@ export const transpileSSGCode = (scriptCode: string, context: Context, relImport
   //transpiledCode = inlineTranspileImportedVanilComponents(transpiledCode, context)
 
   // TODO: necessary call? shouldn't transpileTemplate be catch-all in the end?
-  //transpiledCode = inlineTranspileAbsoluteRequires(transpiledCode, context)
+  transpiledCode = inlineTranspileAbsoluteRequires(transpiledCode, context)
 
   // top-level import statements come first
   // async immediately invoked function execution follows (a-iife)
@@ -323,7 +329,7 @@ export const transpileStyleCode = (styleCode: string, attributes: any, context: 
   // style code is relative the an .astro component
   // change the context for the time of processing
   // (resolve() fn impl. in import plugin is affected)
-  const _contextPath = context.path
+  let _contextPath = context.path
   if (attributes.rel) {
     context.path = attributes.rel
   }

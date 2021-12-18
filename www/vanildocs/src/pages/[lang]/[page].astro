@@ -1,0 +1,55 @@
+---
+import { Markdown, get, props } from "vanil"
+
+import PageLayout from "../../layouts/PageLayout.astro"
+import { getCurrentVersion } from "../../utils/getCurrentVersion"
+import { VanilLogo } from "../../components/icon/VanilLogo"
+import { setNavSectionActive } from "../../function/setNavSectionActive"
+import { STORE_KEY_TOC, NavSectionTypes } from "../../config/constants"
+
+setNavSectionActive('home')
+
+/** isolated executed getStaticPaths(), only for path materialization */
+export const getStaticPaths = async() => {
+  return get(STORE_KEY_TOC)[NavSectionTypes.HOME]
+}
+---
+<PageLayout title="VanilDocs">
+    <main>
+      <div class="bd-masthead mb-3" id="content">
+        <div class="container px-4 px-md-3">
+          <div class="row align-items-lg-center">
+            <div class="col-8 mx-auto col-md-4 order-md-2 col-lg-5 d-flex justify-content-center">
+              <VanilLogo width={180} height={180} className="animated margin-auto" />
+            </div>
+            <div class="col-md-8 order-md-1 col-lg-7 text-center text-md-start">
+
+                <Markdown src={props.contentFilePath} />
+
+                <div class="d-flex flex-column flex-md-row">
+                  <a href="/docs/guides/getting-started" class="btn btn-lg btn-outline-primary mb-3">
+                    Try it out
+                  </a>
+                  <a href="/docs/guides/concepts" class="btn btn-lg btn-bd-primary mb-3 me-md-3">
+                    Read more...
+                  </a>
+                </div>
+
+                <p class="text-muted mb-0">
+                  Currently <strong>v{getCurrentVersion()}</strong>
+                  <span class="px-1">·</span>
+                  <a href="https://www.npmjs.com/package/vanil" class="link-secondary">All releases</a>
+                </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <style lang="scss">
+ 
+        /* CSS4 is fully supported */
+        @import "./index.scss";
+
+    </style>
+</PageLayout>

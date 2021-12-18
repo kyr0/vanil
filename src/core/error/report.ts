@@ -30,10 +30,10 @@ export const renderSSGErrorReport = (relativePath: string, ssgError: ScriptExecu
 
 \`
 
-${relativePath} (or an included .astro component):
+${relativePath} (or imported .astro component):
 ${ssgError.linesOfError.join('\n')}
 \`
-throw new ${ssgError.errorType}(\`${ssgError.errorMessage.trim()}\`)
+throw new ${ssgError.errorType}(\`${ssgError.errorMessage ? ssgError.errorMessage.trim() : ssgError}\`)
 // this happened in Node.js while rendering server-side!
 //
 

@@ -1,0 +1,20 @@
+---
+import { get } from "vanil"
+import PageLayout from "../../layouts/PageLayout.astro"
+import { STORE_KEY_LANGUAGES } from "../../config/constants"
+
+/** isolated executed getStaticPaths(), only for path materialization */
+export const getStaticPaths = async() => {
+  return get(STORE_KEY_LANGUAGES).map((lang: string) => ({
+      params: {
+          lang
+      }, 
+      props: {
+          lang
+      }
+  }))
+}
+---
+<PageLayout title="VanilDocs - 404 Not Found">
+    404 frameworks led us into darkness
+</PageLayout>

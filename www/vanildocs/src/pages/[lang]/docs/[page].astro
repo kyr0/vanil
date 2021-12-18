@@ -1,13 +1,17 @@
 ---
-import { props, Debug } from "vanil"
-
-import PageLayout from "../../layouts/PageLayout.astro"
-import DocPageLayout from "../../layouts/DocPageLayout.astro"
-
-import { setNavSectionActive } from "../../function/setNavSectionActive"
+import PageLayout from "../../../layouts/PageLayout.astro"
+import DocPageLayout from "../../../layouts/DocPageLayout.astro"
+import { setNavSectionActive } from "../../../function/setNavSectionActive"
+import { STORE_KEY_TOC, NavSectionTypes } from "../../../config/constants"
+import { get } from "vanil"
 
 setNavSectionActive('docs')
 
+/** isolated executed getStaticPaths(), only for path materialization */
+export const getStaticPaths = async() => {
+  const allDocsPages = get(STORE_KEY_TOC)[NavSectionTypes.DOCS]
+  return allDocsPages.filter((docPage: any) => !docPage.params.section)
+}
 ---
 <PageLayout>
   <DocPageLayout title="Welcome" sectionHead="Some nice intro text">

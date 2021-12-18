@@ -1,6 +1,7 @@
 
 (async() => {// create shallow object
 Vanil = Astro = {
+    fetch,
     props: {},
 };
 Vanil.isBrowser = typeof window !== 'undefined';

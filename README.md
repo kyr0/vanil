@@ -82,6 +82,7 @@ Here are a few ideas on how it feels to work with Vanil:
 
 ## Near-term roadmap (till beta release)
 
+- feat: throw error when fetchContent or resolve is used in .ts or .tsx code included by .astro components or hooks
 - build docs website with Vanil; publish to netlify
 - build homepage website with Vanil; publish to vercel
 - publish examples to github pages

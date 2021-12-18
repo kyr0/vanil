@@ -235,7 +235,7 @@ export const cli = async (args: string[]) => {
     try {
       await dev(config)
     } catch (err: any) {
-      throwAndExit(err)
+      printError(err)
     }
   }
 
@@ -253,18 +253,6 @@ export const cli = async (args: string[]) => {
       process.exit(0)
     }
     case 'dev': {
-      process.on('uncaughtException', (err: any) => {
-        if (err.code === 'EADDRINUSE') {
-          // increment port number
-          console.log('DevServer: Auto-incrementing port number...')
-          config.devOptions!.port! += 1
-          finalizeConfig(config)
-
-          runDev(config)
-        } else {
-          throwAndExit(err)
-        }
-      })
       runDev(config)
       return
     }
@@ -306,8 +294,10 @@ export const cli = async (args: string[]) => {
   }
 }
 
+const printError = (err: any) => console.error(colors.red(err.toString() || err))
+
 /** Display error and exit */
 const throwAndExit = (err: any) => {
-  console.error(colors.red(err.toString() || err))
+  printError(err)
   process.exit(1)
 }

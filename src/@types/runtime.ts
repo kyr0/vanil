@@ -32,9 +32,9 @@ export interface SSGRuntime extends StoreApi, i18nApi {
     state: any
     [propName: string]: any
   }
-  fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  resolve: (filePath: string) => string
-  fetchContent: (fileGlob: string) => Array<any>
+  fetch: FetchFn
+  resolve: ResolveFn
+  fetchContent: FetchContentFn
   isPage: boolean
   isBrowser: boolean
   site: string
@@ -75,6 +75,10 @@ export declare const request: {
   }
   url: string
 }
+
+// (Astro/Vanil).fetch
+export type FetchFn = (input: RequestInfo, init?: RequestInit) => Promise<Response>
+export declare const fetch: FetchFn
 
 // (Astro/Vanil).fetchContent
 export type FetchContentFn = (pathGlob: string) => Array<any>

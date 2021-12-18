@@ -2,7 +2,7 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://localhost:3000</loc>
-        <lastmod>2021-12-16</lastmod>
+        <lastmod>2021-12-18</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
@@ -16,9 +16,27 @@
         <loc>http://localhost:3000/snippets</loc>
     </url>
     <url>
-        <loc>http://localhost:3000/docs/index</loc>
+        <loc>http://localhost:3000/de/404</loc>
     </url>
     <url>
-        <loc>http://localhost:3000/docs/guides/getting-started</loc>
+        <loc>http://localhost:3000/en/404</loc>
+    </url>
+    <url>
+        <loc>http://localhost:3000/de/index</loc>
+    </url>
+    <url>
+        <loc>http://localhost:3000/en/index</loc>
+    </url>
+    <url>
+        <loc>http://localhost:3000/de/docs/index</loc>
+    </url>
+    <url>
+        <loc>http://localhost:3000/en/docs/index</loc>
+    </url>
+    <url>
+        <loc>http://localhost:3000/de/docs/1_anleitungen/A_loslegen</loc>
+    </url>
+    <url>
+        <loc>http://localhost:3000/en/docs/1_guides/A_getting-started</loc>
     </url>
 </urlset>

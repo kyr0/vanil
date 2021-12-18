@@ -9,6 +9,9 @@ import { featureFlagsArray } from './bundle'
 
 /** fills in emptiness such as initializing optional properties */
 export const validateContext = (context: Context) => {
+  if (!context.path) context.path = ''
+  if (!context.materializedPath) context.materializedPath = ''
+
   // reset values per single page run
   context.styleReplacements = []
 

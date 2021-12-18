@@ -1,6 +1,25 @@
 ---
-import PageLayout from "../layouts/PageLayout.astro"
 ---
-<PageLayout title="VanilDocs - 404 Not Found">
-    404 frameworks led us into darkness
-</PageLayout>
+<html>
+  <head>
+      <script>
+          import { render } from "vanil"
+
+          // browser language detection (we only want lang)
+          // see https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language
+          const lang = (navigator.language || navigator.userLanguage).split('-')[0]
+
+          // use web standard redirect via <meta> refresh
+          render(<meta http-equiv="refresh" content={`0; url=/${lang}/404`} />, document.head)
+      </script>
+  </head>
+  <body>
+      <noscript>
+        <h1>Error 404 - page not found</h1>
+          
+          Please chose a language:
+          <a href="/de/404">German 404 page</a>
+          <a href="/en/404">English 404 page</a>
+      </noscript>
+  </body>
+</html>

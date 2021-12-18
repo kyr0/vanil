@@ -1,6 +1,6 @@
 import { parseHTML } from 'linkedom'
 import { getAbstractDOM } from '../runtime/vdom'
-import { detectRuntimeLibraryFeatures, injectInteractiveRuntimeLibrary } from './bundle'
+import { injectInteractiveRuntimeLibrary } from './bundle'
 import { Context } from '../../@types/context'
 import { replaceStyleReplacements, uncapeCurlyBracketsAndBackticks } from './transpile'
 import { ExecutionResult } from './vm'

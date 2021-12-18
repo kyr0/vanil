@@ -14,12 +14,12 @@ export const getStaticPaths = async() => {
 }
 ---
 <PageLayout>
-  <DocPageLayout title={props.title || "??"} sectionHead="Some nice intro text">
+  <DocPageLayout title={props.title} sectionHead="Some nice intro text">
     <ul slot="doc.page.toc">
       <li>test toc</li>
     </ul>
     <div slot="doc.page.content">
-      <h1>{props.title || "??"}</h1>
+      <h1>{props.title}</h1>
       
       <Markdown src={props.contentFilePath} />
     </div>

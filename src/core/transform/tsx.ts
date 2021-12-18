@@ -98,7 +98,7 @@ const stripFragments = (node: IVirtualNode) => {
     for (let i = 0; i < currentNode.children.length; i++) {
       let child = currentNode.children[i]
 
-      if (child.type === 'fragment') {
+      if (child && child.type === 'fragment') {
         children = [...children, ...(stripFragment(child).children || [])]
       } else {
         children.push(stripFragment(child))

@@ -15,6 +15,7 @@ import { LinkFn } from './runtime/components/Link'
 import { ScriptFn } from './runtime/components/Script'
 import { TransFn } from './runtime/components/Trans'
 import { MarkdownFn } from './runtime/components/Markdown'
+import { TranslationFnNs } from '.'
 
 // all runtime types
 export * from './runtime/index'
@@ -125,6 +126,7 @@ export declare const language: Language
 export declare const translations: Translations
 export declare const changeLanguage: ChangeLanguageFn
 export declare const t: TranslationFn
+export declare const tNs: TranslationFnNs
 export declare const setTranslations: SetTranslationsFn
 
 // BusApi
@@ -144,4 +146,4 @@ export declare const saveForSession: SaveForSessionFn
 
 // runtime state API
 export type SetPropsStateFn = (state: RuntimeState) => void
-export declare const setPropsStateFn: SetPropsStateFn
+export declare const setPropsState: SetPropsStateFn

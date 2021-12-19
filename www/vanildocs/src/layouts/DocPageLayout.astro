@@ -1,15 +1,15 @@
 ---
 ---
 <>
-  <div class="container">
-    <div class="row">
-      <div class="col">
+  <div class="container-xxl">
+    <div class="row d-inline d-md-flex">
+      <aside class="col-2 col-md-3 col-xl-2">
         <slot name="doc.page.toc" />
-      </div>
-      <div class="col">
+      </aside>
+      <main class="col-8 col-md-6 col-xl-8">
         <slot name="doc.page.content" />
-      </div>
-      <div class="col">
+      </main>
+      <div class="col-2 d-none d-md-flex col-md-3 col-xl-2">
         <slot name="doc.page.toc.page" />
       </div>
     </div>

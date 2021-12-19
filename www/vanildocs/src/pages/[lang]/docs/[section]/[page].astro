@@ -26,8 +26,17 @@ export const getStaticPaths = async() => {
       
       <Markdown src={props.contentFilePath} />
     </div>
-    <ul slot="doc.page.toc.page">
-      <li>test toc-page</li>
-    </ul>
+    <div class="bd-toc mt-4 mb-5 my-md-0 ps-xl-3 mb-lg-5 text-muted" slot="doc.page.toc.page">
+      <strong class="d-block h6 my-2 pb-2 border-bottom">On this page</strong>
+      <nav id="TableOfContents">
+        <ul>
+          <li><a href="#sass">Sass</a>
+            <ul>
+              <li><a href="#variables">Variables</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
   </DocPageLayout>
 </PageLayout>

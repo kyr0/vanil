@@ -51,10 +51,10 @@ const languagesSupported: Array<string> = get(STORE_KEY_LANGUAGES)
 
       <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
 
-        <li class="nav-item col-6 col-md-auto">
-          <div class="dropdown ms-3">
+        <li class="nav-item col-6 col-md-auto align-self-center">
+          <div class="dropdown me-1">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
-              <span class="d-none d-lg-inline">{ t(Vanil.language) }</span>
+              <span class="d-lg-inline">{ t(Vanil.language) }</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-versions">
               {languagesSupported.map(lang => (

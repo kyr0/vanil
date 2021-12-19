@@ -8,7 +8,6 @@ import { getExecutionMode } from '../core/config'
 import { orchestrateTransformAll, orchestrateTransformSingle } from '../core/orchestrate'
 import { Context } from '../@types/context'
 import {
-  getProjectRootFolder,
   getPublicFolder,
   isAstroPageTemplate,
   toDistFolderRelativePath,
@@ -17,7 +16,6 @@ import {
 import { debounce } from '../core/time/debounce'
 import { copyPublicToDist } from '../core/hook/core/copyPublicToDist'
 import { invalidateCache } from '../core/transform/cache'
-import { execSync, spawn } from 'child_process'
 
 const publicFolderChangeCopyDebounceMs = 25
 const fileChangeDebounceMs = 30
@@ -79,6 +77,7 @@ export const dev = async (config: Config) => {
     if (context.fileDependenciesToRestartOn!.indexOf(path) > -1) {
       console.log(colors.yellow(`> Re-transform all: ${toProjectRootRelativePath(path, config)} changed...`))
       context = await triggerTransformAll(serverConfig, config, devWebSocketServer)
+      notifyChange(devWebSocketServer, context)
       return
     }
 

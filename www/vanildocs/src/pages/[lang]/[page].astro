@@ -1,6 +1,5 @@
 ---
-import { Markdown, get, props, changeLanguage, translations, t, tNs, setPropsState, Trans } from "vanil"
-
+import { Markdown, get, props, changeLanguage, Trans } from "vanil"
 import PageLayout from "../../layouts/PageLayout.astro"
 import { getCurrentVersion } from "../../utils/getCurrentVersion"
 import { VanilLogo } from "../../components/icon/VanilLogo"
@@ -48,4 +47,14 @@ export const getStaticPaths = async() => {
         </div>
       </div>
     </main>
+
+    <div class="stars">
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+    </div>
 </PageLayout>

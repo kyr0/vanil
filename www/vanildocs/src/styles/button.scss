@@ -1,0 +1,13 @@
+.btn {
+  color: $primary;
+
+  &:hover {
+    color: #fff;
+  }
+
+  &.btn-outline-primary {
+    &:hover {
+      color: #000;
+    }
+  }
+}

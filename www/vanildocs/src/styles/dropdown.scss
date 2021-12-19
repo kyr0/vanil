@@ -1,0 +1,17 @@
+.dropdown-menu {
+  background-color: #000;
+  border: 2px solid $primary;
+}
+
+.dropdown-item {
+  color: #fff;
+
+  &:hover {
+    background-color: #333;
+    color: #fff;
+  }
+}
+
+.dropdown-toggle::after {
+  vertical-align: middle;
+}

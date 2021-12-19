@@ -1,4 +1,4 @@
-import { resolve } from 'path/posix'
+import { resolve } from 'path'
 import { Context, fetchContent, set } from 'vanil'
 import { STORE_KEY_TOC, STORE_KEY_LANGUAGES } from '../config/constants'
 import { getLanguagesSupported } from '../function/getLanguagesSupported'

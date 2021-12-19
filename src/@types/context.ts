@@ -65,6 +65,9 @@ export interface Context {
   /** tracks relative file dependencies as a 2d linked list */
   fileDependencies?: FileDependencyLinkList
 
+  /** files to restart on */
+  fileDependenciesToRestartOn?: Array<string>
+
   /** props, pre-defined for the current .vanil page, e.g. dynamic routing */
   pageParamsAndProps?: PageParamsAndProps
 

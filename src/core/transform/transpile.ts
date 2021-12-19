@@ -203,7 +203,7 @@ export const inlineTranspileAbsoluteRequires = (transpiledCode: string, context:
 
     const retCode = `
         (() => { 
-          exports = {}
+          exports = exports || {}
           let __dirname = '${relativeContextPath}'; 
           let __filename = "${importPath}"; 
           let _contextPath = Vanil.props.context.path

@@ -8,12 +8,14 @@ import { registerHooks, runHooks } from './hook/hook'
 import { MaterializedPage, materializeDynamicRoutingPaths } from './transform/routing'
 import { persistVanilPage } from './transform/persist'
 import { resolve } from 'path'
+import { resetVanilPageIsolatedRuntimeState } from './runtime/reset'
 
 export const setupContext = async (context: Context, doRegisterHooks = false) => {
   validateContext(context)
   if (doRegisterHooks) {
     await registerHooks(context)
   }
+  resetVanilPageIsolatedRuntimeState()
   await runHooks('onContext', context)
   return context
 }
@@ -51,7 +53,7 @@ export const orchestrateTransformSingle = async (context: Context): Promise<Cont
   await runHooks('onBeforePage', context)
 
   console.log(
-    colors.white('Rendering'),
+    colors.white(context.materializedPath ? '>' : 'Rendering'),
     colors.green(
       context.materializedPath
         ? toProjectRootRelativePath(context.materializedPath, context.config)

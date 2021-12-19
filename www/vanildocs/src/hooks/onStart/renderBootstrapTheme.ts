@@ -1,6 +1,6 @@
 import { writeFileSync } from 'fs'
 import { resolve } from 'path'
-import { Context } from 'vanil'
+import { Context, restartOnFileChange } from 'vanil'
 import { renderSync } from 'sass'
 
 export const renderBootstrapTheme = (context: Context) => {
@@ -9,9 +9,17 @@ export const renderBootstrapTheme = (context: Context) => {
   const dt = Date.now()
 
   try {
-    const result = renderSync({ file: resolve(__dirname, '../../custom.scss'), verbose: true })
+    const scssIndexFile = resolve(__dirname, '../../styles/_index.scss')
+    const result = renderSync({ file: scssIndexFile, verbose: true })
 
-    writeFileSync(resolve(context.paths.dist, 'bootstrap-custom.css'), result.css.toString('utf-8'), {
+    if (result.stats.includedFiles) {
+      result.stats.includedFiles.forEach((dependentFile) => {
+        // re-start "dev" mode on file change (will trigger onStart again -> HMR effect)
+        restartOnFileChange(dependentFile)
+      })
+    }
+
+    writeFileSync(resolve(context.paths.dist, 'index.css'), result.css.toString('utf-8'), {
       encoding: 'utf-8',
     })
   } catch (e) {

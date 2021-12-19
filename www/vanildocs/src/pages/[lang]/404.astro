@@ -1,20 +1,35 @@
 ---
-import { get } from "vanil"
+import { get, changeLanguage, props } from "vanil"
 import PageLayout from "../../layouts/PageLayout.astro"
 import { STORE_KEY_LANGUAGES } from "../../config/constants"
+
+// i18n runtime lang sync
+changeLanguage(props.lang)
 
 /** isolated executed getStaticPaths(), only for path materialization */
 export const getStaticPaths = async() => {
   return get(STORE_KEY_LANGUAGES).map((lang: string) => ({
       params: {
+          // materializes [lang] to a specific language, such as: de, en, ...
           lang
       }, 
       props: {
+          // makes lang available as props.lang; (import { props } from "vanil")
           lang
       }
   }))
 }
 ---
 <PageLayout title="VanilDocs - 404 Not Found">
-    404 frameworks led us into darkness
+
+    <div class="message">
+        &ndash; 404 frameworks led us into darkness &ndash; 
+    </div>
+
+    <style lang="scss">
+ 
+        /* importing a stylesheet exclusive for the 404 page */
+        @import "./404.scss";
+
+    </style>
 </PageLayout>

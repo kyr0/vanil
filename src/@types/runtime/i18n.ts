@@ -14,8 +14,9 @@ export interface Translations {
 
 export type Language = string
 export type translations = Translations
-export type ChangeLanguageFn = (language: string) => void
-export type TranslationFn = (namespace: string, options?: Option) => TFunction | string
+export type ChangeLanguageFn = (language: string) => string
+export type TranslationFnNs = (namespace: string, options?: Option) => TFunction
+export type TranslationFn = (text: string, options?: Option) => string
 export type SetTranslationsFn = (language: string, translations: NamespaceTranslation) => i18nApi
 
 export interface i18nApi {
@@ -23,5 +24,6 @@ export interface i18nApi {
   translations: Translations
   changeLanguage: ChangeLanguageFn
   t: TranslationFn
+  tNs: TranslationFnNs
   setTranslations: SetTranslationsFn
 }

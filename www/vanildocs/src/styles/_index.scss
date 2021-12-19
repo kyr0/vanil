@@ -1,0 +1,22 @@
+$primary: #f3e5ab;
+$secondary: #d63384;
+
+.btn {
+  color: $primary !important;
+  &:hover {
+    color: #fff !important;
+  }
+  &.btn-outline-primary {
+    &:hover {
+      color: #000 !important;
+    }
+  }
+}
+
+.dropdown-menu {
+  background-color: #000 !important;
+}
+
+@import './logo';
+@import './prism';
+@import '../../node_modules/bootstrap/scss/bootstrap';

@@ -2,7 +2,7 @@
 Vanil.fetchContent = (fileGlob: string) => {
   throw new Error(
     `Cannot fetchContent('${fileGlob}') at runtime (in browser). Please do: 
-props.setState({
+setPropsState({
     files: await fetchContent('${fileGlob}')
 }) 
 in the SSG code (above the ---), and use props.state.files at runtime!`,
@@ -13,7 +13,7 @@ in the SSG code (above the ---), and use props.state.files at runtime!`,
 Vanil.resolve = (fileGlob: string) => {
   throw new Error(
     `Cannot resolve('${fileGlob}') at runtime (in browser). Please do: 
-props.setState({
+setPropsState({
     paths: await resolve('${fileGlob}')
 }) 
 in the SSG code (above the ---), and use props.state.paths at runtime!`,

@@ -1,0 +1,15 @@
+{
+  // languages
+  de: 'German',
+  en: 'English',
+
+  Currently: 'Currently',
+
+  'Hello world': 'Hello world',
+  'Hello <b>World</b>': 'Hello <b>World</b>',
+  'Hello world {name}': 'Hello {name} world',
+
+  home: {
+    'Try it out': 'Try it now',
+  },
+}

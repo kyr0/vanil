@@ -47,9 +47,9 @@ asasda
 
 #### We can hide anything, even code!
 
-    ```ruby
-      puts "Hello World"
-    ```
+```ruby
+    puts "Hello World"
+```
 
 </p>
 </details>
@@ -61,12 +61,6 @@ function test() {
 ```
 
 <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_150x54dp.png" />
-
-<Code>
-function test() {
-  console.log('notice the blank line before this function?')
-}
-</Code>
 
 #### So cool!
 

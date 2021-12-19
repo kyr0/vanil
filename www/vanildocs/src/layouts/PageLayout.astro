@@ -10,10 +10,13 @@ import { mainColor, brandPrimaryColor, brandSecondaryColor } from "../config/ci"
 
         <title>{ props.title || "VanilDocs" }</title>
 
-        <link href="/bootstrap-custom.css" rel="stylesheet" />
+        <!-- ./hooks/onStart.ts generates this one in dist folder -->
+        <link href="/index.css" rel="stylesheet" />
 
+        <!-- automatically copied to dist folder because it's located in ./public folder -->
         <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
         
+        <!-- map brand / CI colors to CSS custom properties to bridge JS to CSS -->
         <style lang="scss">    
             :root {
                 --bs-dark: ${mainColor} !important;

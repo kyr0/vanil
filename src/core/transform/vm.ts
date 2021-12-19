@@ -40,18 +40,20 @@ export const run = async <D, S>(scriptCode: string, context: Context): Promise<E
   const VanilLocal: Partial<SSGRuntime> = {
     mode: context.mode,
 
+    restartOnFileChange: (path: string) => globalThis.restartOnFileChange(path, context),
+
     // export methods publicly available
     fetch,
     fetchContent: (path: string) => globalThis.vanilFetchContent(path, context),
     resolve: (path: string) => globalThis.resolvePathRelative(path, context.path!),
 
+    setPropsState: (_state: any) => {
+      // map result state
+      state = _state
+    },
     // Vanil.props (dynamically set here and extended in generated runtime code)
     props: {
       context,
-      setState: (_state: any) => {
-        // map result state
-        state = _state
-      },
       state: {},
       // from dynamic routing props
       ...(context.pageParamsAndProps?.props || {}),

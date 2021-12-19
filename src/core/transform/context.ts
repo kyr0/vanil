@@ -81,6 +81,9 @@ export const validateContext = (context: Context) => {
     context.runtimeLibraryFeatureFlags = {}
   }
 
+  if (!context.fileDependenciesToRestartOn) {
+    context.fileDependenciesToRestartOn = []
+  }
   return context
 }
 

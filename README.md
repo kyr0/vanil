@@ -91,6 +91,7 @@ Here are a few ideas on how it feels to work with Vanil:
 
 ## Mid-term roadmap
 
+- feat: implement a codeguide https://codeguide.co/#css-import
 - perf: imagemin hook https://github.com/imagemin/imagemin + https://www.npmjs.com/package/imagemin-svgo
 - perf: CLI: run it all using transpiled code, not with ts-node
 - perf: re-implement and activate cache layer

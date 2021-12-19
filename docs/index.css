@@ -1,4 +1,36 @@
 @charset "UTF-8";
+.btn {
+  color: #f3e5ab !important;
+}
+.btn:hover {
+  color: #fff !important;
+}
+.btn.btn-outline-primary:hover {
+  color: #000 !important;
+}
+
+.dropdown-menu {
+  background-color: #000 !important;
+}
+
+.vanilLogo.margin-auto {
+  margin: auto;
+}
+.vanilLogo.animated {
+  animation: flip-logo 10s infinite ease-in-out;
+}
+
+@keyframes flip-logo {
+  0% {
+    transform: perspective(120px) rotateY();
+  }
+  50% {
+    transform: perspective(120px) rotateY(179.9deg);
+  }
+  100% {
+    transform: perspective(120px) rotateY(0);
+  }
+}
 :not(pre) > code[class*=language-],
 pre[class*=language-] {
   background-color: transparent !important;
@@ -62,7 +94,7 @@ pre[class*=language-] {
   --bs-white-rgb: 255, 255, 255;
   --bs-black-rgb: 0, 0, 0;
   --bs-body-color-rgb: 33, 37, 41;
-  --bs-body-bg-rgb: 243, 243, 240;
+  --bs-body-bg-rgb: 255, 255, 255;
   --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
@@ -71,7 +103,7 @@ pre[class*=language-] {
   --bs-body-font-weight: 400;
   --bs-body-line-height: 1.5;
   --bs-body-color: #212529;
-  --bs-body-bg: #f3f3f0;
+  --bs-body-bg: #fff;
 }
 
 *,
@@ -609,7 +641,7 @@ progress {
 
 .img-thumbnail {
   padding: 0.25rem;
-  background-color: #f3f3f0;
+  background-color: #fff;
   border: 1px solid #dee2e6;
   border-radius: 0.25rem;
   max-width: 100%;
@@ -2197,7 +2229,7 @@ progress {
   font-weight: 400;
   line-height: 1.5;
   color: #212529;
-  background-color: #f3f3f0;
+  background-color: #fff;
   background-clip: padding-box;
   border: 1px solid #ced4da;
   appearance: none;
@@ -2217,7 +2249,7 @@ progress {
 }
 .form-control:focus {
   color: #212529;
-  background-color: #f3f3f0;
+  background-color: #fff;
   border-color: #f9f2d5;
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(243, 229, 171, 0.25);
@@ -2364,7 +2396,7 @@ textarea.form-control-lg {
   font-weight: 400;
   line-height: 1.5;
   color: #212529;
-  background-color: #f3f3f0;
+  background-color: #fff;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
@@ -2428,7 +2460,7 @@ textarea.form-control-lg {
   height: 1em;
   margin-top: 0.25em;
   vertical-align: top;
-  background-color: #f3f3f0;
+  background-color: #fff;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -2525,10 +2557,10 @@ textarea.form-control-lg {
   outline: 0;
 }
 .form-range:focus::-webkit-slider-thumb {
-  box-shadow: 0 0 0 1px #f3f3f0, 0 0 0 0.25rem rgba(243, 229, 171, 0.25);
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.25rem rgba(243, 229, 171, 0.25);
 }
 .form-range:focus::-moz-range-thumb {
-  box-shadow: 0 0 0 1px #f3f3f0, 0 0 0 0.25rem rgba(243, 229, 171, 0.25);
+  box-shadow: 0 0 0 1px #fff, 0 0 0 0.25rem rgba(243, 229, 171, 0.25);
 }
 .form-range::-moz-focus-outer {
   border: 0;
@@ -3895,8 +3927,8 @@ textarea.form-control-lg {
 .nav-tabs .nav-link.active,
 .nav-tabs .nav-item.show .nav-link {
   color: #495057;
-  background-color: #f3f3f0;
-  border-color: #dee2e6 #dee2e6 #f3f3f0;
+  background-color: #fff;
+  border-color: #dee2e6 #dee2e6 #fff;
 }
 .nav-tabs .dropdown-menu {
   margin-top: -1px;
@@ -4501,10 +4533,6 @@ textarea.form-control-lg {
   margin-left: -0.5rem;
   border-bottom: 0;
 }
-.card-header-tabs .nav-link.active {
-  background-color: #fff;
-  border-bottom-color: #fff;
-}
 
 .card-header-pills {
   margin-right: -0.5rem;
@@ -4590,7 +4618,7 @@ textarea.form-control-lg {
   font-size: 1rem;
   color: #212529;
   text-align: left;
-  background-color: #f3f3f0;
+  background-color: #fff;
   border: 0;
   border-radius: 0;
   overflow-anchor: none;
@@ -4641,7 +4669,7 @@ textarea.form-control-lg {
 }
 
 .accordion-item {
-  background-color: #f3f3f0;
+  background-color: #fff;
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
 .accordion-item:first-of-type {

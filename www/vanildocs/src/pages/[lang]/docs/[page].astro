@@ -3,9 +3,15 @@ import PageLayout from "../../../layouts/PageLayout.astro"
 import DocPageLayout from "../../../layouts/DocPageLayout.astro"
 import { setNavSectionActive } from "../../../function/setNavSectionActive"
 import { STORE_KEY_TOC, NavSectionTypes } from "../../../config/constants"
-import { get } from "vanil"
+import { get, props, changeLanguage } from "vanil"
+
+// i18n runtime lang sync
+changeLanguage(props.lang)
 
 setNavSectionActive('docs')
+
+// TODO: allow switching to page by dynamically looking up lang page alternatives
+console.log('i18nLinks', props.i18nLinks)
 
 /** isolated executed getStaticPaths(), only for path materialization */
 export const getStaticPaths = async() => {

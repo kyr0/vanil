@@ -3,13 +3,37 @@ import { NavSectionType } from './setNavSectionActive'
 
 interface PageMaterialization {
   params: {
-    section: string
+    section: string | null
     lang: string
     page: string
   }
   props: {
+    slug: string
+    i18nLinks?: {
+      [slug: string]: {
+        [lang: string]: string
+      }
+    }
     lang: string
     contentFilePath: string
+  }
+}
+
+/** splices "1_foo" to "1" or "A_bar" to A to identify/match data records by id */
+export const getId = (name: string) => name.split('_')[0] || ''
+
+/** constructs the slug path per route (custom logic) */
+export const generateSlug = (lang: string, navSection: NavSectionType, page: string, section?: string) => {
+  if (page === 'index') page = ''
+  if (navSection && navSection !== 'home') {
+    const langAndNav = `/${lang}/${navSection}`
+    if (section) {
+      return `${langAndNav}/${section}/${page}`
+    } else {
+      return `${langAndNav}/${page}`
+    }
+  } else {
+    return `/${lang}/${page}`
   }
 }
 
@@ -39,8 +63,8 @@ export const loadTableOfContents = (section: NavSectionType, folders: Array<stri
             section: pageSection,
             page,
           },
-          // TODO: loop and generate alternative lang page links
           props: {
+            slug: generateSlug(lang, section, page, pageSection),
             lang,
             contentFilePath: folders[i],
           },
@@ -48,5 +72,31 @@ export const loadTableOfContents = (section: NavSectionType, folders: Array<stri
       }
     }
   }
+
+  materizations.forEach((materization) => {
+    const slug: string = materization.props.slug
+
+    if (!materization.props.i18nLinks) {
+      materization.props.i18nLinks = {}
+    }
+
+    if (!materization.props.i18nLinks[slug]) {
+      materization.props.i18nLinks[slug] = {
+        [materization.params.lang]: materization.props.slug,
+      }
+    }
+
+    const sectionId = getId(materization.params.section || '')
+    const pageId = getId(materization.params.page)
+
+    materizations.forEach((materizationCandidate) => {
+      if (
+        sectionId === getId(materizationCandidate.params.section || '') &&
+        pageId === getId(materizationCandidate.params.page)
+      ) {
+        materization.props.i18nLinks[slug][materizationCandidate.params.lang] = materizationCandidate.props.slug
+      }
+    })
+  })
   return materizations
 }

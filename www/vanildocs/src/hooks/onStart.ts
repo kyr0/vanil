@@ -1,7 +1,9 @@
+import { resolve } from 'path/posix'
 import { Context, fetchContent, set } from 'vanil'
 import { STORE_KEY_TOC, STORE_KEY_LANGUAGES } from '../config/constants'
 import { getLanguagesSupported } from '../function/getLanguagesSupported'
 import { loadContent } from './onStart/loadContent'
+import { loadTranslations } from './onStart/loadTranslations'
 import { renderBootstrapTheme } from './onStart/renderBootstrapTheme'
 
 export const onStart = async (context: Context) => {
@@ -12,5 +14,15 @@ export const onStart = async (context: Context) => {
   set(STORE_KEY_TOC, loadContent(fetchContent('resolve:../../content/**')))
 
   // set context property "languages" dynamically based on content available
-  set(STORE_KEY_LANGUAGES, getLanguagesSupported(fetchContent('resolve:../../content/**')))
+  const languagesSupported = getLanguagesSupported(fetchContent('resolve:../../content/**'))
+  set(STORE_KEY_LANGUAGES, languagesSupported)
+
+  // sets translations in Vanil.i18n runtime state
+  loadTranslations(
+    languagesSupported.map((lang) => ({
+      lang,
+      file: resolve(__dirname, `../i18n/${lang}.json5`),
+      translations: fetchContent(`../i18n/${lang}.json5`)[0],
+    })),
+  )
 }

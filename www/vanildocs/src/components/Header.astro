@@ -1,9 +1,19 @@
 ---
+import { get, t, setPropsState, props } from "vanil"
 import { VanilLogo } from "./icon/VanilLogo"
 import { GitterLogo } from "./icon/GitterLogo"
 import { GithubLogo } from "./icon/GithubLogo"
 import { NavbarToggle } from "./icon/NavbarToggle"
 import { NavLink } from "./header/NavLink"
+import { STORE_KEY_LANGUAGES } from "../config/constants"
+
+// pass to runtime (browser)
+// avaiable as: Vanil.props.state.i18nLinks
+setPropsState({
+  i18nLinks: props.i18nLinks
+})
+
+const languagesSupported: Array<string> = get(STORE_KEY_LANGUAGES)
 ---
 <header class="navbar navbar-expand-md navbar-dark bd-navbar">
 
@@ -40,6 +50,22 @@ import { NavLink } from "./header/NavLink"
       <hr class="d-md-none text-white-50">
 
       <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+
+        <li class="nav-item col-6 col-md-auto">
+          <div class="dropdown ms-3">
+            <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+              <span class="d-none d-lg-inline">{ t(Vanil.language) }</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-versions">
+              {languagesSupported.map(lang => (
+                /* set the correct alternative language link to navigate to */
+                <li><a class="dropdown-item" href={props.i18nLinks ? props.i18nLinks[props.slug][lang] : `/${lang}`}>{ 
+                  t(lang) 
+                }</a></li>
+              ))}
+            </ul>
+          </div>
+        </li>
         <li class="nav-item col-6 col-md-auto">
           <a class="nav-link p-2" href="https://gitter.im/vanil-build/community" target="_blank" rel="noopener">
             <GitterLogo />

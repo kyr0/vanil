@@ -4,7 +4,7 @@
 // AND CAN BE BUILD / PREVIEWED VIA `vanil build` AND `vanil preview`
 import { set, t, changeLanguage, language, translations, 
     setTranslations, Debug, Trans, fetchContent, 
-    resolve, props, Code } from "vanil"
+    resolve, props, Code, setPropsState } from "vanil"
 
 set('testKey', 123)
 
@@ -64,7 +64,7 @@ console.log('Vanil config locally provided', props.context.config, resolve('../.
 const red = '#cc0000'
 
 // store kitten data so that it's available at runtime
-props.setState({
+setPropsState({
     catImages,
     catData,
     fooEnv: process.env.FOO || null

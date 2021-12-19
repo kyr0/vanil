@@ -16,8 +16,9 @@ import { ScriptFn } from './runtime/components/Script'
 import { TransFn } from './runtime/components/Trans'
 import { MarkdownFn } from './runtime/components/Markdown'
 
-// all vdom types such as IVirtualNode
-export * from './runtime/vdom'
+// all runtime types
+export * from './runtime/index'
+
 export interface SSGRuntime extends StoreApi, i18nApi {
   mode: 'development' | 'production'
 
@@ -35,6 +36,8 @@ export interface SSGRuntime extends StoreApi, i18nApi {
   fetch: FetchFn
   resolve: ResolveFn
   fetchContent: FetchContentFn
+  restartOnFileChange: RestartOnFileChangeFn
+  setPropsState: SetPropsStateFn
   isPage: boolean
   isBrowser: boolean
   site: string
@@ -65,7 +68,6 @@ export type RuntimeState = { [key: string]: JSONSerializable }
 export declare const props: {
   [key: string]: any
   context: Context
-  setState: (state: RuntimeState) => void
 }
 
 // (Astro/Vanil).request
@@ -87,6 +89,10 @@ export declare const fetchContent: FetchContentFn
 // (Astro/Vanil).resolve
 export type ResolveFn = (path: string) => string
 export declare const resolve: ResolveFn
+
+// (Astro/Vanil).restartOnFileChangeFn
+export type RestartOnFileChangeFn = (path: string) => void
+export declare const restartOnFileChangeFn: RestartOnFileChangeFn
 
 // (Astro/Vanil).isPage
 export declare const isPage: boolean
@@ -135,3 +141,7 @@ export declare const load: LoadFn
 export declare const save: SaveFn
 export declare const loadForSession: LoadForSessionFn
 export declare const saveForSession: SaveForSessionFn
+
+// runtime state API
+export type SetPropsStateFn = (state: RuntimeState) => void
+export declare const setPropsStateFn: SetPropsStateFn

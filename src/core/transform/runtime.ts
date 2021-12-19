@@ -33,6 +33,12 @@ import { SSGRuntime } from '../../@types/runtime'
 import { dirname as nativeDirname, resolve as nativeResolve } from 'path'
 import { SLOT_DEFAULT_NAME } from './tsx'
 
+/** Vanil.reloadOnChange implementation to allow dynamic  */
+export const restartOnFileChange = (filePath: string, context: Context) => {
+  context.fileDependenciesToRestartOn!.push(filePath)
+}
+globalThis.restartOnFileChange = restartOnFileChange
+
 /** Vanil.fetchContent() implementation */
 export const astroFetchContent = (globalThis.vanilFetchContent = (targetPath: string, context: Context) => {
   const targetPathSplits = targetPath.split(':')

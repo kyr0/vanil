@@ -24,6 +24,7 @@ export declare global {
   var getStaticPaths: () => Promise<Array<any>>
   var fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   var vanilFetchContent: (targetPath: string, context: Context) => Array<any>
+  var restartOnFileChange: (targetPath: string, context: Context) => void
   var vanilResolve: (targetPath: string, context: Context) => string
   var paginate: (data: Array<any>, paginationParams: PaginationParams) => Array<any>
 

@@ -1,9 +1,12 @@
 ---
-import { props, get, Markdown } from "vanil"
+import { props, get, Markdown, changeLanguage } from "vanil"
 import PageLayout from "../../../../layouts/PageLayout.astro"
 import DocPageLayout from "../../../../layouts/DocPageLayout.astro"
 import { setNavSectionActive } from "../../../../function/setNavSectionActive"
 import { STORE_KEY_TOC, NavSectionTypes } from "../../../../config/constants"
+
+// i18n runtime lang sync
+changeLanguage(props.lang)
 
 setNavSectionActive('docs')
 

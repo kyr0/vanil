@@ -1,11 +1,14 @@
 ---
-import { Markdown, get, props } from "vanil"
+import { Markdown, get, props, changeLanguage, translations, t, tNs, setPropsState, Trans } from "vanil"
 
 import PageLayout from "../../layouts/PageLayout.astro"
 import { getCurrentVersion } from "../../utils/getCurrentVersion"
 import { VanilLogo } from "../../components/icon/VanilLogo"
 import { setNavSectionActive } from "../../function/setNavSectionActive"
 import { STORE_KEY_TOC, NavSectionTypes } from "../../config/constants"
+
+// i18n runtime lang sync
+changeLanguage(props.lang)
 
 setNavSectionActive('home')
 
@@ -28,7 +31,7 @@ export const getStaticPaths = async() => {
 
                 <div class="d-flex flex-column flex-md-row">
                   <a href="/docs/guides/getting-started" class="btn btn-lg btn-outline-primary mb-3">
-                    Try it out
+                    <Trans key="Try it out" ns="home" />
                   </a>
                   <a href="/docs/guides/concepts" class="btn btn-lg btn-bd-primary mb-3 me-md-3">
                     Read more...
@@ -36,7 +39,7 @@ export const getStaticPaths = async() => {
                 </div>
 
                 <p class="text-muted mb-0">
-                  Currently <strong>v{getCurrentVersion()}</strong>
+                  <Trans key="Currently" /> <strong>v{getCurrentVersion()}</strong>
                   <span class="px-1">·</span>
                   <a href="https://www.npmjs.com/package/vanil" class="link-secondary">All releases</a>
                 </p>
@@ -45,11 +48,4 @@ export const getStaticPaths = async() => {
         </div>
       </div>
     </main>
-
-    <style lang="scss">
- 
-        /* CSS4 is fully supported */
-        @import "./index.scss";
-
-    </style>
 </PageLayout>

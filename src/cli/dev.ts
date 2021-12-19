@@ -1,18 +1,37 @@
 import { Config } from '../@types/config'
 import { watch } from 'chokidar'
 import { resolve } from 'path'
+import * as colors from 'kleur/colors'
 import * as WebSocket from 'ws'
 import { preview, printServerRunning } from './preview'
 import { getExecutionMode } from '../core/config'
 import { orchestrateTransformAll, orchestrateTransformSingle } from '../core/orchestrate'
 import { Context } from '../@types/context'
-import { getPublicFolder, isAstroPageTemplate, toDistFolderRelativePath } from '../core/io/folders'
+import {
+  getProjectRootFolder,
+  getPublicFolder,
+  isAstroPageTemplate,
+  toDistFolderRelativePath,
+  toProjectRootRelativePath,
+} from '../core/io/folders'
 import { debounce } from '../core/time/debounce'
 import { copyPublicToDist } from '../core/hook/core/copyPublicToDist'
 import { invalidateCache } from '../core/transform/cache'
+import { execSync, spawn } from 'child_process'
 
 const publicFolderChangeCopyDebounceMs = 25
-const fileChangeDebounceMs = 25
+const fileChangeDebounceMs = 30
+
+export const triggerTransformAll = async (serverConfig: any, config: Config, devWebSocketServer: WebSocket.Server) =>
+  await orchestrateTransformAll({
+    config,
+    command: 'dev',
+    mode: getExecutionMode(),
+    // register in context for onDevServerStart hooks to apply
+    devServer: serverConfig.server,
+    expressApp: serverConfig.app,
+    devWebSocketServer,
+  })
 
 /**
  * dev HTTP server that watches for src folder changes and
@@ -33,15 +52,7 @@ export const dev = async (config: Config) => {
   // listen for HTTP and WS connections
   serverConfig.server.listen(config.devOptions?.port, () => printServerRunning('DevServer', config))
 
-  let context: Context = await orchestrateTransformAll({
-    config,
-    command: 'dev',
-    mode: getExecutionMode(),
-    // register in context for onDevServerStart hooks to apply
-    devServer: serverConfig.server,
-    expressApp: serverConfig.app,
-    devWebSocketServer,
-  })
+  let context = await triggerTransformAll(serverConfig, config, devWebSocketServer)
 
   // [hmr] notify initial (initial transform, for connected clients)
   notifyChange(devWebSocketServer, context)
@@ -65,6 +76,12 @@ export const dev = async (config: Config) => {
   }
 
   const handleFileChange = async (path: string) => {
+    if (context.fileDependenciesToRestartOn!.indexOf(path) > -1) {
+      console.log(colors.yellow(`> Re-transform all: ${toProjectRootRelativePath(path, config)} changed...`))
+      context = await triggerTransformAll(serverConfig, config, devWebSocketServer)
+      return
+    }
+
     // list of .astro files to retransform
     const astroTemplatesToTransform: Array<string> = []
 

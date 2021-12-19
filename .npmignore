@@ -4,3 +4,5 @@ node_modules
 examples/hellokitten
 examples/homepage
 examples/init/dist
+www/vanildocs
+/docs

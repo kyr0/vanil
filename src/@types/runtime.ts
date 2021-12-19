@@ -93,7 +93,7 @@ export declare const resolve: ResolveFn
 
 // (Astro/Vanil).restartOnFileChangeFn
 export type RestartOnFileChangeFn = (path: string) => void
-export declare const restartOnFileChangeFn: RestartOnFileChangeFn
+export declare const restartOnFileChange: RestartOnFileChangeFn
 
 // (Astro/Vanil).isPage
 export declare const isPage: boolean

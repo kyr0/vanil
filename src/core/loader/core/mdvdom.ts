@@ -11,7 +11,8 @@ export const markdownToVdom = (md: string, context: Context) => {
   // transpiles the SVG content as TSX to functional calls
   // and evaluates them down to a JSX JSON tree representation
   // that can be rendered at runtime
-  return eval(transpileTSX(`const { Code, Debug } = Vanil;(<>${code}</>)`, context))
+  // TODO: vm -> run()
+  return eval(transpileTSX(`const { Code, Debug, Trans } = Vanil;(<>${code}</>)`, context))
 }
 
 /** resolves a given target path to an absolute path on disk and returns its UTF8 contents */

@@ -19,14 +19,15 @@ export const addToCache = (untranspiledCode: string, transpiledCode: string, con
   if (!context.codeCache![context.path!]) context.codeCache![context.path!] = {}
 
   // TODO: cache disabled until re-implementation
-  if (force) {
-    context.codeCache![context.path!][hashCode(untranspiledCode)] = transpiledCode
-  }
+  //if (force) {
+  context.codeCache![context.path!][hashCode(untranspiledCode)] = transpiledCode
+  //}
   return transpiledCode
 }
 
 /** removes the codeCache for an .astro file */
 export const invalidateCache = (context: Context) => {
-  delete context.codeCache![context.path!]
+  if (!context.codeCache) context.codeCache = {}
+  delete context.codeCache[context.path!]
   return
 }

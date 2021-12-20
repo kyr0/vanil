@@ -33,3 +33,12 @@ You can run this all in any `CI/CD` and automatically upload the resulting
 code to any hoster of choice. To boost performance to the max., the compiler comes with built-in hook API plugins, that build `sitemap.xml`, `robots.txt`, `manifest.json` and a `worker` for cache management. Thus, all static content would only 1x be loaded from the edge CDN of your hoster and is then cached in visitors browsers.
 
 That is Vanil! A pragmatic compiler for the JAMStack era. Vanil helps you to enjoy simplicity, speed and elegance. Think Node.js React, Vue, jQuery, Svelte and Next.js at the same time. It has all the concepts, but no complexity.
+
+<div class="d-flex flex-column flex-md-row">
+    <a href="/en/docs/1_guides/A_getting-started" class="btn btn-lg btn-outline-primary mb-3">
+    <Trans key="Try it out" ns="home" />
+    </a>
+    <a href="/docs/guides/concepts" class="btn btn-lg btn-bd-primary mb-3 me-md-3">
+    Read more...
+    </a>
+</div>

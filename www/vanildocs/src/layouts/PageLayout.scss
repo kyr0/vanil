@@ -21,3 +21,11 @@ a {
     fill: var(--brand-color) !important;
   }
 }
+
+.in-front {
+  z-index: 1;
+}
+
+.in-back {
+  z-index: 0;
+}

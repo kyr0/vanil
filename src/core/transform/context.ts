@@ -6,6 +6,7 @@ import { Context } from '../../@types/context'
 import { getDistFolder, getHooksFolder, getPagesFolder, getProjectRootFolder, getPublicFolder } from '../io/folders'
 import { FeatureFlagActivationMap } from '../../@types/context/featureflags'
 import { featureFlagsArray } from './bundle'
+import { invalidateCache } from './cache'
 
 /** fills in emptiness such as initializing optional properties */
 export const validateContext = (context: Context) => {
@@ -61,9 +62,11 @@ export const validateContext = (context: Context) => {
   //context.materializedPaths = {}
 
   // caches transpiled code for quick lookup and re-use across transforms
-  if (!context.codeCache) {
-    context.codeCache = {}
-  }
+  // TODO: currently clearing cache on every .astro context enter;
+  // should be persistent but needs a re-implementation therefore
+  //if (!context.codeCache) {
+  invalidateCache(context)
+  //}
 
   // invalidate runtime script and stylesheet injection cache per page
   context.pageRuntimeScriptsAndLinks = []

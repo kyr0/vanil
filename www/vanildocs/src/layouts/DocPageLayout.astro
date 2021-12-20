@@ -1,17 +1,18 @@
 ---
 ---
 <>
-  <div class="container-xxl">
+  <div class="container-xxl docs-page-container">
     <div class="row d-inline d-md-flex">
-      <aside class="col-2 col-md-3 col-xl-2">
+      <aside class="col-2 col-md-3 col-xl-2 docs-toc">
         <slot name="doc.page.toc" />
       </aside>
-      <main class="col-8 col-md-6 col-xl-8">
+      <main class="col-12 col-md-6 col-xl-8 docs-content">
         <slot name="doc.page.content" />
       </main>
       <div class="col-2 d-none d-md-flex col-md-3 col-xl-2">
         <slot name="doc.page.toc.page" />
       </div>
     </div>
+    <link href="./DocPageLayout.scss" rel="stylesheet" />
   </div>
 </>

@@ -1,5 +1,5 @@
 ---
-import { props, get, Markdown, changeLanguage } from "vanil"
+import { props, get, Markdown, changeLanguage, Trans } from "vanil"
 import PageLayout from "../../../../layouts/PageLayout.astro"
 import DocPageLayout from "../../../../layouts/DocPageLayout.astro"
 import { setNavSectionActive } from "../../../../function/setNavSectionActive"
@@ -18,17 +18,38 @@ export const getStaticPaths = async() => {
 ---
 <PageLayout>
   <DocPageLayout title={props.title} sectionHead="Some nice intro text">
-    <ul slot="doc.page.toc">
-      <li>test toc</li>
-    </ul>
+
+    <nav slot="doc.page.toc" class="docs-toc" aria-label="Docs navigation">
+        <ul class="list-unstyled mb-0 py-3 pt-md-1">
+          <li class="mb-1">
+            <button class="btn d-inline-flex align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#getting-started-collapse" aria-expanded="true" aria-current="true">
+              Getting started
+            </button>
+
+            <div class="collapse show" id="getting-started-collapse">
+              <ul class="list-unstyled fw-normal pb-1 small">
+                  <li><a href="/docs/5.1/getting-started/introduction/" class="d-inline-flex align-items-center rounded active" aria-current="page">Introduction</a></li>
+                  <li><a href="/docs/5.1/getting-started/download/" class="d-inline-flex align-items-center rounded">Download</a></li>
+                  <li><a href="/docs/5.1/getting-started/contents/" class="d-inline-flex align-items-center rounded">Contents</a></li>
+                  <li><a href="/docs/5.1/getting-started/browsers-devices/" class="d-inline-flex align-items-center rounded">Browsers &amp; devices</a></li>
+                  <li><a href="/docs/5.1/getting-started/javascript/" class="d-inline-flex align-items-center rounded">JavaScript</a></li>
+                  <li><a href="/docs/5.1/getting-started/webpack/" class="d-inline-flex align-items-center rounded">Webpack</a></li>
+                  <li><a href="/docs/5.1/getting-started/parcel/" class="d-inline-flex align-items-center rounded">Parcel</a></li>
+                  <li><a href="/docs/5.1/getting-started/accessibility/" class="d-inline-flex align-items-center rounded">Accessibility</a></li>
+                  <li><a href="/docs/5.1/getting-started/rfs/" class="d-inline-flex align-items-center rounded">RFS</a></li>
+                  <li><a href="/docs/5.1/getting-started/rtl/" class="d-inline-flex align-items-center rounded">RTL</a></li>
+                  <li><a href="/docs/5.1/getting-started/contribute/" class="d-inline-flex align-items-center rounded">Contribute</a></li>
+              </ul>
+            </div>
+          </li>
+      </ul>
+    </nav>
     <div slot="doc.page.content">
-      <h1>{props.title}</h1>
-      
       <Markdown src={props.contentFilePath} />
     </div>
-    <div class="bd-toc mt-4 mb-5 my-md-0 ps-xl-3 mb-lg-5 text-muted" slot="doc.page.toc.page">
-      <strong class="d-block h6 my-2 pb-2 border-bottom">On this page</strong>
-      <nav id="TableOfContents">
+    <div class="docs-toc-page mt-4 mb-5 my-md-0 ps-xl-3 mb-lg-5 text-muted" slot="doc.page.toc.page">
+      <strong class="d-block h6 my-2 pb-2"><Trans key="On this page"></Trans></strong>
+      <nav class="docs-toc-page-nav">
         <ul>
           <li><a href="#sass">Sass</a>
             <ul>
@@ -38,5 +59,12 @@ export const getStaticPaths = async() => {
         </ul>
       </nav>
     </div>
+
+    <style lang="scss">
+ 
+        /* importing a stylesheet exclusive for the 404 page */
+        @import "./docs-page.scss";
+
+    </style>
   </DocPageLayout>
 </PageLayout>

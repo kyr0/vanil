@@ -5,6 +5,15 @@ Frameworks das Licht der Welt erblickt haben. Frameworks wurden
 entwickelt, weil wir damals keine guten Standards hatten.
 Doch wie sieht es heute aus?
 
+<div class="d-flex flex-column flex-md-row">
+    <a href="/de/docs/1_anleitungen/A_loslegen" class="btn btn-lg btn-outline-primary mb-3">
+    <Trans key="Try it out" ns="home" />
+    </a>
+    <a href="/docs/guides/concepts" class="btn btn-lg btn-bd-primary mb-3 me-md-3">
+    Read more...
+    </a>
+</div>
+
 _asd_
 
 _asd_

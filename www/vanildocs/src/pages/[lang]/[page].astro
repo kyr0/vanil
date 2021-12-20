@@ -17,25 +17,18 @@ export const getStaticPaths = async() => {
 }
 ---
 <PageLayout title="VanilDocs">
-    <main>
+    <div class="content">
       <div class="bd-masthead mb-3" id="content">
         <div class="container px-4 px-md-3">
           <div class="row align-items-lg-center">
-            <div class="col-8 mx-auto col-md-4 order-md-2 col-lg-5 d-flex justify-content-center">
+            <div class="col-8 mx-auto col-md-4 order-md-2 col-lg-5 d-flex justify-content-center in-front">
               <VanilLogo width={180} height={180} className="animated margin-auto" />
             </div>
-            <div class="col-md-8 order-md-1 col-lg-7 text-center text-md-start">
+            <div class="col-md-8 order-md-1 col-lg-7 text-center text-md-start in-front">
 
                 <Markdown src={props.contentFilePath} />
 
-                <div class="d-flex flex-column flex-md-row">
-                  <a href="/docs/guides/getting-started" class="btn btn-lg btn-outline-primary mb-3">
-                    <Trans key="Try it out" ns="home" />
-                  </a>
-                  <a href="/docs/guides/concepts" class="btn btn-lg btn-bd-primary mb-3 me-md-3">
-                    Read more...
-                  </a>
-                </div>
+                
 
                 <p class="text-muted mb-0">
                   <Trans key="Currently" /> <strong>v{getCurrentVersion()}</strong>
@@ -46,9 +39,9 @@ export const getStaticPaths = async() => {
           </div>
         </div>
       </div>
-    </main>
+    </div>
 
-    <div class="stars">
+    <div class="stars in-back">
       <div class="star"></div>
       <div class="star"></div>
       <div class="star"></div>

@@ -127,6 +127,9 @@ export const dev = async (config: Config) => {
       astroTemplatesToTransform.indexOf(path) === -1
     ) {
       astroTemplatesToTransform.push(path)
+    } else if (path.endsWith('.astro')) {
+      // .astro component case; clear component cache
+      context.codeCache = {}
     }
 
     // walk thru all .astro templates that depend on the files changed

@@ -1,5 +1,5 @@
 ---
-import { props, get, Markdown, changeLanguage, Trans } from "vanil"
+import { props, get, Markdown, changeLanguage, Trans, fetchContent } from "vanil"
 import PageLayout from "../../../../layouts/PageLayout.astro"
 import DocPageLayout from "../../../../layouts/DocPageLayout.astro"
 import { setNavSectionActive } from "../../../../function/setNavSectionActive"
@@ -10,6 +10,10 @@ changeLanguage(props.lang)
 
 setNavSectionActive('docs')
 
+const md = fetchContent(props.contentFilePath)[0]
+
+console.log('md', md)
+
 /** isolated executed getStaticPaths(), only for path materialization */
 export const getStaticPaths = async() => {
   const allDocsPages = get(STORE_KEY_TOC)[NavSectionTypes.DOCS]
@@ -18,6 +22,8 @@ export const getStaticPaths = async() => {
 ---
 <PageLayout>
   <DocPageLayout title={props.title} sectionHead="Some nice intro text">
+
+    <link href="./page.scss" rel="stylesheet" />
 
     <nav slot="doc.page.toc" class="docs-toc" aria-label="Docs navigation">
         <ul class="list-unstyled mb-0 py-3 pt-md-1">
@@ -60,11 +66,5 @@ export const getStaticPaths = async() => {
       </nav>
     </div>
 
-    <style lang="scss">
- 
-        /* importing a stylesheet exclusive for the 404 page */
-        @import "./docs-page.scss";
-
-    </style>
   </DocPageLayout>
 </PageLayout>

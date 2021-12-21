@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vanil dev",
     "dev:head": "npm --prefix ../../ run start:dev -- dev --project-root ./www/vanildocs",
-    "build": "vanil build",
+    "build:head": "npm --prefix ../../ run start:dev -- build --project-root ./www/vanildocs",
+    "preview:head": "npm --prefix ../../ run start:dev -- preview --project-root ./www/vanildocs",
     "preview": "vanil preview",
     "config": "vanil config",
     "clean": "vanil clean"

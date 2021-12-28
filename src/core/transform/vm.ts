@@ -2,13 +2,6 @@ import { Context } from '../../@types/context'
 
 const vm = require('vm')
 
-// === IMPORTS NEEDED FOR RUNTIME EVALUATION ===
-
-// need to import the tsx() transform code for later evaluation
-import './tsx'
-
-// SSG runtime
-import './runtime'
 import fetch from 'cross-fetch'
 import { getPagesFolder } from '../io/folders'
 import { getPageUrl } from './routing'

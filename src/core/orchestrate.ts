@@ -10,6 +10,14 @@ import { persistVanilPage } from './transform/persist'
 import { resolve } from 'path'
 import { resetVanilPageIsolatedRuntimeState } from './runtime/reset'
 
+// === IMPORTS NEEDED FOR RUNTIME EVALUATION ===
+
+// need to import the tsx() transform code for later evaluation
+import './transform/tsx'
+
+// SSG runtime
+import './transform/runtime'
+
 export const setupContext = async (context: Context, doRegisterHooks = false) => {
   validateContext(context)
   if (doRegisterHooks) {

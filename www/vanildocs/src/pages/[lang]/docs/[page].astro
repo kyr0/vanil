@@ -4,6 +4,7 @@ import DocPageLayout from "../../../layouts/DocPageLayout.astro"
 import { setNavSectionActive } from "../../../function/setNavSectionActive"
 import { STORE_KEY_TOC, NavSectionTypes } from "../../../config/constants"
 import { get, props, changeLanguage } from "vanil"
+import SectionsNav from "../../../components/SectionsNav.astro"
 
 // i18n runtime lang sync
 changeLanguage(props.lang)
@@ -21,11 +22,17 @@ export const getStaticPaths = async() => {
 ---
 <PageLayout>
   <DocPageLayout title="Welcome" sectionHead="Some nice intro text">
-    <ul slot="doc.page.toc">
-      <li>test toc1</li>
-    </ul>
+
+    <nav slot="doc.page.toc">
+      <SectionsNav />
+    </nav>
+
     <div slot="doc.page.content">
       <h1>Welcome!</h1>
+
+      <p>
+        Here is a simple example of how Vanil code looks like and works:
+      </p>
 
       <iframe src="https://codesandbox.io/embed/how-to-use-the-debug-component-2oszj?fontsize=14&hidenavigation=1&module=%2Fsrc%2Fpages%2Findex.astro&theme=dark"
         style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
@@ -34,17 +41,33 @@ export const getStaticPaths = async() => {
         sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
       ></iframe>
     </div>
-    <div class="bd-toc mt-4 mb-5 my-md-0 ps-xl-3 mb-lg-5 text-muted" slot="doc.page.toc.page">
-      <strong class="d-block h6 my-2 pb-2 border-bottom">On this page</strong>
-      <nav id="PageTableOfContents">
-        <ul>
-          <li><a href="#sass">Sass</a>
-            <ul>
-              <li><a href="#variables">Variables</a></li>
-            </ul>
-          </li>
-        </ul>
-      </nav>
+    
+
+    <div slot="doc.page.toc.page">
+      <h4>TL;DR</h4>
+      <p>
+        Vanil has been developed by Aron Homberg (kyr0). 
+        It is his answer to todays framework fatigue.
+      </p>
+
+      <p>
+        It's a web compiler that uses the `astro` file format to 
+        processes Node.js and then compile TSX/JSX, HTML, SCSS, CSS 
+        + any media file into a static WebApp.
+      </p>
+
+      <p>
+        You don't need any framework anymore to work
+        like in React but you're free to use them.
+      </p>
+
+      <p>
+        <strong>
+          A thin dynamic (only compiled in, if used) runtime API 
+          handles state hydration and provides pattern primitives.
+        </strong>
+      </p>
     </div>
+
   </DocPageLayout>
 </PageLayout>

@@ -20,6 +20,7 @@ import { paginate } from './routing'
 // (automatically assigns to Vanil global object)
 import '../runtime/store'
 import '../runtime/i18n'
+import '../runtime/tsx'
 
 // built-in Components
 import '../runtime/components/Script'

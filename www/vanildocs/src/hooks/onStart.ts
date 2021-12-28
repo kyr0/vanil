@@ -10,9 +10,6 @@ export const onStart = async (context: Context) => {
   // render custom bootstrap theme
   renderBootstrapTheme(context)
 
-  // set context property "toc" (table of contents)
-  set(STORE_KEY_TOC, loadContent(fetchContent('resolve:../../content/**')))
-
   // set context property "languages" dynamically based on content available
   const languagesSupported = getLanguagesSupported(fetchContent('resolve:../../content/**'))
   set(STORE_KEY_LANGUAGES, languagesSupported)
@@ -25,4 +22,7 @@ export const onStart = async (context: Context) => {
       translations: fetchContent(`../i18n/${lang}.json5`)[0],
     })),
   )
+
+  // set context property "toc" (table of contents)
+  set(STORE_KEY_TOC, loadContent(fetchContent('resolve:../../content/**')))
 }

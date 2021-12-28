@@ -1,4 +1,6 @@
+import { fetchContent, IVirtualNode } from 'vanil'
 import { getLanguagesSupported } from './getLanguagesSupported'
+import { getRawTitle } from './getRawTitle'
 import { NavSectionType } from './setNavSectionActive'
 
 interface PageMaterialization {
@@ -14,7 +16,10 @@ interface PageMaterialization {
         [lang: string]: string
       }
     }
+    sectionTitle: string
+    pageTitle: string
     lang: string
+    vdom: IVirtualNode
     contentFilePath: string
   }
 }
@@ -65,7 +70,10 @@ export const loadTableOfContents = (section: NavSectionType, folders: Array<stri
           },
           props: {
             slug: generateSlug(lang, section, page, pageSection),
+            sectionTitle: getRawTitle(pageSection),
+            pageTitle: getRawTitle(page),
             lang,
+            vdom: fetchContent(folders[i])[0],
             contentFilePath: folders[i],
           },
         })

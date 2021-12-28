@@ -1,0 +1,37 @@
+---
+import { props, Trans, IVirtualNode } from "vanil"
+
+const pageNav = <nav class="docs-toc-page-nav"><ul></ul></nav>
+const pageNavWrapperUl: IVirtualNode = pageNav.children[0]!
+let currentH2: IVirtualNode
+let currentH2WrapperUl: IVirtualNode
+
+props.vdom.forEach((node: IVirtualNode) => {
+
+  if (node.type === 'h2') {
+    currentH2 = <li><a href={`#${node.attributes.id}`}>{node.children[0]!}</a>
+      <ul>
+      </ul>
+    </li>
+
+    currentH2WrapperUl = currentH2.children[1]! as IVirtualNode
+
+    pageNavWrapperUl.children.push(currentH2)
+  }
+
+  if (node.type === 'h3') {
+    const h3Node = <li><a href={`#${node.attributes.id}`}>{node.children[0]!}</a></li>
+    if (currentH2) { 
+      currentH2WrapperUl.children.push(h3Node) 
+    } else { 
+      pageNavWrapperUl.children.push(h3Node) 
+    } 
+  }
+})
+---
+<div class="docs-toc-page mt-4 mb-5 my-md-0 ps-xl-3 mb-lg-5 text-muted">
+  <strong class="d-block h6 my-2 pb-2">
+    <Trans key="On this page"></Trans>
+  </strong>
+  { pageNav }
+</div>

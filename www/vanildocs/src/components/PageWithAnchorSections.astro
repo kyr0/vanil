@@ -1,0 +1,26 @@
+---
+import { Markdown, props } from "vanil"
+
+/** 
+ * higher order component to add an <a name="..." href="...">#</a> 
+ * after each heading that we can page-navigate to 
+ */
+const md = <Markdown src={props.contentFilePath} />
+const anchoredMdNodes = []
+
+for (let i=0; i<md.length; i++) {
+
+    anchoredMdNodes.push(md[i])
+
+    if (md[i].type !== 'h2' && md[i].type !== 'h3') {
+        continue
+    } else {
+        md[i].children.push(<a name={md[i].attributes.id} href={`#${md[i].attributes.id}`}>#</a>)
+    }
+}
+
+
+---
+<>
+    { anchoredMdNodes }
+</>

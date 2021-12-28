@@ -1,0 +1,46 @@
+---
+import { props, language, get, IVirtualNode } from "vanil"
+import { STORE_KEY_TOC, NavSectionTypes } from "../config/constants"
+import { ucfirst } from "../function/ucfirst"
+
+const sectionUls: {
+    [sectionName: string]: IVirtualNode
+} = {}
+
+const pageSlug = props.slug
+const allDocPages = get(STORE_KEY_TOC)[NavSectionTypes.DOCS]
+
+allDocPages.forEach(({ params, props }: any) => {
+
+    if (!params.section || language !== props.lang) return // skip
+
+    if (!sectionUls[params.section]) {
+        sectionUls[params.section] = <ul class="list-unstyled mb-0 py-3 pt-md-1">
+          <li class="mb-1">
+            <button class="btn d-inline-flex align-items-center rounded" data-bs-toggle="collapse" data-bs-target={`#${props.sectionTitle}-collapse`} aria-expanded="true" aria-current="true">
+              { ucfirst(props.sectionTitle).replaceAll('-', ' ') }
+            </button>
+
+            <div class="collapse show" id={`${props.sectionTitle}-collapse`}>
+              <ul class="list-unstyled fw-normal pb-1 small">
+              </ul>
+            </div>
+          </li>
+      </ul>
+    }
+    const wrapperUl = sectionUls[params.section].children[0]! as IVirtualNode
+    const wrapperDiv = wrapperUl.children[1]! as IVirtualNode
+    const pagesInSectionWrapperUrl = wrapperDiv.children[0]! as IVirtualNode
+    
+    pagesInSectionWrapperUrl.children.push(
+        <li>
+            <a href={props.slug} class={`d-inline-flex align-items-center rounded ${pageSlug === props.slug ? 'active' : ''}`} aria-current="page">
+                { ucfirst(props.pageTitle).replaceAll('-', ' ') }
+            </a>
+        </li>
+    )
+})
+---
+<div class="docs-toc" aria-label="Docs navigation">
+    {Object.keys(sectionUls).map(sectionUl => sectionUls[sectionUl])}
+</div>

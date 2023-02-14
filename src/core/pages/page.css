@@ -1,0 +1,11 @@
+body {
+  background-color: black;
+  color: wheat;
+  font-family: Verdana, sans-serif;
+}
+
+pre {
+  padding: 1rem;
+  border: 2px solid #ccc;
+  border-radius: 1rem;
+}

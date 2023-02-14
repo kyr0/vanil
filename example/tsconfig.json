@@ -1,0 +1,11 @@
+{
+  "extends": "../dist/tsconfig",
+  "compilerOptions": {
+    "types": [
+      "../dist/typings"
+    ]
+  },
+  "include": [
+    "src"
+  ]
+}

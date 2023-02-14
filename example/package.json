@@ -1,0 +1,23 @@
+{
+  "name": "example",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Example of Vanil 2.0",
+  "scripts": {
+    "build:custom": "../dist/run.js ./scripts/build.ts",
+    "dev:custom": "../dist/run.js ./scripts/dev.ts",
+    "dev:custom2": "NODE_OPTIONS='--inspect --enable-source-maps --experimental-vm-modules --experimental-import-meta-resolve --no-warnings' ts-node --esm --experimental-specifier-resolution=node ./scripts/dev.ts",
+    "build": "../dist/run.js build",
+    "clean": "../dist/run.js clean",
+    "preview": "../dist/run.js preview",
+    "dev": "../dist/run.js dev"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.4"
+  },
+  "devDependencies": {
+    "@types/node": "*"
+  }
+}

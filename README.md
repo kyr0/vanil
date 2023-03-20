@@ -2,16 +2,13 @@
 
 > *!!* Please note that this project is an experimental prototype. I am working behind the scenes on VANIL 2.0 and will release a next-gen implementation once I finish my research on the best architecture and algorithms.
 
-VANIL is a compiler and static site generator (SSG) that combines TSX/JSX+HTML+CSS and modern web standards. Back in the day, _transpilers_, _bundlers_, _source maps_ and _frameworks_ have been invented to cope with web-tech limitations. However,
+VANIL 1.0 is a compiler and static site generator (SSG) that combines TSX/JSX+HTML+CSS and modern web standards. Back in the day, _transpilers_, _bundlers_, _source maps_ and _frameworks_ have been invented to cope with web-tech limitations. However,
 the ancient times are over. It's time to get rid of all the complexity,  
 and get back to the roots and use vanilla APIs - modern vanilla code is lightweight,
 powerful, vastly compatible and very maintainable. The missing part has been
 the glue layer in between: VANIL.
 
-VANIL uses the Astro.build template format, but it's rather meant for the land-bornes among us. This is not a fork, it's a clean-room re-implementation that
-pragmatically implements the original API, but extends it with a dynamic runtime.
-
-And, no pun intended, already [more stable than the original](https://github.com/snowpackjs/astro/issues/1787). At least, it doesn't fall apart when you use template literals ;)
+VANIL 1.0 uses the Astro.build template format, but it's rather meant for the land-bornes among us. This is not a fork, it's a clean-room re-implementation that pragmatically implements the original API, but extends it with a dynamic runtime.
 
 ## Example
 

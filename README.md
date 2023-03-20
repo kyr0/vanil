@@ -1,6 +1,6 @@
 # VANIL
 
-[![Join the chat at https://gitter.im/vanil-build/community](https://badges.gitter.im/vanil-build/community.svg)](https://gitter.im/vanil-build/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+> Please note that this project is an experimental prototype. I am working behind the scenes on VANIL 2.0 and will release a next-gen implementation once I finish my research on the best architecture and algorithms.
 
 > Vanilla JSX + HTML + CSS compiler and static-site generator (SSG)
 

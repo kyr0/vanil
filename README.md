@@ -1,8 +1,6 @@
 # VANIL
 
-> Please note that this project is an experimental prototype. I am working behind the scenes on VANIL 2.0 and will release a next-gen implementation once I finish my research on the best architecture and algorithms.
-
-> Vanilla JSX + HTML + CSS compiler and static-site generator (SSG)
+> *!!* Please note that this project is an experimental prototype. I am working behind the scenes on VANIL 2.0 and will release a next-gen implementation once I finish my research on the best architecture and algorithms.
 
 VANIL is a compiler and static site generator (SSG) that combines TSX/JSX+HTML+CSS and modern web standards. Back in the day, _transpilers_, _bundlers_, _source maps_ and _frameworks_ have been invented to cope with web-tech limitations. However,
 the ancient times are over. It's time to get rid of all the complexity,  

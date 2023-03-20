@@ -8,7 +8,7 @@ and get back to the roots and use vanilla APIs - modern vanilla code is lightwei
 powerful, vastly compatible and very maintainable. The missing part has been
 the glue layer in between: VANIL.
 
-VANIL 1.0 uses the Astro.build template format, but it's rather meant for the land-bornes among us. This is not a fork, it's a clean-room re-implementation that pragmatically implements the original API, but extends it with a dynamic runtime.
+VANIL 1.0 uses the Astro.build template format, but it's rather meant for the land-bornes among us. This is not a fork, it's a clean-room re-implementation that pragmatically implements the Astro API, but extends it with a dynamic runtime.
 
 ## Example
 
